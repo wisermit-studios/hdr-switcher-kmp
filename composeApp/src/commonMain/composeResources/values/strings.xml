@@ -1,0 +1,8 @@
+<resources>
+  <string name="app_name">HDR Switcher</string>
+
+  <string name="minimize">Minimize</string>
+  <string name="maximize">Maximize</string>
+  <string name="restore_down">Restore Down</string>
+  <string name="close">Close</string>
+</resources>
