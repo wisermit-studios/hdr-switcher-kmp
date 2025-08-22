@@ -12,17 +12,18 @@ plugins {
 kotlin {
     jvm()
 
+    mingwX64("windows") {
+        compilations.getByName("main") {
+            cinterops {
+                val myLib by creating {
+                    defFile = file("src/nativeInterop/cinterop/windows_processes.def")
+                }
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.net.java.jna)
             implementation(libs.net.java.jna.platform)
         }
@@ -30,8 +31,21 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
+            implementation(compose.components.resources)
+            implementation(compose.ui)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+        }
+        val windowsMain by getting {
+            dependencies {
+            }
         }
     }
 }
@@ -46,6 +60,12 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "com.wisermit.hdrswitcher.resources"
+    generateResClass = always
 }
 
 tasks.withType<KotlinCompile>().configureEach {
