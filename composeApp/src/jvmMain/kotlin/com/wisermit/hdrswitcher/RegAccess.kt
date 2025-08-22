@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.ui.theme
+package com.wisermit.hdrswitcher
 
 import com.sun.jna.platform.win32.Advapi32Util
 import com.sun.jna.platform.win32.WinReg
@@ -6,6 +6,8 @@ import com.sun.jna.platform.win32.WinReg
 private const val REG_THEME_PATH =
     "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
 private const val REG_IS_LIGHT_THEME_KEY = "AppsUseLightTheme"
+
+ // FIXME: Remover.
 
 fun isSystemInDarkTheme2(): Boolean {
     val isDark = Advapi32Util.registryValueExists(
