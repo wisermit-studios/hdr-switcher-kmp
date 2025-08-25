@@ -2,7 +2,6 @@ package com.wisermit.hdrswitcher
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -66,7 +65,7 @@ fun FluentWindow(
     icon: Painter,
     content: @Composable FrameWindowScope.() -> Unit,
 ) {
-    val windowPosition = getWindowPosition();
+    val windowPosition = getWindowPosition()
 
     Window(
         onCloseRequest = onCloseRequest,
@@ -98,12 +97,7 @@ fun FluentWindow(
                     title = stringResource(Res.string.app_name),
                     onCloseRequest = onCloseRequest,
                 )
-
-                Box(
-                    Modifier.weight(1f)
-                ) {
-                    content()
-                }
+                content()
             }
         }
     }
@@ -144,20 +138,20 @@ private fun FrameWindowScope.TitleBar(
             )
 
             WindowControlButton(
-                Icons.Filled.HorizontalRule,
+                Icons.Default.HorizontalRule,
                 contentDescription = stringResource(Res.string.minimize),
                 onClick = { window.isMinimized = true },
             )
 
 //            if (window.placement == WindowPlacement.Maximized) {
 //                WindowControlButton(
-//                    Icons.Filled.FilterNone,
+//                    Icons.Default.FilterNone,
 //                    contentDescription = stringResource(Res.string.restore_down),
 //                    onClick = { window.placement = WindowPlacement.Floating },
 //                )
 //            } else {
 //                WindowControlButton(
-//                    Icons.Filled.CropSquare,
+//                    Icons.Default.CropSquare,
 //                    contentDescription = stringResource(Res.string.maximize),
 //                    onClick = { window.placement = WindowPlacement.Maximized },
 //                )
