@@ -14,16 +14,17 @@ kotlin {
 
     mingwX64("windows") {
         compilations.getByName("main") {
-            cinterops {
-                val myLib by creating {
-                    defFile = file("src/nativeInterop/cinterop/windows_processes.def")
-                }
-            }
+//            cinterops {
+//                val windowsLib by creating {
+//                    defFile = file("src/nativeInterop/cinterop/windows_lib.def")
+//                }
+//            }
         }
     }
 
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.koin.core)
             implementation(libs.net.java.jna)
             implementation(libs.net.java.jna.platform)
         }
@@ -40,6 +41,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
