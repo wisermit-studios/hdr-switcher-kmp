@@ -1,12 +1,10 @@
-package com.wisermit.hdrswitcher.ui
+package com.wisermit.hdrswitcher.ui.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,50 +19,33 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
-import androidx.compose.ui.draganddrop.DragData
-import androidx.compose.ui.draganddrop.dragData
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.model.Application
-import com.wisermit.hdrswitcher.resources.Res
-import org.jetbrains.compose.resources.stringResource
+import com.wisermit.hdrswitcher.ui.theme.DISABLED_ALPHA
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import java.net.URI
-import java.nio.file.Path
-import kotlin.io.path.toPath
+import org.koin.compose.koinInject
 
-private val TEST = Application(Path.of("F:\\Downloads\\Test.exe"))
 
 @Composable
 @Preview
-fun App() {
-    val hdrEnabled = remember { mutableStateOf(false) }
-    val appList = remember { mutableStateOf<List<Application>>(mutableListOf(TEST)) }
-
+fun MainScreen(
+    viewModel: MainViewModel = koinInject(),
+) {
     val dragAndDropTarget = remember {
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
-                (event.dragData() as? DragData.FilesList)
-                    ?.readFiles()
-                    ?.firstOrNull()
-                    ?.let(::URI)
-                    ?.let(URI::toPath)
-                    ?.let {
-                        println(".. dropped: $it")
-                        appList.value += Application(it)
-                    }
-                    ?.let(::println)
-                    ?: return false
-                return true
+                return viewModel.dropFile(event)
             }
         }
     }
+
+    // TODO: Refresh on Focus changed.
 
     Scaffold {
         Column(
@@ -75,18 +56,18 @@ fun App() {
                     target = dragAndDropTarget
                 ),
         ) {
-            // TODO: Check HDR support.
+            // TODO: Display no HDR message.
+
             ConfigItem(
+                enabled = viewModel.isHdrEnabled.value != null,
                 headline = "HDR",
                 trailing = {
                     Switch(
-                        checked = hdrEnabled.value,
-                        onCheckedChange = {
-                            // TODO: Toggle system HDR.
-                            hdrEnabled.value = !hdrEnabled.value
-                        },
+                        enabled = viewModel.isHdrEnabled.value != null,
+                        checked = viewModel.isHdrEnabled.value == true,
+                        onCheckedChange = viewModel::setHdrEnabled,
                     )
-                }
+                },
             )
 
             Text(
@@ -95,11 +76,14 @@ fun App() {
                 text = "Custom settings for applications"
             )
 
+            // TODO: Display no applications.
+
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                items(appList.value.size) { index ->
-                    val item = appList.value[index]
+                items(viewModel.applicationsSettings.value.size) { index ->
+                    val item = viewModel.applicationsSettings.value[index]
                     ConfigItem(
                         leading = {
                             Icon(
@@ -111,7 +95,7 @@ fun App() {
                         headline = item.name,
                         supportingContent = {
                             Column {
-                                Text(item.pathString)
+                                Text(item.path)
                                 Row(
                                     Modifier.fillMaxWidth().padding(top = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically,
@@ -120,7 +104,7 @@ fun App() {
                                         "HDR",
                                         color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.weight(1f),
-                                        )
+                                    )
                                     Switch(
                                         checked = false,
                                         onCheckedChange = {
@@ -146,12 +130,18 @@ fun ConfigItem(
     supportingContent: @Composable (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
 ) {
-    var modifier = modifier.clip(shape = shapes.extraSmall)
-    onClick?.let {
-        modifier = modifier.clickable(onClick = onClick)
-    }
+    val modifier = modifier
+        .clip(shape = shapes.extraSmall)
+        .let {
+            if (!enabled) it.alpha(DISABLED_ALPHA) else it
+        }.let { m ->
+            onClick?.let {
+                m.clickable(enabled = enabled, onClick = onClick)
+            } ?: m
+        }
 
     ListItem(
         modifier = modifier,
