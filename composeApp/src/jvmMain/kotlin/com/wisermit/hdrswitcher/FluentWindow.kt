@@ -38,7 +38,6 @@ import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.resources.close
 import com.wisermit.hdrswitcher.resources.hdr_switcher
 import com.wisermit.hdrswitcher.resources.minimize
-import com.wisermit.hdrswitcher.ui.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension
@@ -82,23 +81,21 @@ fun FluentWindow(
     ) {
         window.minimumSize = Dimension(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-        AppTheme {
-            Column(
-                Modifier.fillMaxSize()
-                    .clip(RoundedCornerShape(WINDOW_CORNER_RADIUS))
-                    .border(
-                        WINDOW_BORDER_WIDTH,
-                        colorScheme.outlineVariant,
-                        RoundedCornerShape(WINDOW_CORNER_RADIUS),
-                    )
-                    .background(colorScheme.background),
-            ) {
-                TitleBar(
-                    title = stringResource(Res.string.app_name),
-                    onCloseRequest = onCloseRequest,
+        Column(
+            Modifier.fillMaxSize()
+                .clip(RoundedCornerShape(WINDOW_CORNER_RADIUS))
+                .border(
+                    WINDOW_BORDER_WIDTH,
+                    colorScheme.outlineVariant,
+                    RoundedCornerShape(WINDOW_CORNER_RADIUS),
                 )
-                content()
-            }
+                .background(colorScheme.background),
+        ) {
+            TitleBar(
+                title = stringResource(Res.string.app_name),
+                onCloseRequest = onCloseRequest,
+            )
+            content()
         }
     }
 }

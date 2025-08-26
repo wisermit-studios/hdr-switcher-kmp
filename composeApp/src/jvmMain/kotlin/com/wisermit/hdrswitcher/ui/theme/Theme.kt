@@ -19,7 +19,7 @@ val Win11SurfaceVariantLight = Color(0xFFE5E5E5)
 val Win11SurfaceVariantDark = Color(0xFF808080)
 
 @Composable
-fun AppTheme(
+fun WindowsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
