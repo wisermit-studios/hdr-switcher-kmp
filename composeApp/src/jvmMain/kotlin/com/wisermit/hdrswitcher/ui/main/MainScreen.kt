@@ -34,8 +34,8 @@ import com.wisermit.hdrswitcher.model.HdrMode
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.error
 import com.wisermit.hdrswitcher.resources.main_empty_application_list
-import com.wisermit.hdrswitcher.ui.components.ConfigItem
-import com.wisermit.hdrswitcher.ui.components.WindowsScrollBar
+import com.wisermit.hdrswitcher.widget.ConfigItem
+import com.wisermit.hdrswitcher.widget.WindowsScrollBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject

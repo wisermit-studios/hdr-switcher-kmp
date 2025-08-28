@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.ui.components
+package com.wisermit.hdrswitcher.widget
 
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateDpAsState

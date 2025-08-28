@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.ui.components
+package com.wisermit.hdrswitcher.widget
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ListItem
