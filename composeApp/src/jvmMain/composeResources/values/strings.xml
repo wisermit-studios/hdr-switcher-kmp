@@ -8,5 +8,5 @@
 
   <string name="error">Error</string>
 
-  <string name="main_empty_application_list">Drag and drop applications</string>
+  <string name="main_empty_application_list">Drag and drop executables</string>
 </resources>

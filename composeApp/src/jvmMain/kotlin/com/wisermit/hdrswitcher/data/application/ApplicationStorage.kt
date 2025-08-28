@@ -1,14 +1,13 @@
 package com.wisermit.hdrswitcher.data.application
 
-import com.wisermit.hdrswitcher.Config
 import com.wisermit.hdrswitcher.model.Application
-import com.wisermit.hdrswitcher.utils.FileManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.io.File
 
 private val json = Json {
     prettyPrint = true
@@ -16,28 +15,32 @@ private val json = Json {
     ignoreUnknownKeys = true
 }
 
-class ApplicationsStorage() {
+class ApplicationsStorage(private val file: File) {
 
     private val _applications = MutableStateFlow(emptyList<Application>())
     val applications = _applications.asStateFlow()
 
-    private val fileManager = FileManager(
-        file = Config.applicationsFile,
-        encode = { json.encodeToString(it) },
-        decode = { json.decodeFromString(it) },
-        newData = ::Data,
-        onDataChanged = {
-            _applications.value = it.applications.toList()
-        },
-    )
-
     private val mutex = Mutex()
 
+    private val data: Data by lazy {
+        val jsonString = file
+            .takeIf { it.exists() }
+            ?.readText()
+
+        if (jsonString.isNullOrBlank()) {
+            Data()
+        } else {
+            json.decodeFromString(jsonString)
+        }.also {
+            _applications.value = it.applications.toList()
+        }
+    }
+
     suspend fun <T> read(
-        block: MutableList<Application>.() -> T
+        block: List<Application>.() -> T
     ) = runCatching {
         mutex.withLock {
-            block(fileManager.data.applications)
+            block(data.applications)
         }
     }
 
@@ -45,14 +48,25 @@ class ApplicationsStorage() {
         block: MutableList<Application>.() -> Unit
     ) = runCatching {
         mutex.withLock {
-            block(fileManager.data.applications)
-            fileManager.write()
+            val mutableList = data.applications.toMutableList()
+            block(mutableList)
+            write(mutableList.toList())
         }
+    }
+
+    private fun write(applications: List<Application>) {
+        if (!file.exists()) {
+            file.parentFile.mkdirs()
+        }
+        val jsonString = json.encodeToString(data)
+        file.writeText(jsonString)
+        data.applications = applications
+        _applications.value = applications
     }
 }
 
 @Serializable
 private data class Data(
     val version: Int = 1,
-    val applications: MutableList<Application> = mutableListOf(),
+    var applications: List<Application> = emptyList(),
 )
