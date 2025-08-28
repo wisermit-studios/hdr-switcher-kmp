@@ -14,8 +14,6 @@ class AppConfig {
 
         val SETTINGS_PATH = "$USER_DOCUMENTS_PATH\\$SETTINGS_FOLDER_NAME"
 
-        const val APPLICATIONS_SETTINGS_FILE_NAME = "ApplicationsSettings.ini"
-        val APPLICATIONS_SETTINGS_PATH = "${SETTINGS_PATH}\\${APPLICATIONS_SETTINGS_FILE_NAME}"
+        val APPLICATIONS_PATH = "${SETTINGS_PATH}\\applications.json"
     }
-
 }

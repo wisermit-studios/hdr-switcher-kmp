@@ -5,4 +5,8 @@
   <string name="maximize">Maximize</string>
   <string name="restore_down">Restore Down</string>
   <string name="close">Close</string>
+
+  <string name="error">Error</string>
+
+  <string name="main_empty_application_list">Drag and drop applications</string>
 </resources>

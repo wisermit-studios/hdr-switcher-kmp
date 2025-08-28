@@ -1,71 +1,62 @@
 package com.wisermit.hdrswitcher.ui.main
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragData
 import androidx.compose.ui.draganddrop.dragData
 import androidx.lifecycle.ViewModel
-import com.wisermit.hdrswitcher.data.ApplicationsSettingsRepository
+import androidx.lifecycle.viewModelScope
 import com.wisermit.hdrswitcher.data.SystemRepository
-import com.wisermit.hdrswitcher.model.ApplicationSettings
+import com.wisermit.hdrswitcher.data.application.ApplicationRepository
+import com.wisermit.hdrswitcher.framework.Event
+import com.wisermit.hdrswitcher.framework.trySend
+import com.wisermit.hdrswitcher.model.Application
+import com.wisermit.hdrswitcher.model.HdrMode
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.net.URI
 
 class MainViewModel(
     private val systemRepository: SystemRepository,
-    private val applicationsSettingsRepository: ApplicationsSettingsRepository,
+    private val applicationRepository: ApplicationRepository,
 ) : ViewModel() {
-    private val _isHdrEnabled = mutableStateOf<Boolean?>(null)
-    val isHdrEnabled: State<Boolean?> = _isHdrEnabled
+    val isHdrEnabled: StateFlow<Boolean?> = systemRepository.isHdrEnabled()
 
-    private val _applicationsSettings = mutableStateOf<List<ApplicationSettings>>(emptyList())
-    val applicationsSettings: State<List<ApplicationSettings>> = _applicationsSettings
+    val applications: StateFlow<List<Application>> = applicationRepository.getApplications(
+        onFailureScope = viewModelScope,
+        onFailure = { _event.trySend(it) },
+    )
 
-    init {
-        refresh()
-    }
-
-    fun refresh() {
-        // TODO: Return Flow from repository.
-        refreshHdrStatus()
-        refreshApplicationsSettings()
-
-    }
-
-    private fun refreshHdrStatus() {
-        _isHdrEnabled.value = systemRepository.isHdrEnabled()
-    }
-
-    private fun refreshApplicationsSettings() {
-        _applicationsSettings.value = applicationsSettingsRepository.fetch().toList()
-    }
+    private val _event = MutableStateFlow<Event<Throwable?>?>(null)
+    val event = _event.asStateFlow()
 
     fun setHdrEnabled(enabled: Boolean) {
         systemRepository.setSystemHdr(enabled)
-        refreshHdrStatus()
     }
 
-    fun save(settings: ApplicationSettings) {
-        applicationsSettingsRepository.save(settings)
-            .onFailure {
-                // TODO: Display error.
-            }
+    fun setApplicationHdr(app: Application, isEnabled: Boolean) {
+        val hdrState = if (isEnabled) HdrMode.On else HdrMode.Off
+        save(app.copy(hdr = hdrState))
     }
 
-    fun dropFile(event: DragAndDropEvent): Boolean {
-        (event.dragData() as? DragData.FilesList)
-            ?.readFiles()
-            ?.firstOrNull()
-            ?.let(::URI)
-            ?.let {
-                applicationsSettingsRepository.save(it)
-                    .onSuccess {
-                        refreshApplicationsSettings()
-                        return true
-                    }.onFailure {
-                        // TODO: Display error.
-                    }
-            }
-        return false
+    fun save(settings: Application) {
+        viewModelScope.launch {
+            applicationRepository.save(settings)
+                .onFailure(_event::trySend)
+        }
+    }
+
+    fun dropFile(event: DragAndDropEvent) {
+        viewModelScope.launch {
+            (event.dragData() as? DragData.FilesList)
+                ?.readFiles()
+                ?.firstOrNull()
+                ?.let(::URI)
+                ?.let {
+                    applicationRepository.save(it)
+                        .onFailure(_event::trySend)
+                }
+        }
     }
 }
