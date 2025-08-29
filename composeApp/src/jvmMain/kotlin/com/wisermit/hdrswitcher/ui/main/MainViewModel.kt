@@ -47,9 +47,16 @@ class MainViewModel(
         save(app.copy(hdr = hdrState))
     }
 
-    fun save(settings: Application) {
+    fun save(app: Application) {
         viewModelScope.launch {
-            applicationRepository.save(settings)
+            applicationRepository.save(app)
+                .onFailure(_event::trySend)
+        }
+    }
+
+    fun delete(app: Application) {
+        viewModelScope.launch {
+            applicationRepository.delete(app)
                 .onFailure(_event::trySend)
         }
     }

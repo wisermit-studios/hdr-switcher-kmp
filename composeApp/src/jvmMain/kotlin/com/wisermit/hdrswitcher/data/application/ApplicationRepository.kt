@@ -13,9 +13,7 @@ class ApplicationRepository(
     fun getApplications(
         onFailureScope: CoroutineScope,
         onFailure: (Throwable) -> Unit,
-    ): StateFlow<List<Application>> {
-        return localDataSource.getApplications(onFailureScope, onFailure)
-    }
+    ) = localDataSource.getApplications(onFailureScope, onFailure)
 
     suspend fun add(appUri: URI): Result<Unit> {
         // TODO: Check uri and file type.
@@ -28,7 +26,7 @@ class ApplicationRepository(
         return localDataSource.add(application)
     }
 
-    suspend fun save(app: Application): Result<Unit> {
-        return localDataSource.save(app)
-    }
+    suspend fun save(app: Application) = localDataSource.save(app)
+
+    suspend fun delete(app: Application) = localDataSource.delete(app)
 }

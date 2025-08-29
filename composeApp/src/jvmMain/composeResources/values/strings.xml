@@ -1,14 +1,19 @@
 <resources>
-  <string name="app_name">HDR Switcher</string>
+    <string name="app_name">HDR Switcher</string>
 
-  <string name="minimize">Minimize</string>
-  <string name="maximize">Maximize</string>
-  <string name="restore_down">Restore Down</string>
-  <string name="close">Close</string>
-  <string name="open">Open</string>
-  <string name="error">Error</string>
-  <string name="or">Or</string>
+    <string name="minimize">Minimize</string>
+    <string name="maximize">Maximize</string>
+    <string name="restore_down">Restore Down</string>
+    <string name="close">Close</string>
+    <string name="open">Open</string>
+    <string name="error">Error</string>
+    <string name="or">Or</string>
+    <string name="remove">Remove</string>
+    <string name="hdr">HDR</string>
 
-  <string name="drag_and_drop_application">Drag and drop application</string>
-  <string name="add_application">Add application</string>
+    <string name="drag_and_drop_application">Drag and drop application</string>
+    <string name="add_application">Add application</string>
+    <string name="remove_from_list">Remove from list</string>
+
+    <string name="main_applications_label">Custom settings for applications</string>
 </resources>

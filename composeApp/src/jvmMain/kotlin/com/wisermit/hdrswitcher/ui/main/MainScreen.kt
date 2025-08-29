@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WebAsset
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -36,8 +36,12 @@ import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.add_application
 import com.wisermit.hdrswitcher.resources.drag_and_drop_application
 import com.wisermit.hdrswitcher.resources.error
+import com.wisermit.hdrswitcher.resources.hdr
+import com.wisermit.hdrswitcher.resources.main_applications_label
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
+import com.wisermit.hdrswitcher.resources.remove
+import com.wisermit.hdrswitcher.resources.remove_from_list
 import com.wisermit.hdrswitcher.utils.SystemInfo
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
@@ -127,9 +131,9 @@ fun MainScreen(
                 } else {
                     item {
                         Text(
+                            stringResource(Res.string.main_applications_label),
                             modifier = Modifier.padding(top = 12.dp, bottom = 0.dp),
                             style = typography.labelLarge,
-                            text = "Custom settings for applications"
                         )
                     }
                     items(applications.size) { index ->
@@ -138,6 +142,7 @@ fun MainScreen(
                             onApplicationHdrChange = { app, enabled ->
                                 viewModel.setApplicationHdr(app, enabled)
                             },
+                            onDelete = viewModel::delete
                         )
                     }
                 }
@@ -151,6 +156,7 @@ fun MainScreen(
 fun ApplicationItem(
     item: Application,
     onApplicationHdrChange: (Application, Boolean) -> Unit,
+    onDelete: (Application) -> Unit,
 ) {
     ConfigItem(
         leading = {
@@ -169,8 +175,8 @@ fun ApplicationItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        "HDR",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        stringResource(Res.string.hdr),
+                        color = colorScheme.onSurface,
                         modifier = Modifier.weight(1f),
                     )
                     Switch(
@@ -180,15 +186,27 @@ fun ApplicationItem(
                         },
                     )
                 }
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(Res.string.remove_from_list),
+                        color = colorScheme.onSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Button(
+                        stringResource(Res.string.remove),
+                        onClick = { onDelete(item) }
+                    )
+                }
             }
         }
     )
 }
 
 @Composable
-fun EmptyView(
-    onAddApplication: (URI) -> Unit
-) {
+fun EmptyView(onAddApplication: (URI) -> Unit) {
     Column(
         modifier = Modifier
             .padding(vertical = 48.dp, horizontal = 32.dp)
@@ -202,7 +220,7 @@ fun EmptyView(
         Text(
             stringResource(Res.string.or).uppercase(),
             style = typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = colorScheme.onSurfaceVariant,
         )
 
         Spacer(Modifier.height(16.dp))

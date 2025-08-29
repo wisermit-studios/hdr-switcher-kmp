@@ -41,10 +41,8 @@ class ApplicationStorage(
     }
 
     suspend fun delete(app: Application) = withContext(Dispatchers.IO) {
-        runCatching {
-            dataStore.edit {
-                removeIf { it.path == app.path }
-            }
+        dataStore.edit {
+            removeIf { it.path == app.path }
         }
     }
 }
