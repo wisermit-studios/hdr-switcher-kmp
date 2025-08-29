@@ -1,72 +1,50 @@
 package com.wisermit.hdrswitcher.data.application
 
 import com.wisermit.hdrswitcher.model.Application
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-private val json = Json {
-    prettyPrint = true
-    encodeDefaults = true
-    ignoreUnknownKeys = true
-}
+class ApplicationStorage(
+    private val dataStore: ApplicationsDataStore
+) {
+    fun getApplications(
+        onFailureScope: CoroutineScope,
+        onFailure: (Throwable) -> Unit,
+    ): StateFlow<List<Application>> {
+        onFailureScope.launch {
+            withContext(Dispatchers.IO) {
+                dataStore.read {}
+            }.onFailure(onFailure)
+        }
+        return dataStore.applications
+    }
 
-class ApplicationsStorage(private val file: File) {
-
-    private val _applications = MutableStateFlow(emptyList<Application>())
-    val applications = _applications.asStateFlow()
-
-    private val mutex = Mutex()
-
-    private val data: Data by lazy {
-        val jsonString = file
-            .takeIf { it.exists() }
-            ?.readText()
-
-        if (jsonString.isNullOrBlank()) {
-            Data()
-        } else {
-            json.decodeFromString(jsonString)
-        }.also {
-            _applications.value = it.applications.toList()
+    suspend fun add(app: Application) = withContext(Dispatchers.IO) {
+        dataStore.edit {
+            val index = indexOfFirst { it.path == app.path }
+            if (index == -1) add(app)
         }
     }
 
-    suspend fun <T> read(
-        block: List<Application>.() -> T
-    ) = runCatching {
-        mutex.withLock {
-            block(data.applications)
+    suspend fun save(app: Application) = withContext(Dispatchers.IO) {
+        dataStore.edit {
+            val index = indexOfFirst { it.path == app.path }
+            if (index == -1) {
+                add(app)
+            } else {
+                set(index, app)
+            }
         }
     }
 
-    suspend fun write(
-        block: MutableList<Application>.() -> Unit
-    ) = runCatching {
-        mutex.withLock {
-            val mutableList = data.applications.toMutableList()
-            block(mutableList)
-            write(mutableList.toList())
+    suspend fun delete(app: Application) = withContext(Dispatchers.IO) {
+        runCatching {
+            dataStore.edit {
+                removeIf { it.path == app.path }
+            }
         }
-    }
-
-    private fun write(applications: List<Application>) {
-        if (!file.exists()) {
-            file.parentFile.mkdirs()
-        }
-        val jsonString = json.encodeToString(data)
-        file.writeText(jsonString)
-        data.applications = applications
-        _applications.value = applications
     }
 }
-
-@Serializable
-private data class Data(
-    val version: Int = 1,
-    var applications: List<Application> = emptyList(),
-)

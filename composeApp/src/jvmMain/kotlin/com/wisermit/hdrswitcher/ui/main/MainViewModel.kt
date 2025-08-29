@@ -31,6 +31,13 @@ class MainViewModel(
     private val _event = MutableStateFlow<Event<Throwable?>?>(null)
     val event = _event.asStateFlow()
 
+    fun addApplication(uri: URI) {
+        viewModelScope.launch {
+            applicationRepository.add(uri)
+                .onFailure(_event::trySend)
+        }
+    }
+
     fun setHdrEnabled(enabled: Boolean) {
         systemRepository.setSystemHdr(enabled)
     }
@@ -48,15 +55,10 @@ class MainViewModel(
     }
 
     fun dropFile(event: DragAndDropEvent) {
-        viewModelScope.launch {
-            (event.dragData() as? DragData.FilesList)
-                ?.readFiles()
-                ?.firstOrNull()
-                ?.let(::URI)
-                ?.let {
-                    applicationRepository.save(it)
-                        .onFailure(_event::trySend)
-                }
-        }
+        (event.dragData() as? DragData.FilesList)
+            ?.readFiles()
+            ?.firstOrNull()
+            ?.let(::URI)
+            ?.let(::addApplication)
     }
 }

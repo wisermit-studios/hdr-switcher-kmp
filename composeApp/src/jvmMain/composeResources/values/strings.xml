@@ -5,8 +5,10 @@
   <string name="maximize">Maximize</string>
   <string name="restore_down">Restore Down</string>
   <string name="close">Close</string>
-
+  <string name="open">Open</string>
   <string name="error">Error</string>
+  <string name="or">Or</string>
 
-  <string name="main_empty_application_list">Drag and drop executables</string>
+  <string name="drag_and_drop_application">Drag and drop application</string>
+  <string name="add_application">Add application</string>
 </resources>

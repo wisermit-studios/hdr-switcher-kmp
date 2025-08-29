@@ -15,8 +15,8 @@ data class Application(
     val description: String,
     val hdr: HdrMode = HdrMode.Default,
 ) {
-    constructor(path: Path) : this(
+    constructor(path: Path, description: String?) : this(
         path = path.pathString,
-        description = path.name.substringBeforeLast("."),
+        description = description ?: path.name.substringBeforeLast("."),
     )
 }
