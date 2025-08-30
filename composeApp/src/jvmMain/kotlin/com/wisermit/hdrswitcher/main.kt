@@ -5,6 +5,7 @@ import com.wisermit.hdrswitcher.di.AppModule
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.resources.hdr_switcher
+import com.wisermit.hdrswitcher.ui.FluentWindow
 import com.wisermit.hdrswitcher.ui.main.MainScreen
 import com.wisermit.hdrswitcher.ui.theme.WindowsTheme
 import org.jetbrains.compose.resources.painterResource

@@ -26,8 +26,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+private val THICKNESS_DEFAULT = 2.dp
+private val THICKNESS_HOVERED = 6.dp
+private val MARGIN_HORIZONTAL = 6.dp
+private const val THICKNESS_SHRINK_DELAY = 500L
+
 @Composable
-fun WindowsScrollBar(
+fun ScrollViewer(
     modifier: Modifier,
     content: @Composable BoxScope.(LazyListState) -> Unit
 ) {
@@ -37,7 +42,7 @@ fun WindowsScrollBar(
         val interactionSource = remember { MutableInteractionSource() }
         val isHovered = remember { mutableStateOf(false) }
         val thickness by animateDpAsState(
-            targetValue = if (isHovered.value) 6.dp else 2.dp,
+            targetValue = if (isHovered.value) THICKNESS_HOVERED else THICKNESS_DEFAULT,
             animationSpec = spring(visibilityThreshold = Dp.VisibilityThreshold),
         )
 
@@ -47,7 +52,7 @@ fun WindowsScrollBar(
                 when (interaction) {
                     is HoverInteraction.Enter -> hoverInteractions.add(interaction)
                     is HoverInteraction.Exit -> {
-                        delay(500)
+                        delay(THICKNESS_SHRINK_DELAY)
                         hoverInteractions.remove(interaction.enter)
                     }
                 }
@@ -60,7 +65,7 @@ fun WindowsScrollBar(
         Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(start = 6.dp, end = 6.dp),
+                .padding(start = MARGIN_HORIZONTAL, end = MARGIN_HORIZONTAL),
         ) {
             VerticalScrollbar(
                 modifier = Modifier.fillMaxHeight(),
