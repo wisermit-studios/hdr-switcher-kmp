@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,14 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-
-private val THICKNESS_DEFAULT = 2.dp
-private val THICKNESS_HOVERED = 6.dp
-private val MARGIN_HORIZONTAL = 6.dp
-private const val THICKNESS_SHRINK_DELAY = 500L
 
 @Composable
 fun ScrollViewer(
@@ -42,7 +38,11 @@ fun ScrollViewer(
         val interactionSource = remember { MutableInteractionSource() }
         val isHovered = remember { mutableStateOf(false) }
         val thickness by animateDpAsState(
-            targetValue = if (isHovered.value) THICKNESS_HOVERED else THICKNESS_DEFAULT,
+            targetValue = if (isHovered.value) {
+                ScrollViewerDefaults.ThicknessHovered
+            } else {
+                ScrollViewerDefaults.ThicknessDefault
+            },
             animationSpec = spring(visibilityThreshold = Dp.VisibilityThreshold),
         )
 
@@ -52,7 +52,7 @@ fun ScrollViewer(
                 when (interaction) {
                     is HoverInteraction.Enter -> hoverInteractions.add(interaction)
                     is HoverInteraction.Exit -> {
-                        delay(THICKNESS_SHRINK_DELAY)
+                        delay(ScrollViewerDefaults.THICKNESS_SHRINK_DELAY)
                         hoverInteractions.remove(interaction.enter)
                     }
                 }
@@ -65,18 +65,30 @@ fun ScrollViewer(
         Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(start = MARGIN_HORIZONTAL, end = MARGIN_HORIZONTAL),
+                .padding(horizontal = ScrollViewerDefaults.MarginHorizontal),
         ) {
             VerticalScrollbar(
-                modifier = Modifier.fillMaxHeight(),
-                interactionSource = interactionSource,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .alpha(ScrollViewerDefaults.OPACITY),
                 adapter = rememberScrollbarAdapter(listState),
+                interactionSource = interactionSource,
                 style = LocalScrollbarStyle.current.copy(
                     thickness = thickness,
-                    unhoverColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    hoverColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unhoverColor = colorScheme.onSurface,
+                    hoverColor = colorScheme.onSurface,
                 ),
             )
         }
     }
+}
+
+object ScrollViewerDefaults {
+
+    const val THICKNESS_SHRINK_DELAY = 500L
+    const val OPACITY = 0.5f
+
+    val MarginHorizontal = 6.dp
+    val ThicknessDefault = 2.dp
+    val ThicknessHovered = 6.dp
 }

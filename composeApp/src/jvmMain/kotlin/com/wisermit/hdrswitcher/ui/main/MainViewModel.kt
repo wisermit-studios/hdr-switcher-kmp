@@ -42,9 +42,8 @@ class MainViewModel(
         systemRepository.setSystemHdr(enabled)
     }
 
-    fun setApplicationHdr(app: Application, isEnabled: Boolean) {
-        val hdrState = if (isEnabled) HdrMode.On else HdrMode.Off
-        save(app.copy(hdr = hdrState))
+    fun setApplicationHdr(app: Application, hdrMode: HdrMode) {
+        save(app.copy(hdr = hdrMode))
     }
 
     fun save(app: Application) {

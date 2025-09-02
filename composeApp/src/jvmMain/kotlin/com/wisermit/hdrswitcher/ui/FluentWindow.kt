@@ -1,7 +1,6 @@
 package com.wisermit.hdrswitcher.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,7 +37,7 @@ import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.resources.close
 import com.wisermit.hdrswitcher.resources.hdr_switcher
 import com.wisermit.hdrswitcher.resources.minimize
-import com.wisermit.hdrswitcher.ui.theme.Theme
+import com.wisermit.hdrswitcher.utils.outline
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension
@@ -47,7 +45,6 @@ import java.awt.GraphicsEnvironment
 import java.awt.Point
 
 private val WINDOW_CORNER_RADIUS = 8.dp
-private val WINDOW_BORDER_WIDTH = Theme.OUTLINE_WIDTH
 private val TITLE_BAR_HEIGHT = 44.dp
 private val TITLE_BAR_FONT_SIZE = 14.sp
 private val TITLE_BAR_ICON_SIZE = 28.dp
@@ -87,12 +84,7 @@ fun FluentWindow(
 
         Column(
             Modifier.fillMaxSize()
-                .clip(shape)
-                .border(
-                    width = WINDOW_BORDER_WIDTH,
-                    color = colorScheme.outlineVariant,
-                    shape = shape,
-                )
+                .outline(shape = shape)
                 .background(colorScheme.background),
         ) {
             TitleBar(

@@ -1,18 +1,23 @@
 package com.wisermit.hdrswitcher.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 object Theme {
-    const val DISABLED_OPACITY = 0.38f
-    val OUTLINE_WIDTH = 0.5.dp
-    val BUTTON_HEIGHT = 32.dp
-    val TEXT_BASELINE_PADDING = 6.dp
+    const val COMPONENT_DISABLED_OPACITY = 0.38f
+
+    val MINIMUM_INTERACTIVE_COMPONENT_SIZE = 44.dp
+    val BORDER_STROKE_WIDTH = 0.5.dp
+
+    // Fix for incorrect center alignment.
+    val TEXT_BASELINE_BOTTOM_FIX = 6.dp
 }
 
 // Switch = outline: 8C8C8C, thumb: (off: 5E5E5E, on: White)
@@ -23,6 +28,7 @@ private val layer1 = Color(0xFFF3F3F3)
 private val layer2 = Color(0xFFF9F9F9)
 private val layer3 = Color(0xFFFBFBFB)
 private val layer4 = Color(0xFFFDFDFD)
+
 //private val layer5 =
 private val layerForeground = Color(0xFF1B1B1B)
 private val layerForegroundVariant = Color(0xFF606060)
@@ -54,6 +60,7 @@ fun colorScheme(darkTheme: Boolean) = when {
         onSurfaceVariant = layerForegroundVariantDark,
         surfaceBright = layer5Dark,
         surfaceContainerLowest = layer2Dark,
+        surfaceContainer = layer3Dark,
         surfaceContainerHighest = layer4Dark,
         outline = outlineDark,
         outlineVariant = outlineVariantDark,
@@ -67,6 +74,7 @@ fun colorScheme(darkTheme: Boolean) = when {
         onSurface = layerForeground,
         onSurfaceVariant = layerForegroundVariant,
         surfaceContainerLowest = layer2,
+        surfaceContainer = layer3,
         surfaceContainerHighest = layer4,
         outline = outline,
         outlineVariant = outlineVariant,
@@ -74,12 +82,16 @@ fun colorScheme(darkTheme: Boolean) = when {
 }
 
 @Composable
-fun WindowsTheme(
+fun FluentTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = colorScheme(isDarkTheme),
-        content = content,
-    )
+    CompositionLocalProvider(
+        LocalMinimumInteractiveComponentSize provides Theme.MINIMUM_INTERACTIVE_COMPONENT_SIZE
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme(isDarkTheme),
+            content = content,
+        )
+    }
 }

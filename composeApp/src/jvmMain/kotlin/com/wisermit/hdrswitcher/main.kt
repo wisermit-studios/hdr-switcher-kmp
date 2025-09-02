@@ -7,7 +7,7 @@ import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.resources.hdr_switcher
 import com.wisermit.hdrswitcher.ui.FluentWindow
 import com.wisermit.hdrswitcher.ui.main.MainScreen
-import com.wisermit.hdrswitcher.ui.theme.WindowsTheme
+import com.wisermit.hdrswitcher.ui.theme.FluentTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.startKoin
@@ -16,7 +16,7 @@ fun main() = application {
     startKoin {
         modules(AppModule.modules)
     }
-    WindowsTheme {
+    FluentTheme {
         FluentWindow(
             onCloseRequest = ::exitApplication,
             title = stringResource(Res.string.app_name),

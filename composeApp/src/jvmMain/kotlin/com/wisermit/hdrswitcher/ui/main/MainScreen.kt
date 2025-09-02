@@ -4,7 +4,6 @@ import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,18 +33,23 @@ import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.add_application
+import com.wisermit.hdrswitcher.resources.default
 import com.wisermit.hdrswitcher.resources.drag_and_drop_application
 import com.wisermit.hdrswitcher.resources.error
 import com.wisermit.hdrswitcher.resources.hdr
 import com.wisermit.hdrswitcher.resources.main_applications_label
+import com.wisermit.hdrswitcher.resources.off
+import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
 import com.wisermit.hdrswitcher.resources.remove
 import com.wisermit.hdrswitcher.resources.remove_from_list
 import com.wisermit.hdrswitcher.utils.SystemInfo
 import com.wisermit.hdrswitcher.widget.Button
+import com.wisermit.hdrswitcher.widget.ComboBox
 import com.wisermit.hdrswitcher.widget.ConfigItem
-import com.wisermit.hdrswitcher.widget.WindowsScrollBar
+import com.wisermit.hdrswitcher.widget.ConfigSubItem
+import com.wisermit.hdrswitcher.widget.ScrollViewer
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -80,7 +84,7 @@ fun MainScreen(
     }
 
     Scaffold {
-        WindowsScrollBar(
+        ScrollViewer(
             modifier = Modifier
                 .fillMaxHeight()
                 .dragAndDropTarget(
@@ -101,18 +105,17 @@ fun MainScreen(
                 modifier = Modifier.fillMaxSize(),
                 state = listState,
                 contentPadding = PaddingValues(
-                    top = 18.dp,
-                    start = 18.dp,
-                    end = 18.dp,
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
                     bottom = 32.dp,
                 ),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 item {
-                    // TODO: Display no HDR message.
+                    // TODO: Display no HDR message / Text On/Off.
 
                     ConfigItem(
-                        enabled = isHdrEnabled != null,
                         headline = "HDR",
                         trailing = {
                             Switch(
@@ -139,8 +142,8 @@ fun MainScreen(
                     items(applications.size) { index ->
                         ApplicationItem(
                             item = applications[index],
-                            onApplicationHdrChange = { app, enabled ->
-                                viewModel.setApplicationHdr(app, enabled)
+                            onApplicationHdrChange = { app, hdrMode ->
+                                viewModel.setApplicationHdr(app, hdrMode)
                             },
                             onDelete = viewModel::delete
                         )
@@ -155,14 +158,15 @@ fun MainScreen(
 @Composable
 fun ApplicationItem(
     item: Application,
-    onApplicationHdrChange: (Application, Boolean) -> Unit,
+    onApplicationHdrChange: (Application, HdrMode) -> Unit,
     onDelete: (Application) -> Unit,
 ) {
     ConfigItem(
         leading = {
             Icon(
-                modifier = Modifier.height(44.dp),
+                // TODO: Icon.
                 imageVector = Icons.Default.WebAsset,
+                modifier = Modifier.height(44.dp),
                 contentDescription = null,
             )
         },
@@ -170,36 +174,33 @@ fun ApplicationItem(
         supportingContent = {
             Column {
                 Text(item.path)
-                Row(
-                    Modifier.fillMaxWidth().padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        stringResource(Res.string.hdr),
-                        color = colorScheme.onSurface,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Switch(
-                        checked = item.hdr == HdrMode.On,
-                        onCheckedChange = {
-                            onApplicationHdrChange(item, it)
-                        },
-                    )
-                }
-                Row(
-                    Modifier.fillMaxWidth().padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        stringResource(Res.string.remove_from_list),
-                        color = colorScheme.onSurface,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Button(
-                        stringResource(Res.string.remove),
-                        onClick = { onDelete(item) }
-                    )
-                }
+
+                ConfigSubItem(
+                    stringResource(Res.string.hdr),
+                    trailing = {
+                        ComboBox(
+                            value = item.hdr,
+                            entries = mapOf(
+                                HdrMode.Default to stringResource(Res.string.default),
+                                HdrMode.On to stringResource(Res.string.on),
+                                HdrMode.Off to stringResource(Res.string.off),
+                            ),
+                            onSelected = {
+                                onApplicationHdrChange(item, it)
+                            },
+                        )
+                    }
+                )
+
+                ConfigSubItem(
+                    stringResource(Res.string.remove_from_list),
+                    trailing = {
+                        Button(
+                            stringResource(Res.string.remove),
+                            onClick = { onDelete(item) },
+                        )
+                    }
+                )
             }
         }
     )
