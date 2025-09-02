@@ -14,7 +14,7 @@ object Theme {
     val BORDER_STROKE_WIDTH = 0.5.dp
 
     // Fix for incorrect horizontal alignment.
-    val TEXT_BASELINE_BOTTOM_FIX = 8.dp
+    val TEXT_BASELINE_BOTTOM_FIX = 6.dp
 }
 
 private fun colorScheme(darkTheme: Boolean) = when {
