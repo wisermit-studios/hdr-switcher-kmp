@@ -1,3 +1,0 @@
-library=WindowsInterop
-headers=WindowsInterop.h
-linkerOpts=-L<path-para-dll>

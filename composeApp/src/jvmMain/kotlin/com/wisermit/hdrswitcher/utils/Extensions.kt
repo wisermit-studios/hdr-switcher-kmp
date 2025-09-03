@@ -13,6 +13,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import com.wisermit.hdrswitcher.ui.theme.Theme
+import java.nio.file.Path
+
+fun Path.add(path: String): Path = resolve(path)
 
 @Composable
 @Stable

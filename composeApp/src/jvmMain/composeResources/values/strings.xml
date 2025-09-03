@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HDR Switcher</string>
+    <string name="app_name" translatable="false">HDR Switcher</string>
 
     <string name="minimize">Minimize</string>
     <string name="maximize">Maximize</string>

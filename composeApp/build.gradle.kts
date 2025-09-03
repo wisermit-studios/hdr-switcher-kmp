@@ -1,6 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -13,44 +11,38 @@ plugins {
 kotlin {
     jvm()
 
-    mingwX64("windows") {
-        compilations.getByName("main") {
-//            cinterops {
-//                val windowsLib by creating {
-//                    defFile = file("src/nativeInterop/cinterop/windows_lib.def")
-//                }
-//            }
-        }
-    }
-
     sourceSets {
+        all {
+            languageSettings {
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("androidx.compose.ui.ExperimentalComposeUiApi")
+                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi") // TODO: Delete.
+            }
+        }
+
         commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.koin.core)
-            implementation(libs.net.java.jna)
-            implementation(libs.net.java.jna.platform)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.components.resources)
-            implementation(compose.ui)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation(libs.kotlinx.serialization.json)
-        }
-        val windowsMain by getting {
-            dependencies {
-            }
+            implementation(compose.desktop.currentOs)
+            implementation(libs.net.java.jna)
+            implementation(libs.net.java.jna.platform)
         }
     }
 }
@@ -64,22 +56,5 @@ compose.desktop {
             packageName = "com.wisermit.hdrswitcher"
             packageVersion = "1.0.0"
         }
-    }
-}
-
-compose.resources {
-    publicResClass = false
-    packageOfResClass = "com.wisermit.hdrswitcher.resources"
-    generateResClass = always
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
-        freeCompilerArgs.addAll(
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-            "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
-        )
     }
 }

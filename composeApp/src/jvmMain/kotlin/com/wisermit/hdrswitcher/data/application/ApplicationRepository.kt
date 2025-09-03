@@ -3,7 +3,6 @@ package com.wisermit.hdrswitcher.data.application
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.utils.FileUtils
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 import java.net.URI
 import kotlin.io.path.toPath
 

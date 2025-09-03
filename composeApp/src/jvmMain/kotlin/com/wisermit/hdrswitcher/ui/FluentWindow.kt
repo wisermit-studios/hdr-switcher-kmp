@@ -22,7 +22,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,12 +31,12 @@ import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
-import com.wisermit.hdrswitcher.resources.Res
-import com.wisermit.hdrswitcher.resources.app_name
-import com.wisermit.hdrswitcher.resources.close
-import com.wisermit.hdrswitcher.resources.hdr_switcher
-import com.wisermit.hdrswitcher.resources.minimize
 import com.wisermit.hdrswitcher.utils.outline
+import hdrswitcher.composeapp.generated.resources.Res
+import hdrswitcher.composeapp.generated.resources.app_name
+import hdrswitcher.composeapp.generated.resources.close
+import hdrswitcher.composeapp.generated.resources.hdr_switcher
+import hdrswitcher.composeapp.generated.resources.minimize
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension

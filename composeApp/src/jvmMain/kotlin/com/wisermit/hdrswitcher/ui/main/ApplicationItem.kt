@@ -18,18 +18,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
-import com.wisermit.hdrswitcher.resources.Res
-import com.wisermit.hdrswitcher.resources.default
-import com.wisermit.hdrswitcher.resources.hdr
-import com.wisermit.hdrswitcher.resources.off
-import com.wisermit.hdrswitcher.resources.on
-import com.wisermit.hdrswitcher.resources.remove
-import com.wisermit.hdrswitcher.resources.remove_from_list
 import com.wisermit.hdrswitcher.utils.outline
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ComboBox
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ConfigItemDefaults
+import hdrswitcher.composeapp.generated.resources.Res
+import hdrswitcher.composeapp.generated.resources.default
+import hdrswitcher.composeapp.generated.resources.hdr
+import hdrswitcher.composeapp.generated.resources.off
+import hdrswitcher.composeapp.generated.resources.on
+import hdrswitcher.composeapp.generated.resources.remove
+import hdrswitcher.composeapp.generated.resources.remove_from_list
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

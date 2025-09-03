@@ -1,5 +1,6 @@
 package com.wisermit.hdrswitcher.data.application
 
+import com.wisermit.hdrswitcher.Config
 import com.wisermit.hdrswitcher.model.Application
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -7,7 +8,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.io.File
 
 private val json = Json {
     prettyPrint = true
@@ -15,10 +15,12 @@ private val json = Json {
     ignoreUnknownKeys = true
 }
 
-class ApplicationsDataStore(private val file: File) {
+class ApplicationsDataStore(config: Config) {
 
     private val _applications = MutableStateFlow(emptyList<Application>())
     val applications = _applications.asStateFlow()
+
+    private val file = config.applicationsFile
 
     private var _data: Data? = null
     private val data: Data

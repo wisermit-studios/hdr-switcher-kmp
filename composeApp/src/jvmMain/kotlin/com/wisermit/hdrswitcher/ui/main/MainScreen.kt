@@ -26,21 +26,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.resources.Res
-import com.wisermit.hdrswitcher.resources.add_application
-import com.wisermit.hdrswitcher.resources.drag_and_drop_application
-import com.wisermit.hdrswitcher.resources.error
-import com.wisermit.hdrswitcher.resources.main_applications_label
-import com.wisermit.hdrswitcher.resources.open
-import com.wisermit.hdrswitcher.resources.or
-import com.wisermit.hdrswitcher.utils.SystemInfo
+import com.wisermit.hdrswitcher.SystemInfo
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ScrollViewer
+import hdrswitcher.composeapp.generated.resources.Res
+import hdrswitcher.composeapp.generated.resources.add_application
+import hdrswitcher.composeapp.generated.resources.drag_and_drop_application
+import hdrswitcher.composeapp.generated.resources.error
+import hdrswitcher.composeapp.generated.resources.main_applications_label
+import hdrswitcher.composeapp.generated.resources.open
+import hdrswitcher.composeapp.generated.resources.or
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-import java.io.File
 import java.net.URI
 import javax.swing.JFileChooser
 import javax.swing.JOptionPane
@@ -171,7 +170,7 @@ fun EmptyView(onAddApplication: (URI) -> Unit) {
                     dialogTitle = title
                     fileFilter = FILE_PICKER_EXTENSION_FILTER
                     isAcceptAllFileFilterUsed = false
-                    currentDirectory = File(SystemInfo.systemDrive)
+                    currentDirectory = SystemInfo.systemDrive.toFile()
                 }
                 val result = chooser.showOpenDialog(null)
                 if (result == JFileChooser.APPROVE_OPTION) {
