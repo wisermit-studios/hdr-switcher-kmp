@@ -11,7 +11,7 @@ object SystemInfo {
         when {
             osName.startsWith("Windows") -> Platform.Windows
             // The app is not functional on macOS. This is for development purposes only.
-            osName.startsWith("mac") -> Platform.MacOs
+            osName.startsWith("Mac") -> Platform.MacOs
             else -> throw Exception("Unsupported operating system: $osName.")
         }
 

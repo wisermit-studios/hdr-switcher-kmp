@@ -20,14 +20,14 @@ abstract class Config() {
         get() = userDataPath.add(APPLICATIONS_FILE_NAME).toFile()
 }
 
-class ConfigWindows : Config() {
+class WindowsConfig : Config() {
     override val userDataRoot: Path
         get() = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Documents)
             ?.let { Path.of(it) }
             ?: SystemInfo.userHomePath.add("Documents")
 }
 
-class ConfigMacOs : Config() {
+class MacOsConfig : Config() {
     override val userDataRoot: Path
         get() = SystemInfo.userHomePath
             .add("Library")

@@ -11,10 +11,10 @@ class ApplicationStorage(
     private val dataStore: ApplicationsDataStore
 ) {
     fun getApplications(
-        onFailureScope: CoroutineScope,
+        currentScope: CoroutineScope,
         onFailure: (Throwable) -> Unit,
     ): StateFlow<List<Application>> {
-        onFailureScope.launch {
+        currentScope.launch {
             withContext(Dispatchers.IO) {
                 dataStore.read {}
             }.onFailure(onFailure)

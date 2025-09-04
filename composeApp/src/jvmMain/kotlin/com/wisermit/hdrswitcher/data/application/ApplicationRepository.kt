@@ -1,26 +1,28 @@
 package com.wisermit.hdrswitcher.data.application
 
+import com.wisermit.hdrswitcher.framework.AppError
+import com.wisermit.hdrswitcher.framework.toFailure
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.utils.FileUtils
+import com.wisermit.hdrswitcher.utils.FileUtils.isApplication
 import kotlinx.coroutines.CoroutineScope
-import java.net.URI
-import kotlin.io.path.toPath
+import java.io.File
 
 class ApplicationRepository(
     val localDataSource: ApplicationStorage,
 ) {
     fun getApplications(
-        onFailureScope: CoroutineScope,
+        currentScope: CoroutineScope,
         onFailure: (Throwable) -> Unit,
-    ) = localDataSource.getApplications(onFailureScope, onFailure)
+    ) = localDataSource.getApplications(currentScope, onFailure)
 
-    suspend fun add(appUri: URI): Result<Unit> {
-        // TODO: Check uri and file type.
-
-        val path = appUri.toPath()
+    suspend fun add(file: File): Result<Unit> {
+        if (!file.isApplication()) {
+            return AppError.UnsupportedFile(file.name).toFailure()
+        }
         val application = Application(
-            path = path,
-            description = FileUtils.getExeDescription(path).getOrNull()
+            path = file.toPath(),
+            description = FileUtils.getApplicationDescription(file).getOrNull()
         )
         return localDataSource.add(application)
     }

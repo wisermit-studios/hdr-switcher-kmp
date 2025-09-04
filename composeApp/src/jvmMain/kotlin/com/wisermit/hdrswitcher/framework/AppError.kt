@@ -1,14 +1,12 @@
 package com.wisermit.hdrswitcher.framework
 
-import org.jetbrains.compose.resources.StringResource
-
-enum class AppError(
-    val messageRes: StringResource? = null,
+sealed class AppError(
+    val param: String? = null,
 ) {
-    Unknown();
+    class UnsupportedFile(fileName: String) : AppError(fileName)
 }
 
-class AppException(error: AppError) : Exception("## ${error.name} error")
+class AppException(error: AppError) : Exception("## $error error")
 
 fun <T> AppError.toFailure(): Result<T> {
     val exception = AppException(this)

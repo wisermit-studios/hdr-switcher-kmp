@@ -26,26 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.SystemInfo
+import com.wisermit.hdrswitcher.utils.ErrorUtils
+import com.wisermit.hdrswitcher.utils.FilePicker
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ScrollViewer
 import hdrswitcher.composeapp.generated.resources.Res
 import hdrswitcher.composeapp.generated.resources.add_application
 import hdrswitcher.composeapp.generated.resources.drag_and_drop_application
-import hdrswitcher.composeapp.generated.resources.error
 import hdrswitcher.composeapp.generated.resources.main_applications_label
 import hdrswitcher.composeapp.generated.resources.open
 import hdrswitcher.composeapp.generated.resources.or
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-import java.net.URI
-import javax.swing.JFileChooser
-import javax.swing.JOptionPane
-import javax.swing.filechooser.FileNameExtensionFilter
-
-private val FILE_PICKER_EXTENSION_FILTER = FileNameExtensionFilter("*.exe", "exe")
+import java.io.File
 
 @Composable
 @Preview
@@ -54,18 +49,9 @@ fun MainScreen(
 ) {
     // TODO: Refresh on Focus changed.
 
-    val event by viewModel.event.collectAsState(null)
-    event?.pickValue()?.let { exception ->
-        val title = stringResource(Res.string.error)
-
-        LaunchedEffect(exception) {
-            // TODO: Beautify error messages.
-            JOptionPane.showMessageDialog(
-                null,
-                exception.message,
-                title,
-                JOptionPane.ERROR_MESSAGE
-            )
+    LaunchedEffect(Unit) {
+        viewModel.event.collect {
+            ErrorUtils.showError("Title", it.message!!)
         }
     }
 
@@ -115,7 +101,7 @@ fun MainScreen(
 
                 if (applications.isEmpty()) {
                     item {
-                        EmptyView(onAddApplication = viewModel::addApplication)
+                        EmptyView(onApplicationAdded = viewModel::addApplication)
                     }
                 } else {
                     item {
@@ -142,7 +128,7 @@ fun MainScreen(
 }
 
 @Composable
-fun EmptyView(onAddApplication: (URI) -> Unit) {
+fun EmptyView(onApplicationAdded: (File) -> Unit) {
     Column(
         modifier = Modifier
             .padding(vertical = 48.dp, horizontal = 32.dp)
@@ -165,17 +151,11 @@ fun EmptyView(onAddApplication: (URI) -> Unit) {
         Button(
             text = stringResource(Res.string.add_application),
             onClick = {
-                // TODO: Improve FileChoose.
-                val chooser = JFileChooser().apply {
-                    dialogTitle = title
-                    fileFilter = FILE_PICKER_EXTENSION_FILTER
-                    isAcceptAllFileFilterUsed = false
-                    currentDirectory = SystemInfo.systemDrive.toFile()
-                }
-                val result = chooser.showOpenDialog(null)
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    onAddApplication(chooser.selectedFile.toURI())
-                }
+                FilePicker.show(
+                    title = title,
+                    fileFilter = FilePicker.APPLICATION_FILTER,
+                    onPick = onApplicationAdded
+                )
             },
         )
     }
