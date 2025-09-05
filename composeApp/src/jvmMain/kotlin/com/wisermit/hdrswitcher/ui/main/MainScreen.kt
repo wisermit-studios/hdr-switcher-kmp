@@ -147,13 +147,13 @@ fun EmptyView(onApplicationAdded: (File) -> Unit) {
 
         Spacer(Modifier.height(16.dp))
 
-        val title = stringResource(Res.string.open)
+        val filePickerTitle = stringResource(Res.string.open)
         Button(
             text = stringResource(Res.string.add_application),
             onClick = {
                 FilePicker.show(
-                    title = title,
-                    fileFilter = FilePicker.APPLICATION_FILTER,
+                    title = filePickerTitle,
+                    fileFilter = FilePicker.applicationFilter,
                     onPick = onApplicationAdded
                 )
             },

@@ -11,5 +11,5 @@ val dataModule = module {
 
     factory { ApplicationsDataStore(get()) }
     factory { ApplicationStorage(get()) }
-    factory { ApplicationRepository(get()) }
+    factory { ApplicationRepository(get(), get()) }
 }

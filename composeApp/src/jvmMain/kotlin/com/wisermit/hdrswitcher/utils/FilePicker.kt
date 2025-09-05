@@ -1,22 +1,30 @@
 package com.wisermit.hdrswitcher.utils
 
 import com.wisermit.hdrswitcher.SystemInfo
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.io.File
 import java.nio.file.Path
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileFilter
 import javax.swing.filechooser.FileNameExtensionFilter
 
-object FilePicker {
+object FilePicker : KoinComponent {
 
-    val APPLICATION_FILTER = FileNameExtensionFilter("*.exe", "exe")
+    private val systemInfo: SystemInfo by inject()
+
+    val applicationFilter
+        get() = FileNameExtensionFilter(
+            "*.${systemInfo.applicationExtension}",
+            systemInfo.applicationExtension,
+        )
 
     fun show(
         onPick: (File) -> Unit,
         title: String? = null,
         fileFilter: FileFilter? = null,
         isAcceptAllFileFilterUsed: Boolean = false,
-        currentDirectory: Path = SystemInfo.systemDrive,
+        currentDirectory: Path = systemInfo.systemDrive,
     ) {
         val chooser = JFileChooser().also {
             it.dialogTitle = title

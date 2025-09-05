@@ -2,12 +2,11 @@ package com.wisermit.hdrswitcher.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
 import java.io.File
 import java.io.InputStreamReader
 
-object FileUtils {
-
-    const val APPLICATION_EXTENSION = "exe"
+object FileUtils : KoinComponent {
 
     suspend fun getApplicationDescription(
         file: File
@@ -26,6 +25,4 @@ object FileUtils {
                 .readLine()
         }
     }
-
-    fun File.isApplication(): Boolean = extension == APPLICATION_EXTENSION
 }
