@@ -1,20 +1,19 @@
 package com.wisermit.hdrswitcher.framework
 
 sealed class AppError(
-    val param: String? = null,
+    vararg val args: String = emptyArray(),
 ) {
     class UnsupportedFile(fileName: String) : AppError(fileName)
 }
 
-class AppException(error: AppError) : Exception("## $error error")
+class AppException(val error: AppError) : Exception(error.javaClass.simpleName)
 
 fun <T> AppError.toFailure(): Result<T> {
     val exception = AppException(this)
-    println(exception)
     return exception.toFailure()
 }
 
 fun <T> Throwable.toFailure(): Result<T> {
-    println(this)
+    println("## ${javaClass.simpleName}${message?.let { ": $it" }.orEmpty()}")
     return Result.failure(this)
 }

@@ -48,5 +48,5 @@ class MacOsSystemInfo : SystemInfo() {
             .add("Library")
             .add("Application Support")
 
-    override val applicationExtension = "app"
+    override val applicationExtension = "test"
 }

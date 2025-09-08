@@ -50,8 +50,8 @@ fun MainScreen(
     // TODO: Refresh on Focus changed.
 
     LaunchedEffect(Unit) {
-        viewModel.event.collect {
-            ErrorUtils.showError("Title", it.message!!)
+        viewModel.showErrorDialog.collect {
+            ErrorUtils.showError(ErrorUtils.messageFor(it))
         }
     }
 

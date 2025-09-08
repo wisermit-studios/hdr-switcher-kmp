@@ -1,29 +1,34 @@
 package com.wisermit.hdrswitcher.utils
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.flow.Flow
+import com.wisermit.hdrswitcher.framework.AppError
+import com.wisermit.hdrswitcher.framework.AppException
+import hdrswitcher.composeapp.generated.resources.Res
+import hdrswitcher.composeapp.generated.resources.error
+import hdrswitcher.composeapp.generated.resources.error_message_unsupported_file
+import org.jetbrains.compose.resources.getString
 import javax.swing.JOptionPane
 
 // TODO: Beautify error messages.
 object ErrorUtils {
 
-    fun showError(
-        title: String,
-        message: String,
-    ) {
+    suspend fun showError(message: String) {
         JOptionPane.showMessageDialog(
             null,
             message,
-            title,
+            getString(Res.string.error),
             JOptionPane.ERROR_MESSAGE
         )
     }
-}
 
-@Composable
-fun Flow<Throwable>.collectAsEvent() {
-    LaunchedEffect(Unit) {
-
+    suspend fun messageFor(throwable: Throwable): String {
+        return if (throwable is AppException) {
+            val error = throwable.error
+            val stringRes = when (error) {
+                is AppError.UnsupportedFile -> Res.string.error_message_unsupported_file
+            }
+            getString(stringRes, *error.args)
+        } else {
+            "${throwable.javaClass.simpleName}: ${throwable.message}"
+        }
     }
 }

@@ -24,11 +24,11 @@ class MainViewModel(
 
     val applications: StateFlow<List<Application>> = applicationRepository.getApplications(
         currentScope = viewModelScope,
-        onFailure = { _event.trySend(it) },
+        onFailure = { _showErrorDialog.trySend(it) },
     )
 
-    private val _event = Channel<Throwable>()
-    val event = _event.receiveAsFlow()
+    private val _showErrorDialog = Channel<Throwable>()
+    val showErrorDialog = _showErrorDialog.receiveAsFlow()
 
     fun dropFile(event: DragAndDropEvent) {
         (event.dragData() as? DragData.FilesList)
@@ -42,7 +42,7 @@ class MainViewModel(
     fun addApplication(file: File) {
         viewModelScope.launch {
             applicationRepository.add(file)
-                .onFailure(_event::trySend)
+                .onFailure(_showErrorDialog::trySend)
         }
     }
 
@@ -57,14 +57,14 @@ class MainViewModel(
     fun save(app: Application) {
         viewModelScope.launch {
             applicationRepository.save(app)
-                .onFailure(_event::trySend)
+                .onFailure(_showErrorDialog::trySend)
         }
     }
 
     fun delete(app: Application) {
         viewModelScope.launch {
             applicationRepository.delete(app)
-                .onFailure(_event::trySend)
+                .onFailure(_showErrorDialog::trySend)
         }
     }
 }
