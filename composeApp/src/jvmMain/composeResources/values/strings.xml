@@ -18,7 +18,10 @@
     <string name="add_application">Add application</string>
     <string name="remove_from_list">Remove from list</string>
 
-    <string name="error_message_unsupported_file">File "%1$s" is not a valid application.</string>
+    <string name="invalid_file_dialog_title">Invalid file</string>
+    <string name="invalid_file_dialog_message">Invalid '%1$s':\n%2$s</string>
+    <string name="unsupported_file_dialog_title">Unsupported file</string>
+    <string name="unsupported_file_dialog_message">%1$s\nThis is not a valid application file.</string>
 
     <string name="main_applications_label">Custom settings for applications</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.wisermit.hdrswitcher.data.application
 
 import com.wisermit.hdrswitcher.Config
+import com.wisermit.hdrswitcher.framework.AppError
+import com.wisermit.hdrswitcher.framework.AppException
 import com.wisermit.hdrswitcher.model.Application
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +22,8 @@ class ApplicationsDataStore(config: Config) {
     private val _applications = MutableStateFlow(emptyList<Application>())
     val applications = _applications.asStateFlow()
 
+    private val mutex = Mutex()
+
     private val file = config.applicationsFile
 
     private var _data: Data? = null
@@ -32,14 +36,16 @@ class ApplicationsDataStore(config: Config) {
             if (jsonString.isNullOrBlank()) {
                 Data()
             } else {
-                json.decodeFromString(jsonString)
+                try {
+                    json.decodeFromString(jsonString)
+                } catch (e: Exception) {
+                    throw AppException(AppError.InvalidFile(file.name), e)
+                }
             }.also {
                 _data = it
                 _applications.value = it.applications.toList()
             }
         }
-
-    private val mutex = Mutex()
 
     suspend fun <T> read(
         block: List<Application>.() -> T

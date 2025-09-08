@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.utils.ErrorUtils
+import com.wisermit.hdrswitcher.utils.DialogUtils
 import com.wisermit.hdrswitcher.utils.FilePicker
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
@@ -51,10 +51,9 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         viewModel.showErrorDialog.collect {
-            ErrorUtils.showError(ErrorUtils.messageFor(it))
+            DialogUtils.showErrorDialogFor(it)
         }
     }
-
     Scaffold {
         ScrollViewer(
             modifier = Modifier
