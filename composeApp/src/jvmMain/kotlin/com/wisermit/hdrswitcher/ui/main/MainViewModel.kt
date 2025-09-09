@@ -5,8 +5,8 @@ import androidx.compose.ui.draganddrop.DragData
 import androidx.compose.ui.draganddrop.dragData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wisermit.hdrswitcher.data.SystemRepository
 import com.wisermit.hdrswitcher.data.application.ApplicationRepository
+import com.wisermit.hdrswitcher.infrastructure.SystemManager
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
 import kotlinx.coroutines.channels.Channel
@@ -17,10 +17,10 @@ import java.io.File
 import java.net.URI
 
 class MainViewModel(
-    private val systemRepository: SystemRepository,
+    private val systemManager: SystemManager,
     private val applicationRepository: ApplicationRepository,
 ) : ViewModel() {
-    val isHdrEnabled: StateFlow<Boolean?> = systemRepository.isHdrEnabled()
+    val isHdrEnabled: StateFlow<Boolean?> = systemManager.isHdrEnabled()
 
     val applications: StateFlow<List<Application>> = applicationRepository.getApplications(
         currentScope = viewModelScope,
@@ -47,7 +47,9 @@ class MainViewModel(
     }
 
     fun setHdrEnabled(enabled: Boolean) {
-        systemRepository.setSystemHdr(enabled)
+        viewModelScope.launch {
+            systemManager.setSystemHdr(enabled)
+        }
     }
 
     fun setApplicationHdr(app: Application, hdrMode: HdrMode) {

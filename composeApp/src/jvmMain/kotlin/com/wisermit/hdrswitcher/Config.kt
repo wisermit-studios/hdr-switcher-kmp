@@ -1,5 +1,6 @@
 package com.wisermit.hdrswitcher
 
+import com.wisermit.hdrswitcher.infrastructure.SystemInfo
 import com.wisermit.hdrswitcher.utils.add
 import java.io.File
 import java.nio.file.Path

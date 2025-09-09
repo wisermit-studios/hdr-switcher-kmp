@@ -1,16 +1,17 @@
 package com.wisermit.hdrswitcher.data.application
 
-import com.wisermit.hdrswitcher.SystemInfo
 import com.wisermit.hdrswitcher.framework.AppError
 import com.wisermit.hdrswitcher.framework.toFailure
+import com.wisermit.hdrswitcher.infrastructure.SystemInfo
+import com.wisermit.hdrswitcher.infrastructure.SystemManager
 import com.wisermit.hdrswitcher.model.Application
-import com.wisermit.hdrswitcher.utils.FileUtils
 import kotlinx.coroutines.CoroutineScope
 import java.io.File
 
 class ApplicationRepository(
     val localDataSource: ApplicationStorage,
     val systemInfo: SystemInfo,
+    val systemManager: SystemManager,
 ) {
     fun getApplications(
         currentScope: CoroutineScope,
@@ -23,7 +24,7 @@ class ApplicationRepository(
         }
         val application = Application(
             path = file.toPath(),
-            description = FileUtils.getApplicationDescription(file).getOrNull()
+            description = systemManager.getFileDescription(file)
         )
         return localDataSource.add(application)
     }

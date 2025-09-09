@@ -1,15 +1,12 @@
 package com.wisermit.hdrswitcher.di
 
-import com.wisermit.hdrswitcher.data.SystemRepository
 import com.wisermit.hdrswitcher.data.application.ApplicationRepository
 import com.wisermit.hdrswitcher.data.application.ApplicationStorage
 import com.wisermit.hdrswitcher.data.application.ApplicationsDataStore
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { SystemRepository() }
-
     factory { ApplicationsDataStore(get()) }
     factory { ApplicationStorage(get()) }
-    factory { ApplicationRepository(get(), get()) }
+    factory { ApplicationRepository(get(), get(), get()) }
 }

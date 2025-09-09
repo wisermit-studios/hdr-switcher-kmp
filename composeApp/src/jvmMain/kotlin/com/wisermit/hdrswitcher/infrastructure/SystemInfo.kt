@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher
+package com.wisermit.hdrswitcher.infrastructure
 
 import com.sun.jna.platform.win32.KnownFolders
 import com.sun.jna.platform.win32.Shell32Util
@@ -12,7 +12,7 @@ enum class Platform { Windows, MacOs }
 abstract class SystemInfo {
     abstract val platform: Platform
 
-    private val osName: String = OS_NAME
+    val osName: String = OS_NAME
 
     abstract val systemDrive: Path
 
@@ -22,7 +22,7 @@ abstract class SystemInfo {
     abstract val applicationExtension: String
 }
 
-class WindowsSystemInfo : SystemInfo() {
+internal class WindowsSystemInfo : SystemInfo() {
     override val platform: Platform = Platform.Windows
 
     override val systemDrive: Path get() = Path.of(System.getenv("SystemDrive"))
@@ -38,7 +38,7 @@ class WindowsSystemInfo : SystemInfo() {
 /*
  * The app is not functional on macOS. This is for development purposes only.
  */
-class MacOsSystemInfo : SystemInfo() {
+internal class MacOsSystemInfo : SystemInfo() {
     override val platform: Platform = Platform.MacOs
 
     override val systemDrive: Path get() = Path.of("/")
