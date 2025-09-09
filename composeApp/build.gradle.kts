@@ -16,7 +16,6 @@ kotlin {
             languageSettings {
                 optIn("androidx.compose.material3.ExperimentalMaterial3Api")
                 optIn("androidx.compose.ui.ExperimentalComposeUiApi")
-                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi") // TODO: Delete.
             }
         }
 
@@ -39,7 +38,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
-            implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.kotlinx.coroutines.swing)
             implementation(compose.desktop.currentOs)
             implementation(libs.net.java.jna)
             implementation(libs.net.java.jna.platform)

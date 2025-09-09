@@ -5,7 +5,7 @@ import java.io.File
 
 internal class MacOsSystemManager : SystemManager {
 
-    override fun isHdrEnabled() = MutableStateFlow(null)
+    override fun getHdrStatus() = MutableStateFlow(null)
 
     override suspend fun setSystemHdr(enabled: Boolean) = Unit
 

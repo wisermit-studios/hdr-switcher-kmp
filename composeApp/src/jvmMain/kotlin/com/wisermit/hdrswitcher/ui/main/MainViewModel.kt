@@ -20,7 +20,7 @@ class MainViewModel(
     private val systemManager: SystemManager,
     private val applicationRepository: ApplicationRepository,
 ) : ViewModel() {
-    val isHdrEnabled: StateFlow<Boolean?> = systemManager.isHdrEnabled()
+    val hdrStatus: StateFlow<Boolean?> = systemManager.getHdrStatus()
 
     val applications: StateFlow<List<Application>> = applicationRepository.getApplications(
         currentScope = viewModelScope,

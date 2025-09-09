@@ -18,6 +18,7 @@
     <string name="add_application">Add application</string>
     <string name="remove_from_list">Remove from list</string>
 
+    <string name="no_hdr_message">No HDR display detected.</string>
     <string name="invalid_file_dialog_title">Invalid file</string>
     <string name="invalid_file_dialog_message">Invalid '%1$s':\n%2$s</string>
     <string name="unsupported_file_dialog_title">Unsupported file</string>

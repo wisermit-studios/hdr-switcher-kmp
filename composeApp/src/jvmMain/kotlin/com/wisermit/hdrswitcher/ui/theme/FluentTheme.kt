@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 
 object Theme {
+    const val DISABLED_OPACITY = 0.38f
     val MINIMUM_INTERACTIVE_COMPONENT_SIZE = 44.dp
     val BORDER_STROKE_WIDTH = 0.5.dp
 

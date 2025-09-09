@@ -3,18 +3,13 @@ package com.wisermit.hdrswitcher.ui.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WebAsset
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
@@ -43,24 +38,11 @@ fun ApplicationItem(
             .outline(color = ConfigItemDefaults.outlineColor)
             .background(color = ListItemDefaults.containerColor)
     ) {
-        ListItem(
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Unspecified,
-            ),
-            leadingContent = {
-                Icon(
-                    // TODO: Icon.
-                    imageVector = Icons.Default.WebAsset,
-                    modifier = Modifier.height(44.dp),
-                    contentDescription = null,
-                )
-            },
-            headlineContent = {
-                Text(item.description)
-            },
-            supportingContent = {
-                Text(item.path)
-            }
+        ConfigItem(
+            // TODO: Icon.
+            icon = Icons.Default.WebAsset,
+            headline = item.description,
+            supporting = item.path
         )
 
         HorizontalDivider(color = colorScheme.background)
@@ -69,7 +51,7 @@ fun ApplicationItem(
             outlined = false,
             padding = ApplicationItemDefaults.SubItemPadding,
             headline = stringResource(Res.string.hdr),
-            trailing = {
+            trailingContent = {
                 ComboBox(
                     value = item.hdr,
                     entries = mapOf(
@@ -90,7 +72,7 @@ fun ApplicationItem(
             outlined = false,
             padding = ApplicationItemDefaults.SubItemPadding,
             headline = stringResource(Res.string.remove_from_list),
-            trailing = {
+            trailingContent = {
                 Button(
                     stringResource(Res.string.remove),
                     onClick = { onDelete(item) },

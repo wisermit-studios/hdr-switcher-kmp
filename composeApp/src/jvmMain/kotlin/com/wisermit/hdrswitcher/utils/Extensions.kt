@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -46,3 +47,5 @@ fun <T> Modifier.withNotNull(
 ): Modifier {
     return if (value != null) block(value) else this
 }
+
+fun Modifier.disabledAppearance() = alpha(Theme.DISABLED_OPACITY)

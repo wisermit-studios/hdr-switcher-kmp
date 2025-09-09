@@ -5,7 +5,7 @@ import java.io.File
 
 interface SystemManager {
 
-    fun isHdrEnabled(): StateFlow<Boolean?>
+    fun getHdrStatus(): StateFlow<Boolean?>
 
     suspend fun setSystemHdr(enabled: Boolean)
 

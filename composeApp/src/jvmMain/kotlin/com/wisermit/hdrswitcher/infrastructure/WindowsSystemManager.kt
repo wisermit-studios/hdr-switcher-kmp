@@ -18,13 +18,13 @@ private const val HDR_ENABLED_REG_KEY = "HDREnabled"
 
 internal class WindowsSystemManager : SystemManager {
 
-    private val isHdrEnabled = MutableStateFlow<Boolean?>(null)
+    private val hdrStatus = MutableStateFlow<Boolean?>(null)
 
-    override fun isHdrEnabled(): StateFlow<Boolean?> {
+    override fun getHdrStatus(): StateFlow<Boolean?> {
         CoroutineScope(Dispatchers.IO).launch {
             refreshHdrStatus()
         }
-        return isHdrEnabled.asStateFlow()
+        return hdrStatus.asStateFlow()
     }
 
     private suspend fun refreshHdrStatus() {
@@ -33,7 +33,7 @@ internal class WindowsSystemManager : SystemManager {
             hdrMonitors.isEmpty() -> null
             else -> hdrMonitors.any { it.hdrEnabled }
         }
-        isHdrEnabled.tryEmit(hdrStatus)
+        this.hdrStatus.tryEmit(hdrStatus)
     }
 
     private suspend fun getHdrMonitors(): List<MonitorData> {
@@ -63,7 +63,7 @@ internal class WindowsSystemManager : SystemManager {
 
     override suspend fun setSystemHdr(enabled: Boolean) {
         refreshHdrStatus()
-        if (isHdrEnabled.value != enabled) {
+        if (hdrStatus.value != enabled) {
             runCatching {
                 InputSimulator.sendKeyEvent(
                     KeyEvent.VK_WINDOWS,

@@ -4,13 +4,17 @@ import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HdrOn
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
@@ -28,6 +32,8 @@ import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.utils.DialogUtils
 import com.wisermit.hdrswitcher.utils.FilePicker
+import com.wisermit.hdrswitcher.utils.applyIf
+import com.wisermit.hdrswitcher.utils.disabledAppearance
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ScrollViewer
@@ -35,6 +41,9 @@ import hdrswitcher.composeapp.generated.resources.Res
 import hdrswitcher.composeapp.generated.resources.add_application
 import hdrswitcher.composeapp.generated.resources.drag_and_drop_application
 import hdrswitcher.composeapp.generated.resources.main_applications_label
+import hdrswitcher.composeapp.generated.resources.no_hdr_message
+import hdrswitcher.composeapp.generated.resources.off
+import hdrswitcher.composeapp.generated.resources.on
 import hdrswitcher.composeapp.generated.resources.open
 import hdrswitcher.composeapp.generated.resources.or
 import org.jetbrains.compose.resources.stringResource
@@ -69,7 +78,6 @@ fun MainScreen(
                     }
                 ),
         ) { listState ->
-            val isHdrEnabled by viewModel.isHdrEnabled.collectAsState()
             val applications by viewModel.applications.collectAsState()
 
             LazyColumn(
@@ -84,16 +92,33 @@ fun MainScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 item {
-                    // TODO: Display no HDR message / Text On/Off.
+                    val hdrStatus by viewModel.hdrStatus.collectAsState()
 
                     ConfigItem(
                         headline = "HDR",
-                        trailing = {
-                            Switch(
-                                enabled = isHdrEnabled != null,
-                                checked = isHdrEnabled == true,
-                                onCheckedChange = viewModel::setHdrEnabled,
-                            )
+                        icon = Icons.Default.HdrOn,
+                        supporting = if (hdrStatus == null)
+                            stringResource(Res.string.no_hdr_message) else null,
+                        trailingContent = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(
+                                        if (hdrStatus == true) Res.string.on else Res.string.off
+                                    ),
+                                    modifier = Modifier
+                                        .applyIf(hdrStatus == null) {
+                                            disabledAppearance()
+                                        }
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                Switch(
+                                    enabled = hdrStatus != null,
+                                    checked = hdrStatus == true,
+                                    onCheckedChange = viewModel::setHdrEnabled,
+                                )
+                            }
                         },
                     )
                 }
