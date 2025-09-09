@@ -1,29 +1,38 @@
 package com.wisermit.hdrswitcher.widget
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.wisermit.hdrswitcher.utils.applyIf
+import com.wisermit.hdrswitcher.utils.outline
 
 @Composable
 fun ConfigItem(
     modifier: Modifier = Modifier,
-    padding: PaddingValues = ConfigItemDefaults.padding(),
+    padding: PaddingValues = ConfigItemDefaults.Padding,
     headline: String,
     trailing: @Composable (() -> Unit)? = null,
+    outlined: Boolean = true,
 ) {
-
     Row(
         modifier.fillMaxWidth()
+            .applyIf(outlined) {
+                outline(color = ConfigItemDefaults.outlineColor)
+            }
+            .background(color = ListItemDefaults.containerColor)
             .padding(padding)
             .defaultMinSize(minHeight = LocalMinimumInteractiveComponentSize.current),
         verticalAlignment = Alignment.CenterVertically,
@@ -39,20 +48,19 @@ fun ConfigItem(
 
 object ConfigItemDefaults {
 
-    val HorizontalPadding = 16.dp
-    val VerticalPadding = 4.dp
+    private const val OUTLINE_OPACITY = 0.09f
+    private const val OUTLINE_OPACITY_DARK = 0.32f
 
-    fun padding(
-        horizontal: Dp = HorizontalPadding,
-        vertical: Dp = VerticalPadding,
-        start: Dp? = null,
-        top: Dp? = null,
-        end: Dp? = null,
-        bottom: Dp? = null,
-    ) = PaddingValues(
-        start = start ?: horizontal,
-        top = top ?: vertical,
-        end = end ?: horizontal,
-        bottom = bottom ?: vertical,
+    val HorizontalPadding = 16.dp
+    val VerticalPadding = 12.dp
+
+    val Padding = PaddingValues(
+        horizontal = HorizontalPadding,
+        vertical = VerticalPadding,
     )
+
+    val outlineColor: Color
+        @Composable get() = colorScheme.scrim.copy(
+            alpha = if (isSystemInDarkTheme()) OUTLINE_OPACITY_DARK else OUTLINE_OPACITY,
+        )
 }

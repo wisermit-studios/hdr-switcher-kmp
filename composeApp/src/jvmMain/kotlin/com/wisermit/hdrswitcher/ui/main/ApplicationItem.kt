@@ -1,8 +1,8 @@
 package com.wisermit.hdrswitcher.ui.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WebAsset
@@ -40,10 +40,9 @@ fun ApplicationItem(
 ) {
     Column(
         modifier = Modifier
-            .outline(color = ApplicationItemDefaults.outlineColor)
-            .background(color = ListItemDefaults.containerColor),
-
-        ) {
+            .outline(color = ConfigItemDefaults.outlineColor)
+            .background(color = ListItemDefaults.containerColor)
+    ) {
         ListItem(
             colors = ListItemDefaults.colors(
                 containerColor = Color.Unspecified,
@@ -67,7 +66,8 @@ fun ApplicationItem(
         HorizontalDivider(color = colorScheme.background)
 
         ConfigItem(
-            padding = ApplicationItemDefaults.Padding,
+            outlined = false,
+            padding = ApplicationItemDefaults.SubItemPadding,
             headline = stringResource(Res.string.hdr),
             trailing = {
                 ComboBox(
@@ -87,7 +87,8 @@ fun ApplicationItem(
         HorizontalDivider(color = colorScheme.background)
 
         ConfigItem(
-            padding = ApplicationItemDefaults.Padding,
+            outlined = false,
+            padding = ApplicationItemDefaults.SubItemPadding,
             headline = stringResource(Res.string.remove_from_list),
             trailing = {
                 Button(
@@ -100,14 +101,10 @@ fun ApplicationItem(
 }
 
 object ApplicationItemDefaults {
-
-    private const val OUTLINE_OPACITY = 0.09f
-    private const val OUTLINE_OPACITY_DARK = 0.32f
-
-    val Padding = ConfigItemDefaults.padding(start = 56.dp)
-
-    val outlineColor: Color
-        @Composable get() = colorScheme.scrim.copy(
-            alpha = if (isSystemInDarkTheme()) OUTLINE_OPACITY_DARK else OUTLINE_OPACITY,
-        )
+    val SubItemPadding = PaddingValues(
+        start = 56.dp,
+        top = 4.dp,
+        end = ConfigItemDefaults.HorizontalPadding,
+        bottom = 4.dp,
+    )
 }
