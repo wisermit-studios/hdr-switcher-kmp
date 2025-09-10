@@ -1,1 +1,1 @@
-# hdr-switcher-kmp
+# HDR Switcher

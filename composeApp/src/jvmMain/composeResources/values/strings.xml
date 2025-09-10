@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name" translatable="false">HDR Switcher</string>
+
+    <string name="minimize">Minimize</string>
+    <string name="maximize">Maximize</string>
+    <string name="restore_down">Restore Down</string>
+    <string name="close">Close</string>
+    <string name="open">Open</string>
+    <string name="error">Error</string>
+    <string name="or">Or</string>
+    <string name="remove">Remove</string>
+    <string name="hdr">HDR</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="default">Default</string>
+
+    <string name="drag_and_drop_application">Drag and drop application</string>
+    <string name="add_application">Add application</string>
+    <string name="remove_from_list">Remove from list</string>
+
+    <string name="no_hdr_message">No HDR display detected.</string>
+    <string name="invalid_file_dialog_title">Invalid file</string>
+    <string name="invalid_file_dialog_message">Invalid '%1$s':\n%2$s</string>
+    <string name="unsupported_file_dialog_title">Unsupported file</string>
+    <string name="unsupported_file_dialog_message">%1$s\nThis is not a valid application file.</string>
+
+    <string name="main_applications_label">Custom settings for applications</string>
+</resources>
