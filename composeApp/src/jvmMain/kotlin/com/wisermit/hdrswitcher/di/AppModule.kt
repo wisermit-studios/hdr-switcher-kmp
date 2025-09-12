@@ -11,13 +11,14 @@ object AppModule {
     }
 
     private val uiModule = module {
-        factory { MainViewModel(get(), get()) }
+        factory { MainViewModel(get(), get(), get(), get(), get(), get()) }
     }
 
     val modules = listOf(
         platformModule,
         configModule,
         dataModule,
+        domainModule,
         uiModule
     )
 }

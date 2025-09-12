@@ -1,7 +1,6 @@
 package com.wisermit.hdrswitcher.utils
 
 import com.wisermit.hdrswitcher.framework.AppError
-import com.wisermit.hdrswitcher.framework.AppException
 import hdrswitcher.composeapp.generated.resources.Res
 import hdrswitcher.composeapp.generated.resources.error
 import hdrswitcher.composeapp.generated.resources.invalid_file_dialog_message
@@ -43,17 +42,16 @@ object DialogUtils {
         )
     }
 
-    suspend fun showErrorDialogFor(throwable: Throwable) {
-        if (throwable is AppException) {
-            val error = throwable.error
+    suspend fun showErrorDialogFor(error: Throwable) {
+        if (error is AppError) {
             when (error) {
                 is AppError.InvalidFile -> showErrorDialog(
                     title = getString(Res.string.invalid_file_dialog_title),
                     message = getString(
                         Res.string.invalid_file_dialog_message,
                         error.fileName,
-                        throwable.message.toString(),
-                        ),
+                        error.message.toString(),
+                    ),
                 )
                 is AppError.UnsupportedFile -> showErrorDialog(
                     title = getString(Res.string.unsupported_file_dialog_title),
@@ -63,7 +61,7 @@ object DialogUtils {
         } else {
             showErrorDialog(
                 title = getString(Res.string.error),
-                message = "${throwable.javaClass.simpleName}: ${throwable.message}",
+                message = "${error.javaClass.simpleName}: ${error.message}",
             )
         }
     }
