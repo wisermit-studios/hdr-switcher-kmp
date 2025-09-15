@@ -5,30 +5,47 @@ import androidx.compose.ui.draganddrop.DragData
 import androidx.compose.ui.draganddrop.dragData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wisermit.hdrswitcher.data.application.ApplicationRepository
-import com.wisermit.hdrswitcher.infrastructure.SystemManager
+import com.wisermit.hdrswitcher.domain.application.AddApplicationFileUseCase
+import com.wisermit.hdrswitcher.domain.application.DeleteApplicationUseCase
+import com.wisermit.hdrswitcher.domain.application.GetApplicationsUseCase
+import com.wisermit.hdrswitcher.domain.application.SaveApplicationUseCase
+import com.wisermit.hdrswitcher.domain.hdrsettings.GetHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.hdrsettings.SetHdrEnabledUseCase
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
 import java.net.URI
 
 class MainViewModel(
-    private val systemManager: SystemManager,
-    private val applicationRepository: ApplicationRepository,
+    getHdrStatus: GetHdrStatusUseCase,
+    getApplicationsUseCase: GetApplicationsUseCase,
+    private val addApplicationFileUseCase: AddApplicationFileUseCase,
+    private val saveApplicationUseCase: SaveApplicationUseCase,
+    private val deleteApplicationUseCase: DeleteApplicationUseCase,
+    private val setHdrEnabledUseCase: SetHdrEnabledUseCase,
 ) : ViewModel() {
-    val hdrStatus: StateFlow<Boolean?> = systemManager.getHdrStatus()
 
-    val applications: StateFlow<List<Application>> = applicationRepository.getApplications(
-        currentScope = viewModelScope,
-        onFailure = { _showErrorDialog.trySend(it) },
-    )
-
-    private val _showErrorDialog = Channel<Throwable>()
+    private val _showErrorDialog = Channel<Throwable>(Channel.CONFLATED)
     val showErrorDialog = _showErrorDialog.receiveAsFlow()
+
+    val applications: StateFlow<List<Application>> = getApplicationsUseCase(Unit)
+        .map {
+            it.getOrElse { e ->
+                _showErrorDialog.send(e)
+                emptyList()
+            }
+        }
+        .stateIn(viewModelScope, Lazily, emptyList())
+
+    val hdrStatus: StateFlow<Boolean?> = getHdrStatus(Unit)
+        .stateIn(viewModelScope, Lazily, null)
 
     fun dropFile(event: DragAndDropEvent) {
         (event.dragData() as? DragData.FilesList)
@@ -41,14 +58,14 @@ class MainViewModel(
 
     fun addApplication(file: File) {
         viewModelScope.launch {
-            applicationRepository.add(file)
+            addApplicationFileUseCase(file)
                 .onFailure(_showErrorDialog::trySend)
         }
     }
 
     fun setHdrEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            systemManager.setSystemHdr(enabled)
+            setHdrEnabledUseCase(enabled)
         }
     }
 
@@ -58,14 +75,14 @@ class MainViewModel(
 
     fun save(app: Application) {
         viewModelScope.launch {
-            applicationRepository.save(app)
+            saveApplicationUseCase(app)
                 .onFailure(_showErrorDialog::trySend)
         }
     }
 
     fun delete(app: Application) {
         viewModelScope.launch {
-            applicationRepository.delete(app)
+            deleteApplicationUseCase(app)
                 .onFailure(_showErrorDialog::trySend)
         }
     }
