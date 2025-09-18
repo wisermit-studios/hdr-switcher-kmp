@@ -1,6 +1,5 @@
 package com.wisermit.hdrswitcher.ui.main
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
@@ -13,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
-import com.wisermit.hdrswitcher.utils.outline
+import com.wisermit.hdrswitcher.utils.fluentSurface
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ComboBox
 import com.wisermit.hdrswitcher.widget.ConfigItem
@@ -35,20 +34,23 @@ fun ApplicationItem(
 ) {
     Column(
         modifier = Modifier
-            .outline(color = ConfigItemDefaults.outlineColor)
-            .background(color = ListItemDefaults.containerColor)
+            .fluentSurface(
+                borderColor = ConfigItemDefaults.outlineColor,
+                backgroundColor = ListItemDefaults.containerColor
+            )
     ) {
         ConfigItem(
             // TODO: Icon.
+            backgroundEnabled = false,
             icon = Icons.Default.WebAsset,
             headline = item.description,
-            supporting = item.path
+            supporting = item.path,
         )
 
         HorizontalDivider(color = colorScheme.background)
 
         ConfigItem(
-            outlined = false,
+            backgroundEnabled = false,
             padding = ApplicationItemDefaults.SubItemPadding,
             headline = stringResource(Res.string.hdr),
             trailingContent = {
@@ -69,7 +71,7 @@ fun ApplicationItem(
         HorizontalDivider(color = colorScheme.background)
 
         ConfigItem(
-            outlined = false,
+            backgroundEnabled = false,
             padding = ApplicationItemDefaults.SubItemPadding,
             headline = stringResource(Res.string.remove_from_list),
             trailingContent = {

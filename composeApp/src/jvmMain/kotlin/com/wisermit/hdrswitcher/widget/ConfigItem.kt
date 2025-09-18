@@ -1,6 +1,5 @@
 package com.wisermit.hdrswitcher.widget
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,8 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.utils.applyIf
-import com.wisermit.hdrswitcher.utils.outline
+import com.wisermit.hdrswitcher.utils.fluentSurface
 
 @Composable
 fun ConfigItem(
@@ -31,14 +29,20 @@ fun ConfigItem(
     supporting: String? = null,
     icon: ImageVector? = null,
     trailingContent: @Composable (() -> Unit)? = null,
-    outlined: Boolean = true,
+    backgroundEnabled: Boolean = true,
 ) {
     Row(
         modifier.fillMaxWidth()
-            .applyIf(outlined) {
-                outline(color = ConfigItemDefaults.outlineColor)
-            }
-            .background(color = ListItemDefaults.containerColor)
+            .then(
+                if (backgroundEnabled) {
+                    Modifier.fluentSurface(
+                        borderColor = ConfigItemDefaults.outlineColor,
+                        backgroundColor = ListItemDefaults.containerColor,
+                    )
+                } else {
+                    Modifier
+                }
+            )
             .padding(padding)
             .defaultMinSize(minHeight = LocalMinimumInteractiveComponentSize.current),
         verticalAlignment = Alignment.CenterVertically,

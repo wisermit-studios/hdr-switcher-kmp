@@ -36,9 +36,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.ui.theme.Theme
-import com.wisermit.hdrswitcher.utils.applyIf
-import com.wisermit.hdrswitcher.utils.outline
+import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
+import com.wisermit.hdrswitcher.utils.fluentSurface
 import com.wisermit.hdrswitcher.utils.toDp
 
 @Composable
@@ -61,8 +60,7 @@ fun <T> ComboBox(
         InteractiveBox(
             modifier = Modifier
                 .defaultMinSize(minHeight = ComboBoxDefaults.MinHeight)
-                .outline()
-                .background(colorScheme.surfaceBright),
+                .fluentSurface(backgroundColor = colorScheme.surfaceBright),
             role = Role.DropdownList,
             onClick = { expanded = !expanded },
             enabled = enabled,
@@ -96,7 +94,7 @@ fun <T> ComboBox(
             offset = DpOffset(0.dp, -menuHeight.toDp()),
             shape = shapes.small,
             border = BorderStroke(
-                width = Theme.BORDER_STROKE_WIDTH,
+                width = ThemeDefaults.BORDER_STROKE_WIDTH,
                 color = colorScheme.background,
             ),
             modifier = Modifier
@@ -115,9 +113,13 @@ fun <T> ComboBox(
                                 vertical = ComboBoxDefaults.MenuItem.VerticalPadding,
                             )
                             .clip(shapes.extraSmall)
-                            .applyIf(isSelected) {
-                                background(ComboBoxDefaults.MenuItem.selectedBackgroundColor)
-                            },
+                            .background(
+                                if (isSelected) {
+                                    ComboBoxDefaults.MenuItem.selectedBackgroundColor
+                                } else {
+                                    Color.Unspecified
+                                }
+                            ),
                         contentPadding = PaddingValues(0.dp),
                         text = {
                             Box(contentAlignment = Alignment.CenterStart) {
