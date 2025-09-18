@@ -4,6 +4,7 @@
     <string name="minimize">Minimize</string>
     <string name="maximize">Maximize</string>
     <string name="restore_down">Restore Down</string>
+    <string name="exit">Exit</string>
     <string name="close">Close</string>
     <string name="open">Open</string>
     <string name="error">Error</string>

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 
-object Theme {
+object ThemeDefaults {
     const val DISABLED_OPACITY = 0.38f
     val MINIMUM_INTERACTIVE_COMPONENT_SIZE = 44.dp
     val BORDER_STROKE_WIDTH = 0.5.dp
@@ -24,6 +24,7 @@ private fun colorScheme(darkTheme: Boolean) = when {
         onPrimary = onBrandDark,
         error = errorDark,
         background = layer1Dark,
+        onBackground = layerForegroundDark,
         surface = layer3Dark,
         onSurface = layerForegroundDark,
         onSurfaceVariant = layerForegroundVariantDark,
@@ -39,6 +40,7 @@ private fun colorScheme(darkTheme: Boolean) = when {
         onPrimary = brandForeground,
         error = error,
         background = layer1,
+        onBackground = layerForeground,
         surface = layer3,
         onSurface = layerForeground,
         onSurfaceVariant = layerForegroundVariant,
@@ -56,7 +58,8 @@ fun FluentTheme(
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalMinimumInteractiveComponentSize provides Theme.MINIMUM_INTERACTIVE_COMPONENT_SIZE
+        LocalMinimumInteractiveComponentSize provides
+                ThemeDefaults.MINIMUM_INTERACTIVE_COMPONENT_SIZE
     ) {
         MaterialTheme(
             colorScheme = colorScheme(isDarkTheme),

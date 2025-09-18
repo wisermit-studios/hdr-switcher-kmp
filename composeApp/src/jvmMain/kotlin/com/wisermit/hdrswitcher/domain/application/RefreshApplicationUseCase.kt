@@ -2,12 +2,11 @@ package com.wisermit.hdrswitcher.domain.application
 
 import com.wisermit.hdrswitcher.data.application.ApplicationStorage
 import com.wisermit.hdrswitcher.domain.UseCase
-import com.wisermit.hdrswitcher.model.Application
 
-class SaveApplicationUseCase(
+class RefreshApplicationUseCase(
     private val applicationStorage: ApplicationStorage,
-) : UseCase<Application, Unit>() {
+) : UseCase<Unit, Unit>() {
 
-    override suspend fun execute(parameters: Application) =
-        applicationStorage.save(parameters)
+    override suspend fun execute(parameters: Unit) =
+        applicationStorage.refresh()
 }

@@ -8,7 +8,6 @@ class DeleteApplicationUseCase(
     private val applicationStorage: ApplicationStorage,
 ) : UseCase<Application, Unit>() {
 
-    override suspend fun execute(parameters: Application) {
+    override suspend fun execute(parameters: Application) =
         applicationStorage.delete(parameters)
-    }
 }

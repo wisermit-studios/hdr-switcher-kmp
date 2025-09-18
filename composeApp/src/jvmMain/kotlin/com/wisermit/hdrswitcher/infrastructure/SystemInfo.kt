@@ -5,9 +5,21 @@ import com.sun.jna.platform.win32.Shell32Util
 import com.wisermit.hdrswitcher.utils.add
 import java.nio.file.Path
 
-internal val OS_NAME: String = System.getProperty("os.name")
+private val OS_NAME: String = System.getProperty("os.name")
 
-enum class Platform { Windows, MacOs }
+enum class Platform {
+    Windows, MacOS;
+
+    companion object {
+        val Current: Platform by lazy {
+            when {
+                OS_NAME.startsWith("Win") -> Windows
+                OS_NAME.startsWith("Mac") -> MacOS
+                else -> throw UnsupportedOperationException("Unsupported OS: $OS_NAME")
+            }
+        }
+    }
+}
 
 abstract class SystemInfo {
     abstract val platform: Platform
@@ -39,7 +51,7 @@ internal class WindowsSystemInfo : SystemInfo() {
  * The app is not functional on macOS. This is for development purposes only.
  */
 internal class MacOsSystemInfo : SystemInfo() {
-    override val platform: Platform = Platform.MacOs
+    override val platform: Platform = Platform.MacOS
 
     override val systemDrive: Path get() = Path.of("/")
 

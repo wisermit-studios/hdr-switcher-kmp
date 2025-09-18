@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,11 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
 import com.wisermit.hdrswitcher.utils.DialogUtils
 import com.wisermit.hdrswitcher.utils.FilePicker
-import com.wisermit.hdrswitcher.utils.applyIf
-import com.wisermit.hdrswitcher.utils.disabledAppearance
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ScrollViewer
@@ -46,6 +50,8 @@ import hdrswitcher.composeapp.generated.resources.off
 import hdrswitcher.composeapp.generated.resources.on
 import hdrswitcher.composeapp.generated.resources.open
 import hdrswitcher.composeapp.generated.resources.or
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -56,13 +62,28 @@ import java.io.File
 fun MainScreen(
     viewModel: MainViewModel = koinInject(),
 ) {
-    // TODO: Refresh on Focus changed.
-
     LaunchedEffect(Unit) {
         viewModel.showErrorDialog.collect {
-            DialogUtils.showErrorDialogFor(it)
+            withContext(Dispatchers.Main) {
+                DialogUtils.showErrorDialogFor(it)
+            }
         }
     }
+
+    val lifeCycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifeCycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshData()
+            }
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Scaffold {
         ScrollViewer(
             modifier = Modifier
@@ -107,10 +128,10 @@ fun MainScreen(
                                     stringResource(
                                         if (hdrStatus == true) Res.string.on else Res.string.off
                                     ),
-                                    modifier = Modifier
-                                        .applyIf(hdrStatus == null) {
-                                            disabledAppearance()
-                                        }
+                                    modifier = Modifier.alpha(
+                                        if (hdrStatus == null)
+                                            ThemeDefaults.DISABLED_OPACITY else 1f,
+                                    ),
                                 )
                                 Spacer(Modifier.width(16.dp))
                                 Switch(

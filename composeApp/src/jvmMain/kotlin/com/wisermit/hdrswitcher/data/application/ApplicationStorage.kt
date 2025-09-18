@@ -8,6 +8,8 @@ class ApplicationStorage(
 ) {
     fun getApplications(): Flow<List<Application>> = dataStore.getApplications()
 
+    suspend fun refresh() = dataStore.refresh()
+
     suspend fun add(app: Application) {
         dataStore.edit {
             val index = indexOfFirst { it.path == app.path }

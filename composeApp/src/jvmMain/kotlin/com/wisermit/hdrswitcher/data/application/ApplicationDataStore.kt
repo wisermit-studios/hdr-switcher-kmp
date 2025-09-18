@@ -34,7 +34,12 @@ class ApplicationsDataStore(config: Config) {
 
     private val applications = MutableStateFlow(emptyList<Application>())
 
-    fun getApplications(): Flow<List<Application>> = applications.onStart {
+    fun getApplications(): Flow<List<Application>> = applications
+        .onStart {
+            runCatching { refresh() }
+        }
+
+    suspend fun refresh() {
         mutex.withLock {
             ensureData()
         }

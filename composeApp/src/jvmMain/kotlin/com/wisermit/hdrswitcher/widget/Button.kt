@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.ui.theme.Theme
+import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
 import androidx.compose.material3.Button as MaterialButton
 
 @Composable
@@ -36,7 +36,7 @@ fun Button(
         Text(
             text,
             modifier = Modifier.paddingFromBaseline(
-                bottom = Theme.TEXT_BASELINE_BOTTOM_FIX,
+                bottom = ThemeDefaults.TEXT_BASELINE_BOTTOM_FIX,
             ),
             fontWeight = FontWeight.Normal,
         )
