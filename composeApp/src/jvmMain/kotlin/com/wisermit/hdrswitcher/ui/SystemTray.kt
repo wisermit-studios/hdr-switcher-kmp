@@ -36,6 +36,8 @@ import java.awt.SystemTray
 import java.awt.TrayIcon
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
+import java.awt.event.WindowEvent
+import java.awt.event.WindowFocusListener
 
 private val POPUP_SIZE = DpSize(width = 108.dp, height = 44.dp)
 private val POPUP_PADDING = 4.dp
@@ -65,11 +67,13 @@ fun ApplicationScope.SystemTray(
         anchor = popupAnchor,
     ) {
         DisposableEffect(Unit) {
-            val listener = OnWindowFocusChanged { isFocused ->
-                if (!isFocused) {
+            val listener = object : WindowFocusListener {
+                override fun windowGainedFocus(e: WindowEvent?) {}
+                override fun windowLostFocus(e: WindowEvent?) {
                     isOpen = false
                 }
             }
+
             window.addWindowFocusListener(listener)
             onDispose {
                 window.removeWindowFocusListener(listener)

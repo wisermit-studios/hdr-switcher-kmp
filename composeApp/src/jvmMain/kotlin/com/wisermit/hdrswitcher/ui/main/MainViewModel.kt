@@ -44,16 +44,17 @@ class MainViewModel(
     val hdrStatus: StateFlow<Boolean?> = getHdrStatus(Unit)
         .stateIn(viewModelScope, Lazily, null)
 
-    fun refreshData() {
+    init {
         viewModelScope.launch {
-            launch {
-                refreshHdrStatusUseCase(Unit)
-                    .onFailure(_showErrorDialog::trySend)
-            }
-            launch {
-                refreshApplicationUseCase(Unit)
-                    .onFailure(_showErrorDialog::trySend)
-            }
+            refreshApplicationUseCase(Unit)
+                .onFailure(_showErrorDialog::trySend)
+        }
+    }
+
+    fun refreshHdrStatus() {
+        viewModelScope.launch {
+            refreshHdrStatusUseCase(Unit)
+                .onFailure(_showErrorDialog::trySend)
         }
     }
 

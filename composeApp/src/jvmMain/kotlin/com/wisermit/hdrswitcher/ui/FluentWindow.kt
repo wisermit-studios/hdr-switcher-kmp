@@ -55,8 +55,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
-import java.awt.event.WindowEvent
-import java.awt.event.WindowFocusListener
 
 private val WINDOW_MARGIN_DP = 4.dp
 private val WINDOW_CORNER_RADIUS = 8.dp
@@ -69,6 +67,7 @@ private val WINDOW_CONTROL_BUTTON_HEIGHT = TITLE_BAR_HEIGHT
 
 @Composable
 fun FluentWindow(
+    controller: Boolean = true,
     visible: Boolean = true,
     title: String,
     icon: Painter?,
@@ -264,10 +263,4 @@ private fun calculateWindowPosition(
         x = offset.x.coerceIn(bounds.start, bounds.end),
         y = offset.y.coerceIn(bounds.top, bounds.bottom),
     )
-}
-
-fun interface OnWindowFocusChanged : WindowFocusListener {
-    fun onFocusChanged(isFocused: Boolean)
-    override fun windowGainedFocus(e: WindowEvent?) = onFocusChanged(true)
-    override fun windowLostFocus(e: WindowEvent?) = onFocusChanged(false)
 }

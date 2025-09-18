@@ -21,7 +21,7 @@
 
     <string name="no_hdr_message">No HDR display detected.</string>
     <string name="invalid_file_dialog_title">Invalid file</string>
-    <string name="invalid_file_dialog_message">Invalid '%1$s':\n%2$s</string>
+    <string name="invalid_file_dialog_message">Invalid %1$s:\n\n%2$s</string>
     <string name="unsupported_file_dialog_title">Unsupported file</string>
     <string name="unsupported_file_dialog_message">%1$s\nThis is not a valid application file.</string>
 

@@ -1,8 +1,10 @@
 package com.wisermit.hdrswitcher
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -15,6 +17,10 @@ import com.wisermit.hdrswitcher.ui.theme.FluentTheme
 import hdrswitcher.composeapp.generated.resources.Res
 import hdrswitcher.composeapp.generated.resources.app_icon
 import hdrswitcher.composeapp.generated.resources.app_name
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
@@ -31,11 +37,16 @@ fun main() = application {
         },
     ) {
         FluentTheme {
+            val requestWindowFocus = remember { Channel<Unit>() }
             var isVisible by remember { mutableStateOf(true) }
 
             SystemTray(
                 onAction = {
-                    isVisible = true
+                    if (isVisible) {
+                        requestWindowFocus.trySend(Unit)
+                    } else {
+                        isVisible = true
+                    }
                 },
                 onExit = ::exitApplication,
             )
@@ -51,6 +62,14 @@ fun main() = application {
                     isVisible = false
                 },
             ) {
+                val coroutineScope = rememberCoroutineScope()
+
+                LaunchedEffect(Unit) {
+                    requestWindowFocus.receiveAsFlow()
+                        .onEach { window.requestFocus() }
+                        .launchIn(coroutineScope)
+                }
+
                 MainScreen()
             }
         }

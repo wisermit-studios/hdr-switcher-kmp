@@ -75,7 +75,7 @@ fun MainScreen(
     DisposableEffect(lifeCycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.refreshData()
+                viewModel.refreshHdrStatus()
             }
         }
         lifeCycleOwner.lifecycle.addObserver(observer)
