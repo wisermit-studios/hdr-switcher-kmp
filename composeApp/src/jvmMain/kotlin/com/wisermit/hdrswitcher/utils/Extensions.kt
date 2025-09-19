@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -21,18 +20,17 @@ import java.nio.file.Path
 fun Path.add(path: String): Path = resolve(path)
 
 @Composable
-@Stable
 fun Modifier.fluentSurface(
-    backgroundColor: Color = colorScheme.surfaceContainer,
-    borderWidth: Dp = ThemeDefaults.BORDER_STROKE_WIDTH,
-    borderColor: Color = colorScheme.outlineVariant,
+    backgroundColor: Color = colorScheme.surface,
+    borderWidth: Dp = ThemeDefaults.BorderStrokeWidth,
+    borderColor: Color = colorScheme.surfaceDim,
     shape: Shape = shapes.extraSmall,
     shadowElevation: Dp = 0.dp,
 ) =
     then(
         if (shadowElevation > 0.dp) {
             Modifier.graphicsLayer(
-                shadowElevation = shadowElevation.toPx(),
+                shadowElevation = with(LocalDensity.current) { shadowElevation.toPx() },
                 shape = shape,
                 clip = false
             )
@@ -49,6 +47,3 @@ fun Modifier.fluentSurface(
 
 @Composable
 fun Int.toDp(): Dp = with(LocalDensity.current) { toDp() }
-
-@Composable
-fun Dp.toPx(): Float = with(LocalDensity.current) { toPx() }

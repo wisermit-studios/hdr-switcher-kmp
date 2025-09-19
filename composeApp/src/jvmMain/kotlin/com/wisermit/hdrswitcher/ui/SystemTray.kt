@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toAwtImage
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -97,7 +96,6 @@ private fun FluentTray(
     onAction: () -> Unit = {},
     onPopupMenuRequest: (offset: DpOffset) -> Unit,
 ) {
-    val density = LocalDensity.current
     val currentOnAction by rememberUpdatedState(onAction)
 
     val awtIcon = remember(icon) {
@@ -120,7 +118,7 @@ private fun FluentTray(
                 override fun mouseReleased(event: MouseEvent?) {
                     event?.let {
                         if (event.button == 3) {
-                            val offset = with(density) {
+                            val offset = with(GlobalDensity) {
                                 DpOffset(
                                     x = event.x.toDp(),
                                     y = event.y.toDp(),

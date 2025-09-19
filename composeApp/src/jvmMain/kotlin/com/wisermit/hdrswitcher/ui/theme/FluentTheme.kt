@@ -11,11 +11,8 @@ import androidx.compose.ui.unit.dp
 
 object ThemeDefaults {
     const val DISABLED_OPACITY = 0.38f
-    val MINIMUM_INTERACTIVE_COMPONENT_SIZE = 44.dp
-    val BORDER_STROKE_WIDTH = 0.5.dp
-
-    // Fix for incorrect horizontal alignment.
-    val TEXT_BASELINE_BOTTOM_FIX = 6.dp
+    val MinimumInteractiveComponentSize = 44.dp
+    val BorderStrokeWidth = 1.dp
 }
 
 private fun colorScheme(darkTheme: Boolean) = when {
@@ -28,12 +25,13 @@ private fun colorScheme(darkTheme: Boolean) = when {
         surface = layer3Dark,
         onSurface = layerForegroundDark,
         onSurfaceVariant = layerForegroundVariantDark,
-        surfaceBright = layer5Dark,
         surfaceContainerLowest = layer2Dark,
         surfaceContainer = layer3Dark,
         surfaceContainerHighest = layer4Dark,
-        outline = outlineDark,
-        outlineVariant = outlineVariantDark,
+        surfaceBright = layer5Dark,
+        surfaceDim = outlineShadowDark,
+        outline = outline1Dark,
+        outlineVariant = outline2Dark,
     )
     else -> lightColorScheme(
         primary = brand,
@@ -47,8 +45,10 @@ private fun colorScheme(darkTheme: Boolean) = when {
         surfaceContainerLowest = layer2,
         surfaceContainer = layer3,
         surfaceContainerHighest = layer4,
-        outline = outline,
-        outlineVariant = outlineVariant,
+        surfaceBright = layer5,
+        surfaceDim = outlineShadow,
+        outline = outline1,
+        outlineVariant = outline2,
     )
 }
 
@@ -59,7 +59,7 @@ fun FluentTheme(
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides
-                ThemeDefaults.MINIMUM_INTERACTIVE_COMPONENT_SIZE
+                ThemeDefaults.MinimumInteractiveComponentSize
     ) {
         MaterialTheme(
             colorScheme = colorScheme(isDarkTheme),

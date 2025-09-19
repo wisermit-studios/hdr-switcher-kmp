@@ -50,7 +50,7 @@ class ApplicationsDataStore(config: Config) {
             ensureData()
             val mutableList = data.applications.toMutableList()
             block(mutableList)
-            mutableList.sortBy { it.path }
+            mutableList.sortBy { it.description }
             write(mutableList.toList())
             applications.value = data.applications
         }

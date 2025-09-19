@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
 import com.wisermit.hdrswitcher.utils.fluentSurface
@@ -48,19 +50,23 @@ fun <T> ComboBox(
     enabled: Boolean = true,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var menuWidth by remember { mutableStateOf(0) }
-    var menuHeight by remember { mutableStateOf(0) }
+
+    // TODO: Improve.
+    var menuSize by remember { mutableStateOf(IntSize.Zero) }
 
     Box(
         modifier = Modifier.onGloballyPositioned { coordinates ->
-            menuWidth = coordinates.size.width
-            menuHeight = coordinates.size.height
+            menuSize = coordinates.size
         },
     ) {
         InteractiveBox(
             modifier = Modifier
                 .defaultMinSize(minHeight = ComboBoxDefaults.MinHeight)
-                .fluentSurface(backgroundColor = colorScheme.surfaceBright),
+                .fluentSurface(
+                    backgroundColor = colorScheme.surfaceBright,
+                    borderColor = colorScheme.outlineVariant,
+                    borderWidth = ComboBoxDefaults.OutlineWidth
+                ),
             role = Role.DropdownList,
             onClick = { expanded = !expanded },
             enabled = enabled,
@@ -91,15 +97,15 @@ fun <T> ComboBox(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            offset = DpOffset(0.dp, -menuHeight.toDp()),
+            offset = DpOffset(0.dp, -menuSize.height.toDp()),
             shape = shapes.small,
             border = BorderStroke(
-                width = ThemeDefaults.BORDER_STROKE_WIDTH,
+                width = ThemeDefaults.BorderStrokeWidth,
                 color = colorScheme.background,
             ),
             modifier = Modifier
                 .defaultMinSize(
-                    minWidth = menuWidth.toDp(),
+                    minWidth = menuSize.width.toDp(),
                 ),
             content = {
                 entries.forEach { entry ->
@@ -161,9 +167,10 @@ object ComboBoxDefaults {
     val MinHeight = ButtonDefaults.MinHeight
     val HorizontalPadding = 12.dp
     val IconSize = 16.dp
+    val OutlineWidth = 0.5.dp
 
     val foregroundColor: Color
-        @Composable get() = colorScheme.onSurface
+        @Composable @ReadOnlyComposable get() = colorScheme.onSurface
 
     object MenuItem {
         val HorizontalPadding = 6.dp
@@ -173,6 +180,6 @@ object ComboBoxDefaults {
         val IndicatorHeight = 16.dp
 
         val selectedBackgroundColor: Color
-            @Composable get() = colorScheme.onSurface.copy(alpha = 0.08f)
+            @Composable @ReadOnlyComposable get() = colorScheme.onSurface.copy(alpha = 0.08f)
     }
 }

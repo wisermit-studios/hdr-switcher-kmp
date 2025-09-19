@@ -12,7 +12,7 @@ class ApplicationStorage(
 
     suspend fun add(app: Application) {
         dataStore.edit {
-            val index = indexOfFirst { it.path == app.path }
+            val index = indexOfFirst { it.id == app.id }
             if (index == -1)
                 add(app)
         }
@@ -20,7 +20,7 @@ class ApplicationStorage(
 
     suspend fun save(app: Application) {
         dataStore.edit {
-            val index = indexOfFirst { it.path == app.path }
+            val index = indexOfFirst { it.id == app.id }
             if (index == -1) {
                 add(app)
             } else {
@@ -31,7 +31,7 @@ class ApplicationStorage(
 
     suspend fun delete(app: Application) {
         dataStore.edit {
-            removeIf { it.path == app.path }
+            removeIf { it.id == app.id }
         }
     }
 }

@@ -24,6 +24,7 @@ enum class Platform {
 abstract class SystemInfo {
     abstract val platform: Platform
 
+    @Suppress("unused")
     val osName: String = OS_NAME
 
     abstract val systemDrive: Path
@@ -60,5 +61,5 @@ internal class MacOsSystemInfo : SystemInfo() {
             .add("Library")
             .add("Application Support")
 
-    override val applicationExtension = "test"
+    override val applicationExtension = "app"
 }

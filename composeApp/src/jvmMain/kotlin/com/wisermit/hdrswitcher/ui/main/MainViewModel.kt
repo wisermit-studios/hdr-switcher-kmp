@@ -55,6 +55,9 @@ class MainViewModel(
         viewModelScope.launch {
             refreshHdrStatusUseCase(Unit)
                 .onFailure(_showErrorDialog::trySend)
+
+            refreshApplicationUseCase(Unit)
+                .onFailure(_showErrorDialog::trySend)
         }
     }
 

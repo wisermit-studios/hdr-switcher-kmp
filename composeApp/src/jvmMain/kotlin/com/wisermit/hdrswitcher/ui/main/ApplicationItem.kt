@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WebAsset
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,18 +28,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ApplicationItem(
     item: Application,
-    onApplicationHdrChange: (Application, HdrMode) -> Unit,
-    onDelete: (Application) -> Unit,
+    onHdrChange: (HdrMode) -> Unit,
+    onDelete: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fluentSurface(
-                borderColor = ConfigItemDefaults.outlineColor,
-                backgroundColor = ListItemDefaults.containerColor
-            )
+        modifier = Modifier.fluentSurface()
     ) {
         ConfigItem(
-            // TODO: Icon.
+            // TODO: Application icon.
             backgroundEnabled = false,
             icon = Icons.Default.WebAsset,
             headline = item.description,
@@ -61,9 +56,7 @@ fun ApplicationItem(
                         HdrMode.On to stringResource(Res.string.on),
                         HdrMode.Off to stringResource(Res.string.off),
                     ),
-                    onSelected = {
-                        onApplicationHdrChange(item, it)
-                    },
+                    onSelected = onHdrChange,
                 )
             }
         )
@@ -77,7 +70,7 @@ fun ApplicationItem(
             trailingContent = {
                 Button(
                     stringResource(Res.string.remove),
-                    onClick = { onDelete(item) },
+                    onClick = onDelete,
                 )
             }
         )

@@ -8,7 +8,6 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
@@ -20,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,15 +30,15 @@ import kotlinx.coroutines.delay
 @Composable
 fun ScrollViewer(
     modifier: Modifier,
-    content: @Composable BoxScope.(LazyListState) -> Unit
+    content: @Composable (LazyListState) -> Unit
 ) {
     Box(modifier = modifier) {
         val listState = rememberLazyListState()
 
         val interactionSource = remember { MutableInteractionSource() }
-        val isHovered = remember { mutableStateOf(false) }
+        var isHovered by remember { mutableStateOf(false) }
         val thickness by animateDpAsState(
-            targetValue = if (isHovered.value) {
+            targetValue = if (isHovered) {
                 ScrollViewerDefaults.ThicknessHovered
             } else {
                 ScrollViewerDefaults.ThicknessDefault
@@ -56,7 +56,7 @@ fun ScrollViewer(
                         hoverInteractions.remove(interaction.enter)
                     }
                 }
-                isHovered.value = hoverInteractions.isNotEmpty()
+                isHovered = hoverInteractions.isNotEmpty()
             }
         }
 
@@ -84,7 +84,6 @@ fun ScrollViewer(
 }
 
 object ScrollViewerDefaults {
-
     const val THICKNESS_SHRINK_DELAY = 500L
     const val OPACITY = 0.5f
 
