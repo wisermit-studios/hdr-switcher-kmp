@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.system
+package com.wisermit.hdrswitcher.utils
 
 import com.wisermit.hdrswitcher.framework.ProcessException
 

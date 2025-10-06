@@ -5,12 +5,12 @@ import com.wisermit.hdrswitcher.domain.UseCase
 import com.wisermit.hdrswitcher.framework.AppError
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.system.SystemInfo
-import com.wisermit.hdrswitcher.system.SystemManager
+import com.wisermit.hdrswitcher.system.SystemTools
 import java.io.File
 
 class AddApplicationFileUseCase(
     private val systemInfo: SystemInfo,
-    private val systemManager: SystemManager,
+    private val systemTools: SystemTools,
     private val applicationStorage: ApplicationStorage,
 ) : UseCase<File, Unit>() {
 
@@ -21,7 +21,7 @@ class AddApplicationFileUseCase(
         }
         val application = Application(
             file = file,
-            description = systemManager.getFileDescription(file)
+            description = systemTools.getFileDescription(file)
                 ?: file.name.substringBeforeLast(".")
         )
         return applicationStorage.add(application)
