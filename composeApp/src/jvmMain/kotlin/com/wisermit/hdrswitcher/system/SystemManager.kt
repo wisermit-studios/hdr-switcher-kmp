@@ -2,7 +2,7 @@ package com.wisermit.hdrswitcher.system
 
 interface SystemManager {
 
-    fun getHdrStatus(): Boolean?
+    suspend fun getHdrStatus(): Boolean?
 
-    fun toggleHdr()
+    suspend fun toggleHdr()
 }

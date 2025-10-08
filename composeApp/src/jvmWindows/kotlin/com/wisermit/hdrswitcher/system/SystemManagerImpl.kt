@@ -1,17 +1,15 @@
 package com.wisermit.hdrswitcher.system
 
-import com.wisermit.hdrswitcher.utils.SystemManagerExe
-
 private val TAG = SystemManagerImpl::class.java.simpleName
 
-internal class SystemManagerImpl() : SystemManager {
+class SystemManagerImpl() : SystemManager {
 
-    private val exe = SystemManagerExe()
+    // TODO: Lock exe file.
 
-    override fun getHdrStatus(): Boolean? {
+    override suspend fun getHdrStatus(): Boolean? {
         return null
     }
 
-    override fun toggleHdr() {
+    override suspend fun toggleHdr() {
     }
 }

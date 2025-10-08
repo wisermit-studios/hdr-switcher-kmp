@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.system
 
-import com.wisermit.hdrswitcher.utils.PowerShell
+import com.wisermit.hdrswitcher.system.process.PowerShell
 import java.io.File
 
 class SystemToolsImpl : SystemTools {
@@ -8,6 +8,6 @@ class SystemToolsImpl : SystemTools {
     // FIXME: Fix charset (™).
     override suspend fun getFileDescription(file: File) =
         PowerShell
-            .exec("(Get-Item \\\"$file\\\").VersionInfo.FileDescription")
+            .run("(Get-Item \\\"$file\\\").VersionInfo.FileDescription")
             .firstOrNull()
 }

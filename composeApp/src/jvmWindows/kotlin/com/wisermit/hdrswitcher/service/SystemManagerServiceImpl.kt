@@ -12,7 +12,7 @@ class SystemManagerServiceImpl(
 
     override fun getHdrStatus(): Flow<Boolean?> = hdrStatus.asStateFlow()
 
-    override fun refreshHdrStatus() {
+    override suspend fun refreshHdrStatus() {
         hdrStatus.value = systemManager.getHdrStatus()
     }
 
