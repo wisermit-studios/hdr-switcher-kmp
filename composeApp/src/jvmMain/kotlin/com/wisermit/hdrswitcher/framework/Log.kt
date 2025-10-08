@@ -1,11 +1,13 @@
 package com.wisermit.hdrswitcher.framework
 
 import java.io.PrintWriter
+import java.text.SimpleDateFormat
+
+private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 
 object Log {
 
     private const val TAG_LENGTH = 28
-    private const val PREFIX = "##"
 
     var level = Level.None
 
@@ -27,15 +29,17 @@ object Log {
 
     @Deprecated("Remove before commit.")
     fun test(msg: String) {
-        log(Level.Test, "", msg)
+        log(Level.Test, "", "... $msg")
     }
 
     private fun log(level: Level, tag: String, msg: String, tr: Throwable? = null) {
         if (level <= Log.level) {
-            val pw = PrintWriter(System.out, true)
+            val timestamp = DATE_FORMAT.format(System.currentTimeMillis())
             val tag = tag.padEnd(TAG_LENGTH, ' ')
             val priority = level.name[0]
-            pw.println("$PREFIX,$tag,$priority,$msg")
+
+            val pw = PrintWriter(System.out, true)
+            pw.println("$timestamp, $tag,$priority, $msg")
             tr?.printStackTrace(pw)
         }
     }
