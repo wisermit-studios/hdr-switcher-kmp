@@ -7,7 +7,7 @@ class SystemManagerServiceImpl : SystemManagerService {
 
     override fun getHdrStatus(): Flow<Boolean?> = emptyFlow()
 
-    override fun refreshHdrStatus() = Unit
+    override suspend fun refreshHdrStatus() = Unit
 
     override suspend fun setHdrStatus(enabled: Boolean) = Unit
 }

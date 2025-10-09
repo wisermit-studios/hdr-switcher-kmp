@@ -10,32 +10,38 @@ class LocalProperties(rootProject: Project) {
 
     val buildType: BuildType
         get() {
-            val buildType = properties[BUILD_TYPE]
-                ?: return BuildType.Debug
-                    .also { addProperty(BUILD_TYPE, it.value) }
+            val value = properties[BUILD_TYPE] as String?
 
-            return BuildType.entries
-                .find { it.value == buildType }
-                ?: throw Exception(
-                    "Invalid $BUILD_TYPE '$buildType'. Expected values: ${BuildType.entries}."
-                )
+            return if (value == null) {
+                BuildType.Debug.also {
+                    addProperty(BUILD_TYPE, it.value)
+                }
+            } else {
+                BuildType.entries
+                    .find { it.value == value }
+                    ?: throw Exception(
+                        "Invalid $BUILD_TYPE '$value'. Expected values: ${BuildType.entries}."
+                    )
+            }
         }
 
     val buildTarget: BuildTarget
         get() {
-            val buildTarget = properties[BUILD_TARGET]
-                ?: when (System.getProperty("os.name").startsWith("Mac")) {
+            val value = properties[BUILD_TARGET] as String?
+
+            return if (value == null) {
+                when (System.getProperty("os.name").startsWith("Mac")) {
                     true -> BuildTarget.Macos
                     else -> BuildTarget.Windows
                 }.also {
                     addProperty(BUILD_TARGET, it.value)
                 }
-
-            return BuildTarget.entries
-                .find { it.value == buildTarget }
-                ?: throw Exception(
-                    "Invalid $BUILD_TARGET '$buildTarget'. Expected values: ${BuildTarget.entries}."
-                )
+            } else {
+                BuildTarget.entries.find { it.value == value }
+                    ?: throw Exception(
+                        "Invalid $BUILD_TARGET '$value'. Expected values: ${BuildTarget.entries}."
+                    )
+            }
         }
 
     private fun addProperty(property: String, value: String) {

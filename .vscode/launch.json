@@ -1,16 +1,16 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Run System Manager",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "Build SystemManager",
-            "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0-windows/system_manager.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/dotnet/systemManager/src",
-            "console": "internalConsole",
-            "stopAtEntry": false
-        },
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run System Manager",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build SystemManager",
+      "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0/system_manager.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/dotnet/systemManager/src",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    }
+  ]
 }
