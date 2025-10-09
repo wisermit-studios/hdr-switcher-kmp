@@ -1,12 +1,12 @@
 package com.wisermit.hdrswitcher.utils
 
 import com.wisermit.hdrswitcher.framework.AppError
-import hdrswitcher.composeapp.generated.resources.Res
-import hdrswitcher.composeapp.generated.resources.error
-import hdrswitcher.composeapp.generated.resources.invalid_file_dialog_message
-import hdrswitcher.composeapp.generated.resources.invalid_file_dialog_title
-import hdrswitcher.composeapp.generated.resources.unsupported_file_dialog_message
-import hdrswitcher.composeapp.generated.resources.unsupported_file_dialog_title
+import com.wisermit.hdrswitcher.resources.Res
+import com.wisermit.hdrswitcher.resources.error
+import com.wisermit.hdrswitcher.resources.invalid_file_dialog_message
+import com.wisermit.hdrswitcher.resources.invalid_file_dialog_title
+import com.wisermit.hdrswitcher.resources.unsupported_file_dialog_message
+import com.wisermit.hdrswitcher.resources.unsupported_file_dialog_title
 import org.jetbrains.compose.resources.getString
 import javax.swing.JOptionPane
 

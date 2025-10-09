@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.kotlin
 }
 
-val appResourcesDir = project.layout.projectDirectory.dir("resources")
+val appResourcesDir = layout.projectDirectory.dir("resources")
 val windowsAppResourcesBinDir = appResourcesDir.dir("windows/bin")
 
 logger.lifecycle("Running with buildDesktopTarget '$buildDesktopTarget' and buildType '$buildType'.")
@@ -64,7 +64,7 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "com.wisermit.hdrswitcher.MainKt"
+        mainClass = "${BuildConfig.AppCompose.PACKAGE}.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Dmg)
@@ -79,6 +79,12 @@ compose.desktop {
             }
         }
     }
+}
+
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "${BuildConfig.AppCompose.PACKAGE}.resources"
+    generateResClass = auto
 }
 
 val systemManagerExe: Configuration by configurations.creating {
@@ -100,7 +106,7 @@ val importSystemManagerExeTask = tasks.register<Copy>("importSystemManagerForWin
 }
 
 afterEvaluate {
-    tasks.named<Sync>("prepareAppResources") {
+    tasks.named("prepareAppResources") {
         if (buildDesktopTarget == BuildDesktopTarget.Windows) {
             dependsOn(importSystemManagerExeTask)
         }
