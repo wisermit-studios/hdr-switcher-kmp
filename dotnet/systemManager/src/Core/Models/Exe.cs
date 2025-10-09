@@ -8,7 +8,7 @@ namespace SystemManager.Core.Models
         public static List<Exe> ListFromArgs(string[] args)
         {
             return [.. args
-                .Select(arg => arg.Split(':'))
+                .Select(arg => arg.Split('|'))
                 .Select(parts => new Exe(parts[0], parts[1]))];
         }
     }

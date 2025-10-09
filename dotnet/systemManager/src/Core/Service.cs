@@ -3,13 +3,13 @@ using SystemManager.Utils;
 
 namespace SystemManager.Core
 {
-    public class Manager
+    public class Service
     {
         private bool initialHdrStatus = false;
 
         private readonly ProcessWatcher _processWatcher;
 
-        public Manager()
+        public Service()
         {
             _processWatcher = new ProcessWatcher();
         }

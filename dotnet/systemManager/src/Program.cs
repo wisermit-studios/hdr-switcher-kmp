@@ -28,7 +28,7 @@ namespace SystemManager
         [STAThread]
         static async Task Main(string[] args)
         {
-            var logLevel = Log.LEVEL_DEBUG;
+            var logLevel = LogLevel.Debug;
             Log.Level = logLevel;
 
             if (args.Length == 0)

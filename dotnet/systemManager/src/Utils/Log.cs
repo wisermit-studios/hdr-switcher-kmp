@@ -1,49 +1,45 @@
 namespace SystemManager.Utils
 {
+    public enum LogLevel
+    {
+        None = -1,
+        Error = 3,
+        Warning = 4,
+        Info = 6,
+        Debug = 7
+    }
+
     public static class Log
     {
-        public const int LEVEL_NONE = -1;
-        public const int LEVEL_ERROR = 3;
-        public const int LEVEL_WARNING = 4;
-        public const int LEVEL_INFO = 6;
-        public const int LEVEL_DEBUG = 7;
-
-        public static int Level { get; set; } = LEVEL_NONE;
+        public static LogLevel Level { get; set; } = LogLevel.None;
 
         public static void E(string message)
         {
-            WriteLog(LEVEL_ERROR, message);
+            WriteLog(LogLevel.Error, message);
         }
 
         public static void W(string message)
         {
-            WriteLog(LEVEL_WARNING, message);
+            WriteLog(LogLevel.Warning, message);
         }
 
         public static void I(string message)
         {
-            WriteLog(LEVEL_INFO, message);
+            WriteLog(LogLevel.Info, message);
         }
 
         public static void D(string message)
         {
-            WriteLog(LEVEL_DEBUG, message);
+            WriteLog(LogLevel.Debug, message);
         }
 
-        private static void WriteLog(int level, string message)
+        private static void WriteLog(LogLevel level, string message)
         {
             if (level <= Level)
             {
-                string stringLevel = level switch
-                {
-                    LEVEL_ERROR => "E",
-                    LEVEL_WARNING => "W",
-                    LEVEL_INFO => "I",
-                    LEVEL_DEBUG => "D",
-                    _ => "_"
-                };
+                char logPrefix = level.ToString()[0];
 
-                Console.WriteLine($"{stringLevel}/{message}");
+                Console.WriteLine($"{logPrefix}/{message}");
             }
         }
     }
