@@ -55,7 +55,7 @@ listOf(
     configurations.register("systemManager${buildType.name}Exe") {
         isCanBeResolved = false
         attributes {
-            attribute(buildTypeAttr, buildType.toString())
+            attribute(buildTypeAttr, "$buildType")
         }
         outgoing.artifact(outputFile) {
             builtBy(publishTask)

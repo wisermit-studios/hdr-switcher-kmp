@@ -14,12 +14,12 @@ val Project.buildType: BuildType
         }
     }
 
-val Project.buildTarget: BuildTarget
+val Project.buildDesktopTarget: BuildDesktopTarget
     get() {
         return when {
-            startTasks.any { it.endsWith("Msi") || it.endsWith("Exe") } -> BuildTarget.Windows
-            startTasks.any { it.endsWith("Dmg") || it.endsWith("Pkg") } -> BuildTarget.Macos
-            else -> localProperties.buildTarget
+            startTasks.any { it.endsWith("Msi") || it.endsWith("Exe") } -> BuildDesktopTarget.Windows
+            startTasks.any { it.endsWith("Dmg") || it.endsWith("Pkg") } -> BuildDesktopTarget.Macos
+            else -> localProperties.buildDesktopTarget
         }
     }
 
@@ -31,7 +31,7 @@ enum class BuildType() {
     override fun toString() = value
 }
 
-enum class BuildTarget {
+enum class BuildDesktopTarget {
     Windows, Macos;
 
     val value: String get() = name.lowercase()

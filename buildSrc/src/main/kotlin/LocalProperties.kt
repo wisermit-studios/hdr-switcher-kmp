@@ -1,57 +1,53 @@
 import org.gradle.api.Project
+import org.gradle.internal.os.OperatingSystem
 import java.util.Properties
 
-class LocalProperties(rootProject: Project) {
+class LocalProperties(project: Project) {
 
-    private val file = rootProject.file("local.properties")
+    private val file = project.file("local.properties")
     private val properties = Properties().apply {
         file.inputStream().use { load(it) }
     }
 
     val buildType: BuildType
-        get() {
-            val value = properties[BUILD_TYPE] as String?
+        get() = getBuildProperty(
+            BUILD_TYPE,
+            BuildType.entries,
+            defaultProperty = { BuildType.Debug },
+        )
 
-            return if (value == null) {
-                BuildType.Debug.also {
-                    addProperty(BUILD_TYPE, it.value)
+    val buildDesktopTarget: BuildDesktopTarget
+        get() = getBuildProperty(
+            BUILD_DESKTOP_TARGET,
+            BuildDesktopTarget.entries,
+            defaultProperty = {
+                when (OperatingSystem.current()) {
+                    OperatingSystem.WINDOWS -> BuildDesktopTarget.Windows
+                    OperatingSystem.MAC_OS -> BuildDesktopTarget.Macos
+                    else -> BuildDesktopTarget.Windows
                 }
-            } else {
-                BuildType.entries
-                    .find { it.value == value }
-                    ?: throw Exception(
-                        "Invalid $BUILD_TYPE '$value'. Expected values: ${BuildType.entries}."
-                    )
-            }
+            },
+        )
+
+    private fun <T> getBuildProperty(
+        propertyName: String,
+        entries: List<T>,
+        defaultProperty: () -> T,
+    ): T {
+        val value = properties[propertyName] as String?
+
+        return value?.let {
+            entries.find { it.toString() == value }
+                ?: throw Exception("Invalid $propertyName '$value'. Expected values: $entries.")
+        } ?: defaultProperty().also {
+            properties[propertyName] = value
+            file.appendText("\n$propertyName=$value")
         }
-
-    val buildTarget: BuildTarget
-        get() {
-            val value = properties[BUILD_TARGET] as String?
-
-            return if (value == null) {
-                when (System.getProperty("os.name").startsWith("Mac")) {
-                    true -> BuildTarget.Macos
-                    else -> BuildTarget.Windows
-                }.also {
-                    addProperty(BUILD_TARGET, it.value)
-                }
-            } else {
-                BuildTarget.entries.find { it.value == value }
-                    ?: throw Exception(
-                        "Invalid $BUILD_TARGET '$value'. Expected values: ${BuildTarget.entries}."
-                    )
-            }
-        }
-
-    private fun addProperty(property: String, value: String) {
-        properties[property] = value
-        file.appendText("\n$property=$value")
     }
 
     private companion object {
         const val BUILD_TYPE = "buildType"
-        const val BUILD_TARGET = "buildTarget"
+        const val BUILD_DESKTOP_TARGET = "buildDesktopTarget"
     }
 }
 

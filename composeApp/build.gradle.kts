@@ -11,7 +11,7 @@ plugins {
 val appResourcesDir = project.layout.projectDirectory.dir("resources")
 val windowsAppResourcesBinDir = appResourcesDir.dir("windows/bin")
 
-logger.lifecycle("Running with buildTarget '$buildTarget' and buildType '$buildType'.")
+logger.lifecycle("Running with buildDesktopTarget '$buildDesktopTarget' and buildType '$buildType'.")
 
 kotlin {
     jvmToolchain(21)
@@ -46,7 +46,7 @@ kotlin {
         }
 
         jvmMain {
-            val jvmPlatformTarget = "jvm${buildTarget.name}"
+            val jvmPlatformTarget = "jvm${buildDesktopTarget.name}"
             val jvmTargetDir = layout.projectDirectory.dir("src/$jvmPlatformTarget")
 
             kotlin.srcDir(jvmTargetDir.dir("kotlin"))
@@ -84,7 +84,7 @@ compose.desktop {
 val systemManagerExe: Configuration by configurations.creating {
     isCanBeConsumed = false
     attributes {
-        attribute(buildTypeAttr, buildType.toString())
+        attribute(buildTypeAttr, "$buildType")
     }
 }
 
@@ -101,7 +101,7 @@ val importSystemManagerExeTask = tasks.register<Copy>("importSystemManagerForWin
 
 afterEvaluate {
     tasks.named<Sync>("prepareAppResources") {
-        if (buildTarget == BuildTarget.Windows) {
+        if (buildDesktopTarget == BuildDesktopTarget.Windows) {
             dependsOn(importSystemManagerExeTask)
         }
     }
