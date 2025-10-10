@@ -11,7 +11,7 @@ plugins {
 val appResourcesDir = layout.projectDirectory.dir("resources")
 val windowsAppResourcesBinDir = appResourcesDir.dir("windows/bin")
 
-logger.lifecycle("Running with buildDesktopTarget '$buildDesktopTarget' and buildType '$buildType'.")
+logger.lifecycle("Running with buildPlatform '$buildPlatform' and buildType '$buildType'.")
 
 kotlin {
     jvmToolchain(21)
@@ -46,7 +46,7 @@ kotlin {
         }
 
         jvmMain {
-            val jvmPlatformTarget = "jvm${buildDesktopTarget.name}"
+            val jvmPlatformTarget = "jvm${buildPlatform.name}"
             val jvmTargetDir = layout.projectDirectory.dir("src/$jvmPlatformTarget")
 
             kotlin.srcDir(jvmTargetDir.dir("kotlin"))
@@ -66,12 +66,17 @@ compose.desktop {
     application {
         mainClass = "${BuildConfig.AppCompose.PACKAGE}.MainKt"
 
+        buildTypes.release {
+            proguard {
+                configurationFiles.from(project.file("proguard-rules.pro"))
+            }
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Dmg)
             packageName = BuildConfig.AppCompose.PACKAGE_NAME
             packageVersion = BuildConfig.AppCompose.PACKAGE_VERSION
             appResourcesRootDir.set(appResourcesDir)
-
             windows {
                 menu = true
                 shortcut = false
@@ -87,28 +92,27 @@ compose.resources {
     generateResClass = auto
 }
 
-val systemManagerExe: Configuration by configurations.creating {
+val binary: Configuration by configurations.creating {
     isCanBeConsumed = false
     attributes {
-        attribute(buildTypeAttr, "$buildType")
+        attribute(ArtifactAttribute.TYPE, ArtifactAttribute.TYPE_BINARY)
+        attribute(ArtifactAttribute.VARIANT, "$buildType")
     }
 }
 
 dependencies {
-    systemManagerExe(projects.dotnet.systemManager)
+    binary(projects.dotnet.systemManager)
 }
 
-val importSystemManagerExeTask = tasks.register<Copy>("importSystemManagerForWindowsResources") {
-    description = "Copy the SystemManger EXE to jvmWindows resource folder."
-
-    from(systemManagerExe)
+val copyBinFilesForWindowsResources = tasks.register<Copy>("copyBinFilesForWindowsResources") {
+    from(binary)
     into(windowsAppResourcesBinDir)
 }
 
 afterEvaluate {
     tasks.named("prepareAppResources") {
-        if (buildDesktopTarget == BuildDesktopTarget.Windows) {
-            dependsOn(importSystemManagerExeTask)
+        if (buildPlatform == BuildPlatform.Windows) {
+            dependsOn(copyBinFilesForWindowsResources)
         }
     }
 }

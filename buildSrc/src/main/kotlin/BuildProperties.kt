@@ -1,7 +1,15 @@
 import org.gradle.api.Project
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.attributes.Attribute
 
-val buildTypeAttr = Attribute.of("${BuildConfig.AppCompose.PACKAGE}.buildType", String::class.java)
+object ArtifactAttribute {
+    val TYPE = ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE
+
+    const val TYPE_BINARY = "binary"
+
+    val VARIANT =
+        Attribute.of("${BuildConfig.AppCompose.PACKAGE}.artifactVariant", String::class.java)
+}
 
 val Project.startTasks: List<String> get() = gradle.startParameter.taskNames
 
@@ -14,12 +22,12 @@ val Project.buildType: BuildType
         }
     }
 
-val Project.buildDesktopTarget: BuildDesktopTarget
+val Project.buildPlatform: BuildPlatform
     get() {
         return when {
-            startTasks.any { it.endsWith("Msi") || it.endsWith("Exe") } -> BuildDesktopTarget.Windows
-            startTasks.any { it.endsWith("Dmg") || it.endsWith("Pkg") } -> BuildDesktopTarget.Macos
-            else -> localProperties.buildDesktopTarget
+            startTasks.any { it.endsWith("Msi") || it.endsWith("Exe") } -> BuildPlatform.Windows
+            startTasks.any { it.endsWith("Dmg") || it.endsWith("Pkg") } -> BuildPlatform.Macos
+            else -> localProperties.buildPlatform
         }
     }
 
@@ -31,7 +39,7 @@ enum class BuildType() {
     override fun toString() = value
 }
 
-enum class BuildDesktopTarget {
+enum class BuildPlatform {
     Windows, Macos;
 
     val value: String get() = name.lowercase()

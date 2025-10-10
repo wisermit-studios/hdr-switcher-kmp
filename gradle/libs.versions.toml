@@ -6,7 +6,7 @@ kotlin = "2.2.20"
 kotlinxCoroutines = "1.10.2"
 kotlinxSerializationJson = "1.9.0"
 koin = "4.1.0"
-jna = "5.18.0"
+jna = "5.18.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

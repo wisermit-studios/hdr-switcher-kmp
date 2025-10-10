@@ -16,15 +16,14 @@ class LocalProperties(project: Project) {
             defaultProperty = { BuildType.Debug },
         )
 
-    val buildDesktopTarget: BuildDesktopTarget
+    val buildPlatform: BuildPlatform
         get() = getBuildProperty(
-            BUILD_DESKTOP_TARGET,
-            BuildDesktopTarget.entries,
+            BUILD_PLATFORM,
+            BuildPlatform.entries,
             defaultProperty = {
                 when (OperatingSystem.current()) {
-                    OperatingSystem.WINDOWS -> BuildDesktopTarget.Windows
-                    OperatingSystem.MAC_OS -> BuildDesktopTarget.Macos
-                    else -> BuildDesktopTarget.Windows
+                    OperatingSystem.MAC_OS -> BuildPlatform.Macos
+                    else -> BuildPlatform.Windows
                 }
             },
         )
@@ -40,14 +39,14 @@ class LocalProperties(project: Project) {
             entries.find { it.toString() == value }
                 ?: throw Exception("Invalid $propertyName '$value'. Expected values: $entries.")
         } ?: defaultProperty().also {
-            properties[propertyName] = value
-            file.appendText("\n$propertyName=$value")
+            properties[propertyName] = it
+            file.appendText("\n$propertyName=$it")
         }
     }
 
     private companion object {
         const val BUILD_TYPE = "buildType"
-        const val BUILD_DESKTOP_TARGET = "buildDesktopTarget"
+        const val BUILD_PLATFORM = "buildPlatform"
     }
 }
 

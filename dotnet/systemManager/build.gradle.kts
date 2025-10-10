@@ -2,16 +2,21 @@ import BuildConfig.SystemManager
 
 object Group {
     const val BUILD = "build"
-    const val PUBLISHER = "publisher"
 }
 
 val projectSrcDir = layout.projectDirectory.dir("src")
 val outputsDir = layout.buildDirectory.dir("outputs")
 
-tasks.register<Exec>("clean") {
+val cleanDotnet by tasks.registering(Exec::class) {
     group = Group.BUILD
     setWorkingDir(projectSrcDir)
     commandLine("dotnet", "clean")
+}
+
+tasks.register<Delete>("clean") {
+    group = Group.BUILD
+    delete(layout.buildDirectory)
+    dependsOn(cleanDotnet)
 }
 
 listOf(
@@ -22,7 +27,7 @@ listOf(
     val outputFile = File("${outputsDir.get()}/$buildType", SystemManager.EXE_FILE_NAME)
 
     val publishTask = tasks.register<Exec>("publish${buildType.name}Exe") {
-        group = Group.PUBLISHER
+        group = Group.BUILD
         setWorkingDir(projectSrcDir)
 
         inputs.files(
@@ -36,11 +41,11 @@ listOf(
 
         commandLine(
             "dotnet", "publish",
-            "-c", "$buildType,AssemblyName=${SystemManager.EXE_FILE_NAME.substringBefore(".")}",
-            "-r", "win-x64",
+            "-c:$buildType,AssemblyName=${SystemManager.EXE_FILE_NAME.substringBefore(".")}",
+            "-r:win-x64",
             "-p:PublishSingleFile=true",
-            "--self-contained", "false",
-            "-o", outputFile.parent,
+            "--self-contained=false",
+            "-o:${outputFile.parent}",
         )
 
         val startTasks = startTasks
@@ -52,13 +57,16 @@ listOf(
         }
     }
 
-    configurations.register("systemManager${buildType.name}Exe") {
+    configurations.register("${buildType}Binary") {
         isCanBeResolved = false
+
         attributes {
-            attribute(buildTypeAttr, "$buildType")
+            attribute(ArtifactAttribute.TYPE, ArtifactAttribute.TYPE_BINARY)
+            attribute(ArtifactAttribute.VARIANT, "$buildType")
         }
-        outgoing.artifact(outputFile) {
-            builtBy(publishTask)
+
+        artifacts {
+            add(name, publishTask)
         }
     }
 }
