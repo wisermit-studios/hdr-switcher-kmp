@@ -8,9 +8,6 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.kotlin
 }
 
-val appResourcesDir = layout.projectDirectory.dir("resources")
-val windowsAppResourcesBinDir = appResourcesDir.dir("windows/bin")
-
 logger.lifecycle("Running with buildPlatform '$buildPlatform' and buildType '$buildType'.")
 
 kotlin {
@@ -76,7 +73,8 @@ compose.desktop {
             targetFormats(TargetFormat.Msi, TargetFormat.Dmg)
             packageName = BuildConfig.AppCompose.PACKAGE_NAME
             packageVersion = BuildConfig.AppCompose.PACKAGE_VERSION
-            appResourcesRootDir.set(appResourcesDir)
+            appResourcesRootDir.set(layout.projectDirectory.dir("resources"))
+
             windows {
                 menu = true
                 shortcut = false
@@ -95,8 +93,7 @@ compose.resources {
 val binary: Configuration by configurations.creating {
     isCanBeConsumed = false
     attributes {
-        attribute(ArtifactAttribute.TYPE, ArtifactAttribute.TYPE_BINARY)
-        attribute(ArtifactAttribute.VARIANT, "$buildType")
+        attribute(ArtifactAttribute.BUILD_TYPE, buildType)
     }
 }
 
@@ -104,15 +101,10 @@ dependencies {
     binary(projects.dotnet.systemManager)
 }
 
-val copyBinFilesForWindowsResources = tasks.register<Copy>("copyBinFilesForWindowsResources") {
-    from(binary)
-    into(windowsAppResourcesBinDir)
-}
-
 afterEvaluate {
-    tasks.named("prepareAppResources") {
+    tasks.named<Sync>("prepareAppResources") {
         if (buildPlatform == BuildPlatform.Windows) {
-            dependsOn(copyBinFilesForWindowsResources)
+            from(binary) { into("bin") }
         }
     }
 }

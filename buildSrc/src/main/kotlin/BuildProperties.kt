@@ -1,14 +1,9 @@
 import org.gradle.api.Project
-import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.attributes.Attribute
 
 object ArtifactAttribute {
-    val TYPE = ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE
-
-    const val TYPE_BINARY = "binary"
-
-    val VARIANT =
-        Attribute.of("${BuildConfig.AppCompose.PACKAGE}.artifactVariant", String::class.java)
+    val BUILD_TYPE =
+        Attribute.of("${BuildConfig.AppCompose.PACKAGE}.buildType", BuildType::class.java)
 }
 
 val Project.startTasks: List<String> get() = gradle.startParameter.taskNames
@@ -31,7 +26,7 @@ val Project.buildPlatform: BuildPlatform
         }
     }
 
-enum class BuildType() {
+enum class BuildType {
     Debug, Release;
 
     val value get() = name.lowercase()
