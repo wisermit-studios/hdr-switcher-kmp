@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.utils
+package com.wisermit.hdrswitcher.util
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

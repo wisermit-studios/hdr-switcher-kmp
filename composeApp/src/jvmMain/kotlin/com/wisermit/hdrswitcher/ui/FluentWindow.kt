@@ -55,7 +55,7 @@ import com.wisermit.hdrswitcher.resources.maximize
 import com.wisermit.hdrswitcher.resources.minimize
 import com.wisermit.hdrswitcher.resources.restore_down
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.utils.fluentSurface
+import com.wisermit.hdrswitcher.util.fluentSurface
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension

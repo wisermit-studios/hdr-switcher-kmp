@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.utils
+package com.wisermit.hdrswitcher.util
 
 import com.wisermit.hdrswitcher.framework.AppError
 import com.wisermit.hdrswitcher.resources.Res

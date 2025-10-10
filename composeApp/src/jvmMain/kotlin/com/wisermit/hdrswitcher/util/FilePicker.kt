@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.utils
+package com.wisermit.hdrswitcher.util
 
 import com.wisermit.hdrswitcher.system.SystemInfo
 import org.koin.core.component.KoinComponent

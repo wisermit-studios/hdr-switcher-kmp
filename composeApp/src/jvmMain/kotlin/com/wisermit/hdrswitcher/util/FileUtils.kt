@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.utils
+package com.wisermit.hdrswitcher.util
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap

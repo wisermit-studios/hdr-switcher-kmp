@@ -47,8 +47,8 @@ import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.utils.DialogUtils
-import com.wisermit.hdrswitcher.utils.FilePicker
+import com.wisermit.hdrswitcher.util.DialogUtils
+import com.wisermit.hdrswitcher.util.FilePicker
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ScrollViewer

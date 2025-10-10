@@ -25,8 +25,8 @@ import com.wisermit.hdrswitcher.resources.off
 import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.remove
 import com.wisermit.hdrswitcher.resources.remove_from_list
-import com.wisermit.hdrswitcher.utils.FileUtils
-import com.wisermit.hdrswitcher.utils.fluentSurface
+import com.wisermit.hdrswitcher.util.FileUtils
+import com.wisermit.hdrswitcher.util.fluentSurface
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ComboBox
 import com.wisermit.hdrswitcher.widget.ConfigItem
