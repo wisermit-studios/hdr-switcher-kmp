@@ -1,4 +1,4 @@
-namespace SystemManager.Utils
+namespace SystemManager.Framework
 {
     public enum LogLevel
     {

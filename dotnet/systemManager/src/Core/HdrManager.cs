@@ -1,4 +1,4 @@
-﻿using SystemManager.Utils;
+﻿using SystemManager.Framework;
 using Vortice.DXGI;
 using WindowsInput;
 using WindowsInput.Native;

@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "Build SystemManager",
-      "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0/system_manager.dll",
+      "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0-windows/system_manager.dll",
       "args": [],
       "cwd": "${workspaceFolder}/dotnet/systemManager/src",
       "console": "internalConsole",
