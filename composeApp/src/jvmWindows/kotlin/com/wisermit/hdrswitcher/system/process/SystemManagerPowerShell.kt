@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.system.process
 
-import com.wisermit.hdrswitcher.framework.Log
+import com.wisermit.hdrswitcher.util.Log
 import java.awt.Robot
 import java.awt.event.KeyEvent
 

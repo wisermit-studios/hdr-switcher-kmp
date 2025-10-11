@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.framework
+package com.wisermit.hdrswitcher.util
 
 import java.io.PrintWriter
 import java.text.SimpleDateFormat

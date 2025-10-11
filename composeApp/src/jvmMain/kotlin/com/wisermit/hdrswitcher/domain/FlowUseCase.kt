@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 
-abstract class FlowUseCase<in P, R>(
+abstract class ResultFlowUseCase<in P, R>(
     private val coroutineDispatcher: CoroutineDispatcher = COROUTINE_DISPATCHER,
 ) : CoreUseCase() {
     operator fun invoke(parameters: P): Flow<Result<R>> {
@@ -22,7 +22,7 @@ abstract class FlowUseCase<in P, R>(
     protected abstract fun execute(parameters: P): Flow<Result<R>>
 }
 
-abstract class UnsafeFlowUseCase<in P, R>(
+abstract class FlowUseCase<in P, R>(
     private val coroutineDispatcher: CoroutineDispatcher = COROUTINE_DISPATCHER,
 ) : CoreUseCase() {
     operator fun invoke(parameters: P): Flow<R> {
@@ -31,7 +31,6 @@ abstract class UnsafeFlowUseCase<in P, R>(
         return execute(parameters)
             .catch { e ->
                 logFailure(e)
-                throw e
             }
             .flowOn(coroutineDispatcher)
     }

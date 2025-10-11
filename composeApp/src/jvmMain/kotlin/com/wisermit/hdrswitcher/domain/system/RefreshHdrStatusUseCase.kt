@@ -1,10 +1,10 @@
-package com.wisermit.hdrswitcher.domain.hdrsettings
+package com.wisermit.hdrswitcher.domain.system
 
 import com.wisermit.hdrswitcher.domain.UseCase
-import com.wisermit.hdrswitcher.service.SystemManagerService
+import com.wisermit.hdrswitcher.system.SystemManager
 
 class RefreshHdrStatusUseCase(
-    private val systemManagerService: SystemManagerService,
+    private val systemManagerService: SystemManager,
 ) : UseCase<Unit, Unit>() {
 
     override suspend fun execute(parameters: Unit) =

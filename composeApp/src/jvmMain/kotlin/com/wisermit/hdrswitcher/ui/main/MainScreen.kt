@@ -73,7 +73,7 @@ fun MainScreen(
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.refreshHdrStatus()
+        viewModel.refreshData()
     }
 
     Scaffold {

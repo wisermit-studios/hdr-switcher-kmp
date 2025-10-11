@@ -1,9 +1,9 @@
 package com.wisermit.hdrswitcher.di
 
-import com.wisermit.hdrswitcher.service.SystemManagerService
-import com.wisermit.hdrswitcher.service.SystemManagerServiceImpl
+import com.wisermit.hdrswitcher.service.ApplicationsWatcherService
+import com.wisermit.hdrswitcher.service.ApplicationsWatcherServiceImpl
 import org.koin.dsl.module
 
 val platformServiceModule = module {
-    single<SystemManagerService> { SystemManagerServiceImpl() }
+    single<ApplicationsWatcherService> { ApplicationsWatcherServiceImpl() }
 }

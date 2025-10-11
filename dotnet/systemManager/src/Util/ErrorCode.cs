@@ -1,4 +1,4 @@
-namespace SystemManager.Framework
+namespace SystemManager.Util
 {
     public static class ErrorCode
     {

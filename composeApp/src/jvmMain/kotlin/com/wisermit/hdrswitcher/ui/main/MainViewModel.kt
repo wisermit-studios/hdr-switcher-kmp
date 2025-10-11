@@ -5,14 +5,14 @@ import androidx.compose.ui.draganddrop.DragData
 import androidx.compose.ui.draganddrop.dragData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wisermit.hdrswitcher.domain.application.AddApplicationFileUseCase
-import com.wisermit.hdrswitcher.domain.application.DeleteApplicationUseCase
-import com.wisermit.hdrswitcher.domain.application.GetApplicationsUseCase
-import com.wisermit.hdrswitcher.domain.application.RefreshApplicationUseCase
-import com.wisermit.hdrswitcher.domain.application.SaveApplicationUseCase
-import com.wisermit.hdrswitcher.domain.hdrsettings.GetHdrStatusUseCase
-import com.wisermit.hdrswitcher.domain.hdrsettings.RefreshHdrStatusUseCase
-import com.wisermit.hdrswitcher.domain.hdrsettings.SetHdrEnabledUseCase
+import com.wisermit.hdrswitcher.domain.applications.AddApplicationUseCase
+import com.wisermit.hdrswitcher.domain.applications.DeleteApplicationUseCase
+import com.wisermit.hdrswitcher.domain.applications.GetApplicationsUseCase
+import com.wisermit.hdrswitcher.domain.applications.RefreshApplicationUseCase
+import com.wisermit.hdrswitcher.domain.applications.SaveApplicationUseCase
+import com.wisermit.hdrswitcher.domain.system.GetHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.system.RefreshHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.system.SetHdrEnabledUseCase
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +30,7 @@ class MainViewModel(
     private val refreshHdrStatusUseCase: RefreshHdrStatusUseCase,
     private val setHdrEnabledUseCase: SetHdrEnabledUseCase,
     private val refreshApplicationUseCase: RefreshApplicationUseCase,
-    private val addApplicationFileUseCase: AddApplicationFileUseCase,
+    private val addApplicationUseCase: AddApplicationUseCase,
     private val saveApplicationUseCase: SaveApplicationUseCase,
     private val deleteApplicationUseCase: DeleteApplicationUseCase,
 ) : ViewModel() {
@@ -51,7 +51,7 @@ class MainViewModel(
         }
     }
 
-    fun refreshHdrStatus() {
+    fun refreshData() {
         viewModelScope.launch {
             refreshHdrStatusUseCase(Unit)
             refreshApplicationUseCase(Unit)
@@ -69,7 +69,7 @@ class MainViewModel(
 
     fun addApplication(file: File) {
         viewModelScope.launch {
-            addApplicationFileUseCase(file)
+            addApplicationUseCase(file)
                 .onFailure(_showErrorDialog::trySend)
         }
     }

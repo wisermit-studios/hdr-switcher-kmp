@@ -3,6 +3,8 @@ package com.wisermit.hdrswitcher.di
 import com.wisermit.hdrswitcher.Config
 import com.wisermit.hdrswitcher.system.SystemInfo
 import com.wisermit.hdrswitcher.system.SystemInfoImpl
+import com.wisermit.hdrswitcher.system.SystemManager
+import com.wisermit.hdrswitcher.system.SystemManagerImpl
 import com.wisermit.hdrswitcher.system.SystemTools
 import com.wisermit.hdrswitcher.system.SystemToolsImpl
 import org.koin.dsl.module
@@ -12,6 +14,7 @@ object AppModule {
     private val systemModule = module {
         single<SystemInfo> { SystemInfoImpl() }
         single<SystemTools> { SystemToolsImpl() }
+        single<SystemManager> { SystemManagerImpl() }
     }
 
     private val configModule = module {

@@ -1,8 +1,8 @@
-using SystemManager.Framework;
+using SystemManager.Util;
 
 namespace SystemManager.Core
 {
-    public static class ConsoleHandler
+    public static class ConsoleManager
     {
         public static async void ReadArgs(string[] args)
         {
@@ -13,20 +13,23 @@ namespace SystemManager.Core
             }
 
             Log.D($"Starting. Args({args.Length}): {string.Join(", ", args)}");
+        }
 
+        public static async Task ListenInput()
+        {
             var task = ReadInput();
 
             await task.ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
-                    Console.Error.WriteLine($"Erro: {t.Exception}");
+                    Log.E($"Error {t.Exception}");
                 }
                 Environment.Exit(ErrorCode.ERROR_BROKEN_PIPE);
             });
         }
 
-        static async Task ReadInput()
+        private static async Task ReadInput()
         {
             using var reader = new StreamReader(Console.OpenStandardInput());
 

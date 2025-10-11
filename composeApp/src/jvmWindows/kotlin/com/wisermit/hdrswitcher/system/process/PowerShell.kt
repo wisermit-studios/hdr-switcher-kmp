@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.system.process
 
-import com.wisermit.hdrswitcher.framework.ProcessException
+import com.wisermit.hdrswitcher.core.ProcessException
 
 object PowerShell {
 

@@ -1,19 +1,20 @@
 // TODO: Review names and logs.
+using System.Threading.Tasks;
 using SystemManager.Core;
-using SystemManager.Framework;
 using SystemManager.Model;
+using SystemManager.Util;
 
 namespace SystemManager
 {
     public static class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var logLevel = LogLevel.Debug;
             Log.Level = logLevel;
 
-            ConsoleHandler.ReadArgs(args);
+            ConsoleManager.ReadArgs(args);
 
             if (args.Length == 1)
             {
@@ -23,7 +24,7 @@ namespace SystemManager
             else
             {
                 Log.D("Starting service.");
-                StartService(args);
+                await StartService(args);
             }
         }
 
@@ -44,11 +45,13 @@ namespace SystemManager
             }
         }
 
-        private static void StartService(string[] args)
+        private static async Task StartService(string[] args)
         {
             var exeList = Exe.ListFromArgs(args);
             var manager = new Service();
             manager.Watch(exeList);
+
+            await ConsoleManager.ListenInput();
         }
     }
 }

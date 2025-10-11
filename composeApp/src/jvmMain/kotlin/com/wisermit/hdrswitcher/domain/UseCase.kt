@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.domain
 
-import com.wisermit.hdrswitcher.framework.Log
+import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

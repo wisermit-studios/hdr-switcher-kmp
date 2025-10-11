@@ -1,9 +1,9 @@
-package com.wisermit.hdrswitcher.data.application
+package com.wisermit.hdrswitcher.data.applications
 
 import com.wisermit.hdrswitcher.model.Application
 import kotlinx.coroutines.flow.Flow
 
-class ApplicationStorage(
+class ApplicationsStorage(
     private val dataStore: ApplicationsDataStore
 ) {
     fun getApplications(): Flow<List<Application>> = dataStore.getApplications()

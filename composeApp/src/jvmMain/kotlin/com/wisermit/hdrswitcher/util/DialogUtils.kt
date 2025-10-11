@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.util
 
-import com.wisermit.hdrswitcher.framework.AppError
+import com.wisermit.hdrswitcher.core.WiseError
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.error
 import com.wisermit.hdrswitcher.resources.invalid_file_dialog_message
@@ -42,9 +42,9 @@ object DialogUtils {
     }
 
     suspend fun showErrorDialogFor(error: Throwable) {
-        if (error is AppError) {
+        if (error is WiseError) {
             when (error) {
-                is AppError.InvalidFile -> showErrorDialog(
+                is WiseError.InvalidFile -> showErrorDialog(
                     title = getString(Res.string.invalid_file_dialog_title),
                     message = getString(
                         Res.string.invalid_file_dialog_message,
@@ -52,7 +52,7 @@ object DialogUtils {
                         error.message.toString(),
                     ),
                 )
-                is AppError.UnsupportedFile -> showErrorDialog(
+                is WiseError.UnsupportedFile -> showErrorDialog(
                     title = getString(Res.string.unsupported_file_dialog_title),
                     message = getString(Res.string.unsupported_file_dialog_message, error.fileName),
                 )

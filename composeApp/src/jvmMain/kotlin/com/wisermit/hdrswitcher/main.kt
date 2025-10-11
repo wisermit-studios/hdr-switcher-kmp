@@ -1,5 +1,6 @@
 package com.wisermit.hdrswitcher
 
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,14 +11,15 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import com.wisermit.hdrswitcher.di.AppModule
-import com.wisermit.hdrswitcher.framework.Log
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
+import com.wisermit.hdrswitcher.service.ApplicationsWatcherService
 import com.wisermit.hdrswitcher.ui.FluentWindow
 import com.wisermit.hdrswitcher.ui.SystemTray
 import com.wisermit.hdrswitcher.ui.main.MainScreen
 import com.wisermit.hdrswitcher.ui.theme.FluentTheme
+import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
+import org.koin.compose.koinInject
 
 private val WINDOW_SIZE = DpSize(
     width = 440.dp,
@@ -39,6 +42,15 @@ fun main() = application {
             modules(AppModule.modules)
         },
     ) {
+        val applicationsWatcherService = koinInject<ApplicationsWatcherService>()
+
+        DisposableEffect(Unit) {
+            applicationsWatcherService.start()
+            onDispose {
+                applicationsWatcherService.destroy()
+            }
+        }
+
         FluentTheme {
             val requestWindowFocus = remember { Channel<Unit>() }
             var isVisible by remember { mutableStateOf(true) }

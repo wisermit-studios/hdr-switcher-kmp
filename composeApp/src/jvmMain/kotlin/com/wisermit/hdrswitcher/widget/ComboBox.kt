@@ -99,7 +99,6 @@ fun <T> ComboBox(
             }
         }
 
-
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },

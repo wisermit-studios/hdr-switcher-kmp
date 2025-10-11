@@ -1,4 +1,4 @@
-﻿using SystemManager.Framework;
+﻿using SystemManager.Util;
 using SystemManager.Model;
 
 namespace SystemManager.Core
