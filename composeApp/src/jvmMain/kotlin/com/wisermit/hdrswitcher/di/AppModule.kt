@@ -10,8 +10,6 @@ import org.koin.dsl.module
 object AppModule {
 
     private val systemModule = module {
-        includes(platformSystemModule)
-
         single<SystemInfo> { SystemInfoImpl() }
         single<SystemTools> { SystemToolsImpl() }
     }

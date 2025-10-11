@@ -5,7 +5,7 @@ import com.wisermit.hdrswitcher.framework.ProcessException
 object PowerShell {
 
     @Throws(ProcessException::class)
-    fun run(
+    fun execute(
         vararg commands: String
     ): List<String> {
         return ProcessBuilder(

@@ -5,9 +5,9 @@ import java.io.File
 
 class SystemToolsImpl : SystemTools {
 
-    // FIXME: Fix charset (™).
+    // FIXME: Wrong charset (™).
     override suspend fun getFileDescription(file: File) =
         PowerShell
-            .run("(Get-Item \\\"$file\\\").VersionInfo.FileDescription")
+            .execute("(Get-Item \\\"$file\\\").VersionInfo.FileDescription")
             .firstOrNull()
 }
