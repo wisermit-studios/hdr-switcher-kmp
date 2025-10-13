@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.utils.fluentSurface
+import com.wisermit.hdrswitcher.util.fluentSurface
 
 @Composable
 fun <T> ComboBox(
@@ -98,7 +98,6 @@ fun <T> ComboBox(
                 )
             }
         }
-
 
         DropdownMenu(
             expanded = expanded,

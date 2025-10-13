@@ -8,10 +8,7 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.kotlin
 }
 
-val appResourcesDir = project.layout.projectDirectory.dir("resources")
-val windowsAppResourcesBinDir = appResourcesDir.dir("windows/bin")
-
-logger.lifecycle("Running with buildTarget '$buildTarget' and buildType '$buildType'.")
+logger.lifecycle("Running with buildPlatform '$buildPlatform' and buildType '$buildType'.")
 
 kotlin {
     jvmToolchain(21)
@@ -39,6 +36,8 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.kotlinx.serialization.json)
+            implementation("androidx.datastore:datastore:1.1.7")
+            implementation("androidx.datastore:datastore-preferences:1.1.7")
         }
 
         commonTest.dependencies {
@@ -46,7 +45,7 @@ kotlin {
         }
 
         jvmMain {
-            val jvmPlatformTarget = "jvm${buildTarget.name}"
+            val jvmPlatformTarget = "jvm${buildPlatform.name}"
             val jvmTargetDir = layout.projectDirectory.dir("src/$jvmPlatformTarget")
 
             kotlin.srcDir(jvmTargetDir.dir("kotlin"))
@@ -64,13 +63,20 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "com.wisermit.hdrswitcher.MainKt"
+        mainClass = "${BuildConfig.AppCompose.PACKAGE}.MainKt"
+
+        buildTypes.release {
+            proguard {
+                obfuscate = false
+                configurationFiles.from(project.file("proguard-rules.pro"))
+            }
+        }
 
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Dmg)
             packageName = BuildConfig.AppCompose.PACKAGE_NAME
             packageVersion = BuildConfig.AppCompose.PACKAGE_VERSION
-            appResourcesRootDir.set(appResourcesDir)
+            appResourcesRootDir.set(layout.projectDirectory.dir("resources"))
 
             windows {
                 menu = true
@@ -81,28 +87,27 @@ compose.desktop {
     }
 }
 
-val systemManagerExe: Configuration by configurations.creating {
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "${BuildConfig.AppCompose.PACKAGE}.resources"
+    generateResClass = auto
+}
+
+val binary: Configuration by configurations.creating {
     isCanBeConsumed = false
     attributes {
-        attribute(buildTypeAttr, buildType.toString())
+        attribute(ArtifactAttribute.BUILD_TYPE, buildType)
     }
 }
 
 dependencies {
-    systemManagerExe(projects.dotnet.systemManager)
-}
-
-val importSystemManagerExeTask = tasks.register<Copy>("importSystemManagerForWindowsResources") {
-    description = "Copy the SystemManger EXE to jvmWindows resource folder."
-
-    from(systemManagerExe)
-    into(windowsAppResourcesBinDir)
+    binary(projects.dotnet.systemManager)
 }
 
 afterEvaluate {
     tasks.named<Sync>("prepareAppResources") {
-        if (buildTarget == BuildTarget.Windows) {
-            dependsOn(importSystemManagerExeTask)
+        if (buildPlatform == BuildPlatform.Windows) {
+            from(binary) { into("bin") }
         }
     }
 }

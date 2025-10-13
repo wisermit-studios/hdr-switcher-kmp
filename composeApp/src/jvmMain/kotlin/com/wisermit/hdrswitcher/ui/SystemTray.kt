@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
+import com.wisermit.hdrswitcher.resources.Res
+import com.wisermit.hdrswitcher.resources.app_icon
+import com.wisermit.hdrswitcher.resources.app_name
+import com.wisermit.hdrswitcher.resources.exit
 import com.wisermit.hdrswitcher.system.Platform
 import com.wisermit.hdrswitcher.widget.PopupMenuItem
-import hdrswitcher.composeapp.generated.resources.Res
-import hdrswitcher.composeapp.generated.resources.app_icon
-import hdrswitcher.composeapp.generated.resources.app_name
-import hdrswitcher.composeapp.generated.resources.exit
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.GraphicsEnvironment

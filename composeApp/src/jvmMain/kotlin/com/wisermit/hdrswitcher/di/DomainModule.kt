@@ -1,13 +1,13 @@
 package com.wisermit.hdrswitcher.di
 
-import com.wisermit.hdrswitcher.domain.application.AddApplicationFileUseCase
-import com.wisermit.hdrswitcher.domain.application.DeleteApplicationUseCase
-import com.wisermit.hdrswitcher.domain.application.GetApplicationsUseCase
-import com.wisermit.hdrswitcher.domain.application.RefreshApplicationUseCase
-import com.wisermit.hdrswitcher.domain.application.SaveApplicationUseCase
-import com.wisermit.hdrswitcher.domain.hdrsettings.GetHdrStatusUseCase
-import com.wisermit.hdrswitcher.domain.hdrsettings.RefreshHdrStatusUseCase
-import com.wisermit.hdrswitcher.domain.hdrsettings.SetHdrEnabledUseCase
+import com.wisermit.hdrswitcher.domain.applications.AddApplicationUseCase
+import com.wisermit.hdrswitcher.domain.applications.DeleteApplicationUseCase
+import com.wisermit.hdrswitcher.domain.applications.GetApplicationsUseCase
+import com.wisermit.hdrswitcher.domain.applications.RefreshApplicationUseCase
+import com.wisermit.hdrswitcher.domain.applications.SaveApplicationUseCase
+import com.wisermit.hdrswitcher.domain.system.GetHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.system.RefreshHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.system.SetHdrEnabledUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -19,5 +19,5 @@ val domainModule = module {
     factory { GetApplicationsUseCase(get()) }
     factory { SaveApplicationUseCase(get()) }
     factory { DeleteApplicationUseCase(get()) }
-    factory { AddApplicationFileUseCase(get(), get(), get()) }
+    factory { AddApplicationUseCase(get(), get(), get()) }
 }

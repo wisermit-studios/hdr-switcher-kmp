@@ -5,13 +5,15 @@ import com.wisermit.hdrswitcher.system.SystemInfo
 import com.wisermit.hdrswitcher.system.SystemInfoImpl
 import com.wisermit.hdrswitcher.system.SystemManager
 import com.wisermit.hdrswitcher.system.SystemManagerImpl
-import com.wisermit.hdrswitcher.ui.main.MainViewModel
+import com.wisermit.hdrswitcher.system.SystemTools
+import com.wisermit.hdrswitcher.system.SystemToolsImpl
 import org.koin.dsl.module
 
 object AppModule {
 
     private val systemModule = module {
         single<SystemInfo> { SystemInfoImpl() }
+        single<SystemTools> { SystemToolsImpl() }
         single<SystemManager> { SystemManagerImpl() }
     }
 
@@ -19,15 +21,12 @@ object AppModule {
         single { Config(get()) }
     }
 
-    private val uiModule = module {
-        factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    }
-
     val modules = listOf(
         systemModule,
         configModule,
+        serviceModule,
         dataModule,
         domainModule,
-        uiModule
+        uiModule,
     )
 }

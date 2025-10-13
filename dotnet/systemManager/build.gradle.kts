@@ -2,16 +2,29 @@ import BuildConfig.SystemManager
 
 object Group {
     const val BUILD = "build"
-    const val PUBLISHER = "publisher"
 }
 
 val projectSrcDir = layout.projectDirectory.dir("src")
 val outputsDir = layout.buildDirectory.dir("outputs")
 
+interface Injected {
+    @get:Inject
+    val fs: FileSystemOperations
+}
+
 tasks.register<Exec>("clean") {
     group = Group.BUILD
     setWorkingDir(projectSrcDir)
+
     commandLine("dotnet", "clean")
+
+    val injected = project.objects.newInstance<Injected>()
+    val buildDirectory = layout.buildDirectory.get()
+    doLast {
+        injected.fs.delete {
+            delete(buildDirectory)
+        }
+    }
 }
 
 listOf(
@@ -19,11 +32,12 @@ listOf(
     BuildType.Release,
 ).map { buildType ->
 
-    val outputFile = File("${outputsDir.get()}/$buildType", SystemManager.EXE_FILE_NAME)
-
     val publishTask = tasks.register<Exec>("publish${buildType.name}Exe") {
-        group = Group.PUBLISHER
+        group = Group.BUILD
         setWorkingDir(projectSrcDir)
+
+        val outputBinDir = outputsDir.get().dir("$buildType/bin")
+        val outputFile = outputBinDir.file(SystemManager.EXE_FILE_NAME)
 
         inputs.files(
             fileTree(projectSrcDir) {
@@ -36,29 +50,29 @@ listOf(
 
         commandLine(
             "dotnet", "publish",
-            "-c", "$buildType,AssemblyName=${SystemManager.EXE_FILE_NAME.substringBefore(".")}",
-            "-r", "win-x64",
+            "-c:$buildType,AssemblyName=${outputFile.asFile.name.substringBefore(".")}",
+            "-r:win-x64",
             "-p:PublishSingleFile=true",
-            "--self-contained", "false",
-            "-o", outputFile.parent,
+            "--self-contained=false",
+            "-o:${outputBinDir}",
         )
 
-        val startTasks = startTasks
+        val isExplicitPublish = startTasks.contains(name)
 
         doLast {
-            if (startTasks.contains(name)) {
+            if (isExplicitPublish) {
                 logger.lifecycle("The EXE is written to $outputFile.")
             }
         }
     }
 
-    configurations.register("systemManager${buildType.name}Exe") {
+    configurations.register("${buildType}Binary") {
         isCanBeResolved = false
         attributes {
-            attribute(buildTypeAttr, buildType.toString())
+            attribute(ArtifactAttribute.BUILD_TYPE, buildType)
         }
-        outgoing.artifact(outputFile) {
-            builtBy(publishTask)
+        artifacts {
+            add(name, publishTask)
         }
     }
 }

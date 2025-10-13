@@ -36,22 +36,22 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.wisermit.hdrswitcher.resources.Res
+import com.wisermit.hdrswitcher.resources.add_application
+import com.wisermit.hdrswitcher.resources.drag_and_drop_application
+import com.wisermit.hdrswitcher.resources.hdr
+import com.wisermit.hdrswitcher.resources.main_applications_label
+import com.wisermit.hdrswitcher.resources.no_hdr_message
+import com.wisermit.hdrswitcher.resources.off
+import com.wisermit.hdrswitcher.resources.on
+import com.wisermit.hdrswitcher.resources.open
+import com.wisermit.hdrswitcher.resources.or
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.utils.DialogUtils
-import com.wisermit.hdrswitcher.utils.FilePicker
+import com.wisermit.hdrswitcher.util.DialogUtils
+import com.wisermit.hdrswitcher.util.FilePicker
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
 import com.wisermit.hdrswitcher.widget.ScrollViewer
-import hdrswitcher.composeapp.generated.resources.Res
-import hdrswitcher.composeapp.generated.resources.add_application
-import hdrswitcher.composeapp.generated.resources.drag_and_drop_application
-import hdrswitcher.composeapp.generated.resources.hdr
-import hdrswitcher.composeapp.generated.resources.main_applications_label
-import hdrswitcher.composeapp.generated.resources.no_hdr_message
-import hdrswitcher.composeapp.generated.resources.off
-import hdrswitcher.composeapp.generated.resources.on
-import hdrswitcher.composeapp.generated.resources.open
-import hdrswitcher.composeapp.generated.resources.or
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.stringResource
@@ -73,7 +73,7 @@ fun MainScreen(
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.refreshHdrStatus()
+        viewModel.refreshData()
     }
 
     Scaffold {
@@ -107,40 +107,9 @@ fun MainScreen(
                 item {
                     val hdrStatus by viewModel.hdrStatus.collectAsState()
 
-                    ConfigItem(
-                        headlineContent = { Text(stringResource(Res.string.hdr)) },
-                        supportingContent = {
-                            if (hdrStatus == null) {
-                                Text(stringResource(Res.string.no_hdr_message))
-                            }
-                        },
-                        leadingContent = {
-                            Icon(
-                                Icons.Default.HdrOn,
-                                contentDescription = null,
-                            )
-                        },
-                        trailingContent = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    stringResource(
-                                        if (hdrStatus == true) Res.string.on else Res.string.off
-                                    ),
-                                    modifier = Modifier.alpha(
-                                        if (hdrStatus == null)
-                                            ThemeDefaults.DISABLED_OPACITY else 1f,
-                                    ),
-                                )
-                                Spacer(Modifier.width(16.dp))
-                                Switch(
-                                    enabled = hdrStatus != null,
-                                    checked = hdrStatus == true,
-                                    onCheckedChange = viewModel::setHdrEnabled,
-                                )
-                            }
-                        },
+                    HdrConfigItem(
+                        hdrStatus = hdrStatus,
+                        onCheckedChange = viewModel::setHdrEnabled,
                     )
                 }
 
@@ -175,6 +144,48 @@ fun MainScreen(
             }
         }
     }
+}
+
+@Composable
+fun HdrConfigItem(
+    hdrStatus: Boolean?,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    ConfigItem(
+        headlineContent = { Text(stringResource(Res.string.hdr)) },
+        supportingContent = {
+            if (hdrStatus == null) {
+                Text(stringResource(Res.string.no_hdr_message))
+            }
+        },
+        leadingContent = {
+            Icon(
+                Icons.Default.HdrOn,
+                contentDescription = null,
+            )
+        },
+        trailingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    stringResource(
+                        if (hdrStatus == true) Res.string.on else Res.string.off
+                    ),
+                    modifier = Modifier.alpha(
+                        if (hdrStatus == null)
+                            ThemeDefaults.DISABLED_OPACITY else 1f,
+                    ),
+                )
+                Spacer(Modifier.width(16.dp))
+                Switch(
+                    enabled = hdrStatus != null,
+                    checked = hdrStatus == true,
+                    onCheckedChange = onCheckedChange,
+                )
+            }
+        },
+    )
 }
 
 @Composable

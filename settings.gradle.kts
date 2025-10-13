@@ -2,7 +2,7 @@
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "HDRSwitcher"
+rootProject.name = "hdr-switcher"
 
 pluginManagement {
     repositories {

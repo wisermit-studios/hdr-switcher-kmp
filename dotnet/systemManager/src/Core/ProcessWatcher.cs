@@ -1,5 +1,5 @@
 using System.Management;
-using SystemManager.Core.Models;
+using SystemManager.Model;
 
 namespace SystemManager.Core
 {

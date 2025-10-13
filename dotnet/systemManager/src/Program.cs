@@ -1,62 +1,57 @@
+// TODO: Review names and logs.
+using System.Threading.Tasks;
 using SystemManager.Core;
-using SystemManager.Core.Models;
-using SystemManager.Resources;
-using SystemManager.Utils;
+using SystemManager.Model;
+using SystemManager.Util;
 
 namespace SystemManager
 {
-    internal static class Program
+    public static class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var logLevel = Log.LEVEL_DEBUG;
+            var logLevel = LogLevel.Debug;
             Log.Level = logLevel;
 
-            if (args.Length == 0)
+            ConsoleManager.ReadArgs(args);
+
+            if (args.Length == 1)
             {
-                Log.E("Exiting. Missing arguments");
-                Environment.Exit(2);
+                Log.D("Launching process.");
+                LaunchExe(args[0]);
             }
-
-            Log.I($"Starting. args({args.Length}): {string.Join(", ", args)}");
-
-            if (args.Length == 1) LaunchExe(args[0]);
-            else StartService(args);
-
-            Application.Run();
-        }
-
-        private static void StartService(string[] args)
-        {
-            Log.D("Launching process watcher.");
-
-            var exeList = Exe.ListFromArgs(args);
-            var manager = new Manager();
-            manager.Watch(exeList);
+            else
+            {
+                Log.D("Starting service.");
+                await StartService(args);
+            }
         }
 
         private static void LaunchExe(string exePath)
         {
-            Log.D("Launching process.");
-
             if (File.Exists(exePath))
             {
                 Task.Run(() =>
                     {
                         Launcher.Launch(exePath);
-                        Application.Exit();
                     }
                 );
+                Environment.Exit(0);
             }
             else
             {
-                MessageBox.Show(
-                    Res.Strings.DialogErrorText + $"\"{exePath}\"",
-                    Res.Strings.DialogErrorCaption,
-                    MessageBoxButtons.OK
-                );
+                Environment.Exit(ErrorCode.ERROR_FILE_NOT_FOUND);
             }
+        }
+
+        private static async Task StartService(string[] args)
+        {
+            var exeList = Exe.ListFromArgs(args);
+            var manager = new Service();
+            manager.Watch(exeList);
+
+            await ConsoleManager.ListenInput();
         }
     }
 }

@@ -28,7 +28,7 @@ fun Button(
         contentPadding = PaddingValues(
             start = ButtonDefaults.HorizontalPadding,
             end = ButtonDefaults.HorizontalPadding,
-            // Fix text alignment.
+            // Fix text vertical alignment.
             bottom = 2.dp,
         ),
         shape = shapes.extraSmall,

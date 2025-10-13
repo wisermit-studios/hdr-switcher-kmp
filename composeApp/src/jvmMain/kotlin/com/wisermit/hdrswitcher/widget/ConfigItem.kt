@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.utils.ProvideContentColorTextStyle
-import com.wisermit.hdrswitcher.utils.fluentSurface
+import com.wisermit.hdrswitcher.util.ProvideContentColorTextStyle
+import com.wisermit.hdrswitcher.util.fluentSurface
 import com.wisermit.hdrswitcher.widget.ConfigItemDefaults.TrailingStartPadding
 
 @Composable
