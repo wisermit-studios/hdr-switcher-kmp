@@ -49,7 +49,7 @@ object DialogUtils {
                     message = getString(
                         Res.string.invalid_file_dialog_message,
                         error.fileName,
-                        error.message.toString(),
+                        error.cause?.message.toString(),
                     ),
                 )
                 is WiseError.UnsupportedFile -> showErrorDialog(

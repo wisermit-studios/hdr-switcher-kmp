@@ -31,6 +31,9 @@ abstract class FlowUseCase<in P, R>(
         return execute(parameters)
             .catch { e ->
                 logFailure(e)
+
+                // TODO: Throw only in debug.
+                throw e
             }
             .flowOn(coroutineDispatcher)
     }

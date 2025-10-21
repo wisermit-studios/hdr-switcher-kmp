@@ -1,25 +1,34 @@
 package com.wisermit.hdrswitcher.data.applications
 
+import com.wisermit.hdrswitcher.data.CachedDataStore
 import com.wisermit.hdrswitcher.model.Application
 import kotlinx.coroutines.flow.Flow
 
-class ApplicationsStorage(
-    private val dataStore: ApplicationsDataStore
-) {
-    fun getApplications(): Flow<List<Application>> = dataStore.getApplications()
+interface ApplicationsStorage {
+    suspend fun initialize()
+    fun getApplications(): Flow<List<Application>>
+    suspend fun add(app: Application)
+    suspend fun save(app: Application)
+    suspend fun delete(app: Application)
+}
 
-    suspend fun refresh() = dataStore.refresh()
+class ApplicationsStorageImpl(
+    private val dataStore: CachedDataStore<List<Application>>,
+) : ApplicationsStorage {
 
-    suspend fun add(app: Application) {
-        dataStore.edit {
+    override suspend fun initialize() = dataStore.initialize()
+
+    override fun getApplications() = dataStore.data
+
+    override suspend fun add(app: Application) {
+        editData {
             val index = indexOfFirst { it.id == app.id }
-            if (index == -1)
-                add(app)
+            if (index == -1) add(app)
         }
     }
 
-    suspend fun save(app: Application) {
-        dataStore.edit {
+    override suspend fun save(app: Application) {
+        editData {
             val index = indexOfFirst { it.id == app.id }
             if (index == -1) {
                 add(app)
@@ -29,9 +38,18 @@ class ApplicationsStorage(
         }
     }
 
-    suspend fun delete(app: Application) {
-        dataStore.edit {
+    override suspend fun delete(app: Application) {
+        editData {
             removeIf { it.id == app.id }
+        }
+    }
+
+    private suspend fun editData(transform: suspend MutableList<Application>.() -> Unit) {
+        dataStore.updateData { data ->
+            data.toMutableList().apply {
+                transform(this)
+                sortBy { it.description }
+            }
         }
     }
 }

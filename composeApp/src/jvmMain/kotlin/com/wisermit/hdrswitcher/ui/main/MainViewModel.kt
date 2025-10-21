@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.wisermit.hdrswitcher.domain.applications.AddApplicationUseCase
 import com.wisermit.hdrswitcher.domain.applications.DeleteApplicationUseCase
 import com.wisermit.hdrswitcher.domain.applications.GetApplicationsUseCase
-import com.wisermit.hdrswitcher.domain.applications.RefreshApplicationUseCase
 import com.wisermit.hdrswitcher.domain.applications.SaveApplicationUseCase
 import com.wisermit.hdrswitcher.domain.system.GetHdrStatusUseCase
 import com.wisermit.hdrswitcher.domain.system.RefreshHdrStatusUseCase
@@ -29,7 +28,6 @@ class MainViewModel(
     getApplicationsUseCase: GetApplicationsUseCase,
     private val refreshHdrStatusUseCase: RefreshHdrStatusUseCase,
     private val setHdrEnabledUseCase: SetHdrEnabledUseCase,
-    private val refreshApplicationUseCase: RefreshApplicationUseCase,
     private val addApplicationUseCase: AddApplicationUseCase,
     private val saveApplicationUseCase: SaveApplicationUseCase,
     private val deleteApplicationUseCase: DeleteApplicationUseCase,
@@ -38,23 +36,15 @@ class MainViewModel(
     private val _showErrorDialog = Channel<Throwable>(Channel.CONFLATED)
     val showErrorDialog = _showErrorDialog.receiveAsFlow()
 
-    val applications: StateFlow<List<Application>> = getApplicationsUseCase(Unit)
-        .stateIn(viewModelScope, Lazily, emptyList())
-
     val hdrStatus: StateFlow<Boolean?> = getHdrStatus(Unit)
         .stateIn(viewModelScope, Lazily, null)
 
-    init {
-        viewModelScope.launch {
-            refreshApplicationUseCase(Unit)
-                .onFailure(_showErrorDialog::trySend)
-        }
-    }
+    val applications: StateFlow<List<Application>> = getApplicationsUseCase(Unit)
+        .stateIn(viewModelScope, Lazily, emptyList())
 
     fun refreshData() {
         viewModelScope.launch {
             refreshHdrStatusUseCase(Unit)
-            refreshApplicationUseCase(Unit)
         }
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import com.wisermit.hdrswitcher.di.AppModule
+import com.wisermit.hdrswitcher.domain.storage.InitializeStoragesUseCase
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
@@ -19,6 +20,7 @@ import com.wisermit.hdrswitcher.ui.FluentWindow
 import com.wisermit.hdrswitcher.ui.SystemTray
 import com.wisermit.hdrswitcher.ui.main.MainScreen
 import com.wisermit.hdrswitcher.ui.theme.FluentTheme
+import com.wisermit.hdrswitcher.util.DialogUtils
 import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -35,6 +37,7 @@ private val WINDOW_SIZE = DpSize(
 )
 
 fun main() = application {
+
     Log.level = Log.Level.Test
 
     KoinApplication(
@@ -42,7 +45,16 @@ fun main() = application {
             modules(AppModule.modules)
         },
     ) {
+        val initializeStorages = koinInject<InitializeStoragesUseCase>()
         val applicationsWatcherService = koinInject<ApplicationsWatcherService>()
+
+        LaunchedEffect(Unit) {
+            initializeStorages(Unit)
+                .onFailure {
+                    DialogUtils.showErrorDialogFor(it)
+                    exitApplication()
+                }
+        }
 
         DisposableEffect(Unit) {
             applicationsWatcherService.start()
