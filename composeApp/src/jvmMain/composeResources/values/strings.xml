@@ -13,7 +13,7 @@
     <string name="hdr">HDR</string>
     <string name="on">On</string>
     <string name="off">Off</string>
-    <string name="default">Default</string>
+    <string name="default">System default</string>
 
     <string name="drag_and_drop_application">Drag and drop application</string>
     <string name="add_application">Add application</string>
