@@ -4,10 +4,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,12 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
 import com.wisermit.hdrswitcher.util.fluentSurface
@@ -49,21 +47,9 @@ fun <T> ComboBox(
     onSelected: (T) -> Unit,
     enabled: Boolean = true,
 ) {
-    val density = LocalDensity.current
     var expanded by remember { mutableStateOf(false) }
 
-    // TODO: Improve.
-    var menuSize by remember { mutableStateOf(DpSize.Zero) }
-
-    Box(
-        modifier = Modifier.onGloballyPositioned { coordinates ->
-            menuSize = with(density) {
-                with(coordinates.size) {
-                    DpSize(width.toDp(), height.toDp())
-                }
-            }
-        },
-    ) {
+    Box(Modifier.width(IntrinsicSize.Max)) {
         InteractiveBox(
             modifier = Modifier
                 .defaultMinSize(minHeight = ComboBoxDefaults.MinHeight)
@@ -98,18 +84,16 @@ fun <T> ComboBox(
                 )
             }
         }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            offset = DpOffset(0.dp, -menuSize.height),
-            shape = shapes.small,
-            border = BorderStroke(
-                width = ThemeDefaults.BorderStrokeWidth,
-                color = colorScheme.background,
-            ),
-            modifier = Modifier.defaultMinSize(minWidth = menuSize.width),
-            content = {
+        Box(Modifier.fillMaxWidth()) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                shape = shapes.small,
+                border = BorderStroke(
+                    width = ThemeDefaults.BorderStrokeWidth,
+                    color = colorScheme.background,
+                ),
+            ) {
                 entries.forEach { entry ->
                     val isSelected = entry.key == value
 
@@ -128,7 +112,7 @@ fun <T> ComboBox(
                                     Color.Unspecified
                                 }
                             ),
-                        contentPadding = PaddingValues(0.dp),
+                        contentPadding = PaddingValues(end = 16.dp),
                         text = {
                             Box(contentAlignment = Alignment.CenterStart) {
                                 if (isSelected) {
@@ -161,7 +145,7 @@ fun <T> ComboBox(
                     )
                 }
             }
-        )
+        }
     }
 }
 
