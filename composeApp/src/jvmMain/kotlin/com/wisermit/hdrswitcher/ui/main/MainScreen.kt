@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
@@ -47,13 +46,11 @@ import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.util.DialogUtils
 import com.wisermit.hdrswitcher.util.FilePicker
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ConfigItem
+import com.wisermit.hdrswitcher.widget.DialogUtils
 import com.wisermit.hdrswitcher.widget.ScrollViewer
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -64,12 +61,10 @@ import java.io.File
 fun MainScreen(
     viewModel: MainViewModel = koinInject(),
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(coroutineScope) {
-        viewModel.showErrorDialog.onEach {
+    LaunchedEffect(Unit) {
+        viewModel.showErrorDialog.collect {
             DialogUtils.showErrorDialogFor(it)
-        }.launchIn(coroutineScope)
+        }
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {

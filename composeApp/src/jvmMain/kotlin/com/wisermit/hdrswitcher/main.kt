@@ -7,21 +7,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import com.wisermit.hdrswitcher.di.AppModule
 import com.wisermit.hdrswitcher.domain.storage.InitializeStoragesUseCase
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.service.ApplicationsWatcherService
+import com.wisermit.hdrswitcher.ui.FluentTray
 import com.wisermit.hdrswitcher.ui.FluentWindow
-import com.wisermit.hdrswitcher.ui.SystemTray
 import com.wisermit.hdrswitcher.ui.main.MainScreen
+import com.wisermit.hdrswitcher.ui.safeWindowPosition
 import com.wisermit.hdrswitcher.ui.theme.FluentTheme
-import com.wisermit.hdrswitcher.util.DialogUtils
 import com.wisermit.hdrswitcher.util.Log
+import com.wisermit.hdrswitcher.widget.DialogUtils
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -30,6 +33,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
+import java.awt.GraphicsEnvironment
 
 private val WINDOW_SIZE = DpSize(
     width = 440.dp,
@@ -67,7 +71,12 @@ fun main() = application {
             val requestWindowFocus = remember { Channel<Unit>() }
             var isVisible by remember { mutableStateOf(true) }
 
-            SystemTray(
+            val state = rememberWindowState(
+                size = WINDOW_SIZE,
+                position = safeWindowPosition(screenBottomRight, WINDOW_SIZE)
+            )
+
+            FluentTray(
                 onAction = {
                     if (isVisible) {
                         requestWindowFocus.trySend(Unit)
@@ -79,10 +88,10 @@ fun main() = application {
             )
 
             FluentWindow(
+                state = state,
                 visible = isVisible,
                 title = stringResource(Res.string.app_name),
                 icon = painterResource(Res.drawable.app_icon),
-                size = WINDOW_SIZE,
                 minimumSize = WINDOW_SIZE,
                 resizable = false,
                 onCloseRequest = {
@@ -104,3 +113,7 @@ fun main() = application {
         }
     }
 }
+
+private val screenBottomRight: DpOffset
+    get() = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
+        .run { DpOffset(width.dp, height.dp) }

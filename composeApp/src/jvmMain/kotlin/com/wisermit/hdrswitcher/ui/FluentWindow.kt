@@ -36,9 +36,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
@@ -75,26 +76,15 @@ object FluentWindowDefaults {
 
 @Composable
 fun FluentWindow(
-    visible: Boolean = true,
+    onCloseRequest: () -> Unit,
     title: String,
-    icon: Painter?,
-    size: DpSize,
+    state: WindowState = rememberWindowState(),
+    visible: Boolean = true,
+    icon: Painter? = null,
     minimumSize: DpSize? = null,
     resizable: Boolean = true,
-    onCloseRequest: () -> Unit,
     content: @Composable FrameWindowScope.() -> Unit,
 ) {
-    val state = rememberWindowState(
-        size = size,
-        position = with(GraphicsEnvironment.getLocalGraphicsEnvironment()) {
-            val anchor = DpOffset(
-                x = maximumWindowBounds.width.dp,
-                y = maximumWindowBounds.height.dp,
-            )
-            calculateWindowPosition(anchor, size)
-        }
-    )
-
     Window(
         state = state,
         visible = visible,
@@ -125,22 +115,11 @@ fun FluentWindow(
 }
 
 @Composable
-fun FluentPopupWindow(
+fun FluentDialogWindow(
+    state: DialogState = rememberDialogState(),
     visible: Boolean = true,
-    size: DpSize,
-    anchor: DpOffset,
     content: @Composable WindowScope.() -> Unit,
 ) {
-    val state = rememberDialogState(
-        width = size.width,
-        height = size.height,
-    )
-
-    LaunchedEffect(size, anchor) {
-        state.size = size
-        state.position = calculateWindowPosition(anchor, size)
-    }
-
     DialogWindow(
         visible = visible,
         state = state,
@@ -180,7 +159,7 @@ private fun FrameWindowScope.TitleBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(FluentWindowDefaults.TitleBarHeight)
-                .padding(start = 8.dp),
+                .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -270,22 +249,22 @@ private fun ControlButton(
     }
 }
 
-private fun calculateWindowPosition(
-    offset: DpOffset,
-    size: DpSize,
-    windowMargin: Dp = FluentWindowDefaults.margin,
+fun safeWindowPosition(
+    position: DpOffset,
+    windowSize: DpSize,
+    screenMargin: Dp = FluentWindowDefaults.margin,
 ): WindowPosition {
-    val maximumWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
-    val offsetLimits = with(maximumWindowBounds) {
+    val safeScreenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
+    val safePositionArea = with(safeScreenBounds) {
         object {
-            val start = x.dp + windowMargin
-            val top = y.dp + windowMargin
-            val end = ((width + x).dp - size.width - windowMargin).run { max(this, start) }
-            val bottom = ((height + y).dp - size.height - windowMargin).run { max(this, top) }
+            val left = x.dp + screenMargin
+            val top = y.dp + screenMargin
+            val right = (maxX.dp - windowSize.width - screenMargin).coerceAtLeast(left)
+            val bottom = (maxY.dp - windowSize.height - screenMargin).coerceAtLeast(top)
         }
     }
     return WindowPosition(
-        x = offset.x.coerceIn(offsetLimits.start, offsetLimits.end),
-        y = offset.y.coerceIn(offsetLimits.top, offsetLimits.bottom),
+        x = position.x.coerceIn(safePositionArea.left, safePositionArea.right),
+        y = position.y.coerceIn(safePositionArea.top, safePositionArea.bottom),
     )
 }

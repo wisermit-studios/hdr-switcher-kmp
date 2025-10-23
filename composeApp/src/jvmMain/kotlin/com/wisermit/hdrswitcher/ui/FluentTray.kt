@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
+import androidx.compose.ui.window.rememberDialogState
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
@@ -36,48 +39,35 @@ import java.awt.SystemTray
 import java.awt.TrayIcon
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
-import java.awt.event.WindowEvent
-import java.awt.event.WindowFocusListener
 
 private val POPUP_SIZE = DpSize(width = 108.dp, height = 44.dp)
 private val POPUP_PADDING = 4.dp
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-fun ApplicationScope.SystemTray(
+fun ApplicationScope.FluentTray(
     onAction: () -> Unit,
     onExit: () -> Unit,
 ) {
     var isOpen by remember { mutableStateOf(false) }
-    var popupAnchor by remember { mutableStateOf(DpOffset.Zero) }
+    val popupState = rememberDialogState(size = POPUP_SIZE)
 
-    FluentTray(
+    FluentTrayIcon(
         icon = painterResource(Res.drawable.app_icon),
         tooltip = stringResource(Res.string.app_name),
         onAction = onAction,
-        onPopupMenuRequest = { offset ->
-            popupAnchor = offset
+        onPopupMenuRequest = { position ->
             isOpen = true
+            popupState.position = safeWindowPosition(position, POPUP_SIZE)
         },
     )
 
-    FluentPopupWindow(
+    FluentDialogWindow(
+        state = popupState,
         visible = isOpen,
-        size = POPUP_SIZE,
-        anchor = popupAnchor,
     ) {
-        DisposableEffect(Unit) {
-            val listener = object : WindowFocusListener {
-                override fun windowGainedFocus(e: WindowEvent?) {}
-                override fun windowLostFocus(e: WindowEvent?) {
-                    isOpen = false
-                }
-            }
-
-            window.addWindowFocusListener(listener)
-            onDispose {
-                window.removeWindowFocusListener(listener)
-            }
+        LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+            isOpen = false
         }
 
         Column(Modifier.padding(POPUP_PADDING)) {
@@ -91,11 +81,11 @@ fun ApplicationScope.SystemTray(
 }
 
 @Composable
-private fun FluentTray(
+private fun FluentTrayIcon(
     icon: Painter,
     tooltip: String,
     onAction: () -> Unit = {},
-    onPopupMenuRequest: (offset: DpOffset) -> Unit,
+    onPopupMenuRequest: (position: DpOffset) -> Unit,
 ) {
     val currentOnAction by rememberUpdatedState(onAction)
 
@@ -120,10 +110,10 @@ private fun FluentTray(
                     if (event.isPopupTrigger) {
                         // Get Point from MouseInfo, since MouseEvent is inconsistent
                         // across Windows and macOS.
-                        val offset = with(MouseInfo.getPointerInfo().location) {
-                            DpOffset(x = x.dp, y = y.dp)
-                        }
-                        onPopupMenuRequest(offset)
+                        val position = MouseInfo.getPointerInfo().location
+                            .run { DpOffset(x = x.dp, y = y.dp) }
+
+                        onPopupMenuRequest(position)
                     }
                 }
             })
