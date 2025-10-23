@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
 
 @Composable
-fun Modifier.fluentSurface(
+fun Modifier.surface(
     backgroundColor: Color = colorScheme.surface,
     borderWidth: Dp = ThemeDefaults.BorderStrokeWidth,
     borderColor: Color = colorScheme.surfaceDim,

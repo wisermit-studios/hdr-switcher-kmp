@@ -2,6 +2,9 @@ package com.wisermit.hdrswitcher.widget
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -24,6 +27,8 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
@@ -38,7 +43,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.util.fluentSurface
+import com.wisermit.hdrswitcher.util.surface
 
 @Composable
 fun <T> ComboBox(
@@ -50,40 +55,44 @@ fun <T> ComboBox(
     var expanded by remember { mutableStateOf(false) }
 
     Box(Modifier.width(IntrinsicSize.Max)) {
-        InteractiveBox(
+        val interactionSource = remember { MutableInteractionSource() }
+
+        Row(
             modifier = Modifier
-                .defaultMinSize(minHeight = ComboBoxDefaults.MinHeight)
-                .fluentSurface(
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    role = Role.DropdownList,
+                    enabled = enabled,
+                    onClick = { expanded = !expanded },
+                )
+                .minimumInteractiveComponentSize()
+                .surface(
                     backgroundColor = colorScheme.surfaceBright,
                     borderColor = colorScheme.outlineVariant,
                     borderWidth = ComboBoxDefaults.OutlineWidth
-                ),
-            role = Role.DropdownList,
-            onClick = { expanded = !expanded },
-            enabled = enabled,
+                )
+                .indication(interactionSource, ripple())
+                .defaultMinSize(minHeight = ComboBoxDefaults.MinHeight)
+                .padding(horizontal = ComboBoxDefaults.HorizontalPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
         ) {
-            Row(
-                modifier = Modifier.padding(
-                    horizontal = ComboBoxDefaults.HorizontalPadding,
-                ),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    entries[value] ?: "",
-                    style = typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    color = ComboBoxDefaults.foregroundColor
-                )
-                Spacer(Modifier.width(ComboBoxDefaults.HorizontalPadding))
-                Icon(
-                    modifier = Modifier.size(ComboBoxDefaults.IconSize),
-                    imageVector = Icons.Default.ExpandMore,
-                    tint = ComboBoxDefaults.foregroundColor,
-                    contentDescription = null,
-                )
-            }
+            Text(
+                entries[value] ?: "",
+                style = typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = ComboBoxDefaults.foregroundColor
+            )
+            Spacer(Modifier.width(ComboBoxDefaults.HorizontalPadding))
+            Icon(
+                modifier = Modifier.size(ComboBoxDefaults.IconSize),
+                imageVector = Icons.Default.ExpandMore,
+                tint = ComboBoxDefaults.foregroundColor,
+                contentDescription = null,
+            )
         }
+
         Box(Modifier.fillMaxWidth()) {
             DropdownMenu(
                 expanded = expanded,

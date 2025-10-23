@@ -2,7 +2,6 @@ package com.wisermit.hdrswitcher.widget
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +19,6 @@ fun Button(
 ) {
     MaterialButton(
         modifier = modifier
-            .minimumInteractiveComponentSize()
             .defaultMinSize(
                 minHeight = ButtonDefaults.MinHeight,
             ),
@@ -28,7 +26,6 @@ fun Button(
         contentPadding = PaddingValues(
             start = ButtonDefaults.HorizontalPadding,
             end = ButtonDefaults.HorizontalPadding,
-            // Fix text vertical alignment.
             bottom = 2.dp,
         ),
         shape = shapes.extraSmall,

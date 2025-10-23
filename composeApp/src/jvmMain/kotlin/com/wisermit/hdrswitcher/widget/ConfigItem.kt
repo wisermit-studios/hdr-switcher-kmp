@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.util.ProvideContentColorTextStyle
-import com.wisermit.hdrswitcher.util.fluentSurface
+import com.wisermit.hdrswitcher.util.surface
 import com.wisermit.hdrswitcher.widget.ConfigItemDefaults.TrailingStartPadding
 
 @Composable
@@ -31,7 +31,7 @@ fun ConfigItem(
 ) {
     Row(
         modifier.fillMaxWidth()
-            .then(if (backgroundEnabled) Modifier.fluentSurface() else Modifier)
+            .then(if (backgroundEnabled) Modifier.surface() else Modifier)
             .padding(padding)
             .defaultMinSize(minHeight = LocalMinimumInteractiveComponentSize.current),
         verticalAlignment = Alignment.CenterVertically,

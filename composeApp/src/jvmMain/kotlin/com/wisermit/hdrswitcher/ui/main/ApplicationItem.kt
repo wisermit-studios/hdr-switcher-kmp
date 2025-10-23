@@ -26,7 +26,7 @@ import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.remove
 import com.wisermit.hdrswitcher.resources.remove_from_list
 import com.wisermit.hdrswitcher.util.FileUtils
-import com.wisermit.hdrswitcher.util.fluentSurface
+import com.wisermit.hdrswitcher.util.surface
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ComboBox
 import com.wisermit.hdrswitcher.widget.ConfigItem
@@ -42,7 +42,7 @@ fun ApplicationItem(
     onDelete: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fluentSurface()
+        modifier = Modifier.surface()
     ) {
         ConfigItem(
             backgroundEnabled = false,

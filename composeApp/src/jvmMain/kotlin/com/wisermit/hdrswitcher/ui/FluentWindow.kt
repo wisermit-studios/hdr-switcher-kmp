@@ -56,7 +56,7 @@ import com.wisermit.hdrswitcher.resources.maximize
 import com.wisermit.hdrswitcher.resources.minimize
 import com.wisermit.hdrswitcher.resources.restore_down
 import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
-import com.wisermit.hdrswitcher.util.fluentSurface
+import com.wisermit.hdrswitcher.util.surface
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension
@@ -223,7 +223,7 @@ private fun ControlButton(
             Text(
                 text = contentDescription,
                 modifier = Modifier
-                    .fluentSurface(
+                    .surface(
                         shadowElevation = FluentWindowDefaults.TooltipShadowElevation,
                     )
                     .padding(FluentWindowDefaults.TooltipPadding),
