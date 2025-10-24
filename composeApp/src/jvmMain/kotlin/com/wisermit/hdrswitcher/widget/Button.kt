@@ -18,10 +18,7 @@ fun Button(
     enabled: Boolean = true,
 ) {
     MaterialButton(
-        modifier = modifier
-            .defaultMinSize(
-                minHeight = ButtonDefaults.MinHeight,
-            ),
+        modifier = modifier.defaultMinSize(minHeight = ButtonDefaults.MinHeight),
         enabled = enabled,
         contentPadding = PaddingValues(
             start = ButtonDefaults.HorizontalPadding,

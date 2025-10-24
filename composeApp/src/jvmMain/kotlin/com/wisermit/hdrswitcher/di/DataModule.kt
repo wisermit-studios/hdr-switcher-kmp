@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.di
 
-import com.wisermit.hdrswitcher.Config
+import com.wisermit.hdrswitcher.Configuration
 import com.wisermit.hdrswitcher.data.CachedDataStore
 import com.wisermit.hdrswitcher.data.applications.ApplicationsJsonSerializer
 import com.wisermit.hdrswitcher.data.applications.ApplicationsStorage
@@ -10,10 +10,10 @@ import org.koin.dsl.module
 
 val dataModule = module {
     single<CachedDataStore<List<Application>>> {
-        val config = get<Config>()
+        val configuration = get<Configuration>()
 
         CachedDataStore.create(
-            produceFile = { config.applicationsFile },
+            produceFile = { configuration.applicationsFile },
             serializer = ApplicationsJsonSerializer,
         )
     }

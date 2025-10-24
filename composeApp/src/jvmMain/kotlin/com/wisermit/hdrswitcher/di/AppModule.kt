@@ -1,6 +1,7 @@
 package com.wisermit.hdrswitcher.di
 
-import com.wisermit.hdrswitcher.Config
+import com.wisermit.hdrswitcher.Configuration
+import com.wisermit.hdrswitcher.ConfigurationImpl
 import com.wisermit.hdrswitcher.system.SystemInfo
 import com.wisermit.hdrswitcher.system.SystemInfoImpl
 import com.wisermit.hdrswitcher.system.SystemManager
@@ -17,13 +18,13 @@ object AppModule {
         single<SystemManager> { SystemManagerImpl() }
     }
 
-    private val configModule = module {
-        single { Config(get()) }
+    private val configurationModule = module {
+        single<Configuration> { ConfigurationImpl(get()) }
     }
 
     val modules = listOf(
         systemModule,
-        configModule,
+        configurationModule,
         serviceModule,
         dataModule,
         domainModule,

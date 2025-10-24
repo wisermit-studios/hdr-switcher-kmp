@@ -3,6 +3,7 @@ package com.wisermit.hdrswitcher.util
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -44,6 +45,7 @@ fun Modifier.surface(
             shape,
         )
         .background(color = backgroundColor, shape = shape)
+        .padding(borderWidth)
         .clip(shape)
 
 @Composable

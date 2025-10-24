@@ -1,13 +1,9 @@
 package com.wisermit.hdrswitcher.ui.main
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WebAsset
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,11 +22,10 @@ import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.remove
 import com.wisermit.hdrswitcher.resources.remove_from_list
 import com.wisermit.hdrswitcher.util.FileUtils
-import com.wisermit.hdrswitcher.util.surface
 import com.wisermit.hdrswitcher.widget.Button
 import com.wisermit.hdrswitcher.widget.ComboBox
-import com.wisermit.hdrswitcher.widget.ConfigItem
-import com.wisermit.hdrswitcher.widget.ConfigItemDefaults
+import com.wisermit.hdrswitcher.widget.ConfigurationItem
+import com.wisermit.hdrswitcher.widget.SubItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -41,42 +36,35 @@ fun ApplicationItem(
     onHdrChange: (HdrMode) -> Unit,
     onDelete: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.surface()
-    ) {
-        ConfigItem(
-            backgroundEnabled = false,
-            headlineContent = { Text(item.description) },
-            supportingContent = { Text(item.file.path) },
-            leadingContent = {
-                val icon by produceState<ImageBitmap?>(initialValue = null, item.file) {
-                    value = withContext(Dispatchers.IO) {
-                        FileUtils.getIcon(item.file)
-                    }
-                }
-
-                icon?.let {
-                    Icon(
-                        it,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Unspecified,
-                        contentDescription = null
-                    )
-                } ?: run {
-                    Icon(
-                        Icons.Default.WebAsset,
-                        contentDescription = null
-                    )
+    ConfigurationItem(
+        headlineContent = { Text(item.description) },
+        supportingContent = { Text(item.file.path) },
+        leadingContent = {
+            val icon by produceState<ImageBitmap?>(initialValue = null, item.file) {
+                value = withContext(Dispatchers.IO) {
+                    FileUtils.getIcon(item.file)
                 }
             }
-        )
 
-        HorizontalDivider(color = colorScheme.background)
-
-        ConfigItem(
-            backgroundEnabled = false,
-            padding = ApplicationItemDefaults.SubItemPadding,
-            headlineContent = { Text(stringResource(Res.string.hdr)) },
+            icon?.let {
+                Icon(
+                    it,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
+            } ?: run {
+                Icon(
+                    Icons.Default.WebAsset,
+                    contentDescription = null
+                )
+            }
+        }
+    ) {
+        SubItem(
+            headlineContent = {
+                Text(stringResource(Res.string.hdr))
+            },
             trailingContent = {
                 ComboBox(
                     value = item.hdr,
@@ -90,11 +78,7 @@ fun ApplicationItem(
             }
         )
 
-        HorizontalDivider(color = colorScheme.background)
-
-        ConfigItem(
-            backgroundEnabled = false,
-            padding = ApplicationItemDefaults.SubItemPadding,
+        SubItem(
             headlineContent = {
                 Text(stringResource(Res.string.remove_from_list))
             },
@@ -106,13 +90,4 @@ fun ApplicationItem(
             }
         )
     }
-}
-
-object ApplicationItemDefaults {
-    val SubItemPadding = PaddingValues(
-        start = 56.dp,
-        top = 4.dp,
-        end = ConfigItemDefaults.HorizontalPadding,
-        bottom = 4.dp,
-    )
 }
