@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.widget
+package com.wisermit.hdrswitcher.designsystem.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -87,7 +87,7 @@ private fun ButtonInternal(
     }
 }
 
-object ButtonDefaults {
+private object ButtonDefaults {
     val MinHeight = 32.dp
     val HorizontalPadding = 24.dp
 

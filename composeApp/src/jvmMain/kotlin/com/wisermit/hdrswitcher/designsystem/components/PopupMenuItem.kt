@@ -1,13 +1,12 @@
-package com.wisermit.hdrswitcher.widget
+package com.wisermit.hdrswitcher.designsystem.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.MaterialTheme.typography
@@ -30,38 +29,36 @@ fun PopupMenuItem(
         modifier = modifier
             .defaultMinSize(minHeight = MenuItemDefaults.MinHeight)
             .fillMaxWidth()
-            .padding(vertical = MenuItemDefaults.VerticalPadding)
+            .padding(MenuItemDefaults.Padding)
             .clip(shape = shapes.extraSmall)
             .clickable(onClick = onClick)
-            .padding(
-                start = MenuItemDefaults.ContentStartPadding,
-                top = MenuItemDefaults.ContentVerticalPadding,
-                end = MenuItemDefaults.ContentEndPadding,
-                bottom = MenuItemDefaults.ContentVerticalPadding,
-            ),
+            .padding(MenuItemDefaults.ContentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             icon,
-            modifier = Modifier.size(MenuItemDefaults.IconSize),
+            modifier = Modifier
+                .size(MenuItemDefaults.IconSize)
+                .padding(MenuItemDefaults.IconPadding),
             contentDescription = null,
         )
-
-        Spacer(Modifier.width(MenuItemDefaults.IconPadding))
 
         Text(title, style = typography.bodyMedium)
     }
 }
 
-object MenuItemDefaults {
-    val MinHeight = ButtonDefaults.MinHeight
+private object MenuItemDefaults {
+    val MinHeight = 32.dp
 
-    val VerticalPadding = 4.dp
+    val Padding = PaddingValues(vertical = 4.dp)
 
-    val ContentStartPadding = 8.dp
-    val ContentEndPadding = 16.dp
-    val ContentVerticalPadding = 4.dp
+    val ContentPadding = PaddingValues(
+        start = 8.dp,
+        top = 4.dp,
+        end = 16.dp,
+        bottom = 4.dp,
+    )
 
     val IconSize = 16.dp
-    val IconPadding = 16.dp
+    val IconPadding = PaddingValues(end = 16.dp)
 }

@@ -14,16 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HdrOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,6 +35,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.wisermit.hdrswitcher.designsystem.components.Button
+import com.wisermit.hdrswitcher.designsystem.components.ConfigurationItem
+import com.wisermit.hdrswitcher.designsystem.components.ScrollViewer
+import com.wisermit.hdrswitcher.designsystem.theme.ThemeDefaults
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.add_application
 import com.wisermit.hdrswitcher.resources.drag_and_drop_application
@@ -45,12 +49,9 @@ import com.wisermit.hdrswitcher.resources.off
 import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
-import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
+import com.wisermit.hdrswitcher.ui.ErrorDialogWindow
+import com.wisermit.hdrswitcher.ui.UiErrorData
 import com.wisermit.hdrswitcher.util.FilePicker
-import com.wisermit.hdrswitcher.widget.Button
-import com.wisermit.hdrswitcher.widget.ConfigItem
-import com.wisermit.hdrswitcher.widget.DialogUtils
-import com.wisermit.hdrswitcher.widget.ScrollViewer
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -61,81 +62,85 @@ import java.io.File
 fun MainScreen(
     viewModel: MainViewModel = koinInject(),
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.showErrorDialog.collect {
-            DialogUtils.showErrorDialogFor(it)
-        }
-    }
+    val error by viewModel.error.collectAsState()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshData()
     }
 
-    Scaffold {
-        ScrollViewer(
-            modifier = Modifier
-                .fillMaxHeight()
-                .dragAndDropTarget(
-                    shouldStartDragAndDrop = { true },
-                    target = remember {
-                        object : DragAndDropTarget {
-                            override fun onDrop(event: DragAndDropEvent) = true.also {
-                                viewModel.dropFile(event)
-                            }
+    error?.let {
+        ErrorDialogWindow(
+            data = UiErrorData.from(it),
+            onCloseRequest = viewModel::clearError
+        )
+    }
+
+    val listState = rememberLazyListState()
+    val scrollAdapter = rememberScrollbarAdapter(listState)
+
+    ScrollViewer(
+        modifier = Modifier
+            .fillMaxHeight()
+            .dragAndDropTarget(
+                shouldStartDragAndDrop = { true },
+                target = remember {
+                    object : DragAndDropTarget {
+                        override fun onDrop(event: DragAndDropEvent) = true.also {
+                            viewModel.dropFile(event)
                         }
                     }
-                ),
-        ) { listState ->
-            val applications by viewModel.applications.collectAsState()
+                }
+            ),
+        adapter = scrollAdapter,
+    ) {
+        val applications by viewModel.applications.collectAsState()
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = listState,
-                contentPadding = PaddingValues(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 32.dp,
-                ),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = listState,
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 32.dp,
+            ),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            item {
+                val hdrStatus by viewModel.hdrStatus.collectAsState()
+
+                HdrConfigItem(
+                    hdrStatus = hdrStatus,
+                    onCheckedChange = viewModel::setHdrEnabled,
+                )
+            }
+
+            if (applications.isEmpty()) {
                 item {
-                    val hdrStatus by viewModel.hdrStatus.collectAsState()
-
-                    HdrConfigItem(
-                        hdrStatus = hdrStatus,
-                        onCheckedChange = viewModel::setHdrEnabled,
+                    EmptyView(onApplicationAdded = viewModel::addApplication)
+                }
+            } else {
+                item {
+                    Text(
+                        stringResource(Res.string.main_applications_label),
+                        modifier = Modifier.padding(top = 12.dp, bottom = 0.dp),
+                        style = typography.labelLarge,
                     )
                 }
-
-                if (applications.isEmpty()) {
-                    item {
-                        EmptyView(onApplicationAdded = viewModel::addApplication)
-                    }
-                } else {
-                    item {
-                        Text(
-                            stringResource(Res.string.main_applications_label),
-                            modifier = Modifier.padding(top = 12.dp, bottom = 0.dp),
-                            style = typography.labelLarge,
-                        )
-                    }
-                    items(
-                        applications,
-                        key = { it.id },
-                    ) { app ->
-                        ApplicationItem(
-                            item = app,
-                            onHdrChange = { hdrMode ->
-                                viewModel.setApplicationHdr(app, hdrMode)
-                            },
-                            onDelete = {
-                                viewModel.delete(app)
-                            }
-                        )
-                    }
+                items(
+                    applications,
+                    key = { it.id },
+                ) { app ->
+                    ApplicationItem(
+                        item = app,
+                        onHdrChange = { hdrMode ->
+                            viewModel.setApplicationHdr(app, hdrMode)
+                        },
+                        onDelete = {
+                            viewModel.delete(app)
+                        }
+                    )
                 }
-
             }
         }
     }
@@ -146,7 +151,7 @@ fun HdrConfigItem(
     hdrStatus: Boolean?,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    ConfigItem(
+    ConfigurationItem(
         headlineContent = { Text(stringResource(Res.string.hdr)) },
         supportingContent = {
             if (hdrStatus == null) {
@@ -168,8 +173,7 @@ fun HdrConfigItem(
                         if (hdrStatus == true) Res.string.on else Res.string.off
                     ),
                     modifier = Modifier.alpha(
-                        if (hdrStatus == null)
-                            ThemeDefaults.DISABLED_OPACITY else 1f,
+                        if (hdrStatus == null) ThemeDefaults.DISABLED_STATE_LAYER_OPACITY else 1f,
                     ),
                 )
                 Spacer(Modifier.width(16.dp))

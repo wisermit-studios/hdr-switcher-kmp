@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.widget
+package com.wisermit.hdrswitcher.designsystem.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +12,13 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.wisermit.hdrswitcher.designsystem.components.ConfigurationItemDefaults.TrailingStartPadding
 import com.wisermit.hdrswitcher.util.ProvideContentColorTextStyle
 import com.wisermit.hdrswitcher.util.surface
-import com.wisermit.hdrswitcher.widget.ConfigurationItemDefaults.TrailingStartPadding
 
 class ConfigurationItemScope()
 
@@ -31,7 +32,9 @@ fun ConfigurationItem(
     trailingContent: @Composable (() -> Unit)? = null,
     content: @Composable (ConfigurationItemScope.() -> Unit)? = null,
 ) {
-    Column(Modifier.surface()) {
+    Column(
+        Modifier.surface(borderColor = ConfigurationItemDefaults.BorderColor)
+    ) {
         ConfigurationItem(
             modifier = modifier,
             headlineContent = headlineContent,
@@ -54,7 +57,8 @@ fun ConfigurationItemScope.SubItem(
     leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
-    HorizontalDivider(color = colorScheme.background)
+    HorizontalDivider(color = ConfigurationItemDefaults.BorderColor)
+
     ConfigurationItem(
         modifier = Modifier.defaultMinSize(minHeight = ConfigurationItemDefaults.SubItemMinHeight),
         contentPadding = ConfigurationItemDefaults.SubItemContentPadding,
@@ -111,13 +115,16 @@ private fun ConfigurationItem(
     }
 }
 
-object ConfigurationItemDefaults {
+private object ConfigurationItemDefaults {
     val MinHeight = 68.dp
 
     val HorizontalPadding = 16.dp
     val VerticalPadding = 12.dp
     val LeadingEndPadding = 16.dp
     val TrailingStartPadding = 16.dp
+
+    val BorderColor
+        @Composable @ReadOnlyComposable get() = colorScheme.outlineVariant
 
     val Padding = PaddingValues(
         horizontal = HorizontalPadding,

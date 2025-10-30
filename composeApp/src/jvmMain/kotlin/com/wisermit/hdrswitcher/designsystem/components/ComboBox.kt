@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.widget
+package com.wisermit.hdrswitcher.designsystem.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,13 +43,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
+import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
 import com.wisermit.hdrswitcher.util.surface
+
+@Immutable
+data class ComboBoxData<T>(
+    val value: T?,
+    val entries: Map<T, String>,
+) {
+    val text = entries[value]
+}
 
 @Composable
 fun <T> ComboBox(
-    value: T?,
-    entries: Map<T, String>,
+    data: ComboBoxData<T>,
     onSelected: (T) -> Unit,
     enabled: Boolean = true,
 ) {
@@ -68,9 +76,10 @@ fun <T> ComboBox(
                 )
                 .minimumInteractiveComponentSize()
                 .surface(
-                    backgroundColor = colorScheme.surfaceBright,
-                    borderColor = colorScheme.outlineVariant,
-                    borderWidth = ComboBoxDefaults.OutlineWidth
+                    backgroundColor = colorScheme.surfaceContainerHighest,
+                    borderColor = FluentTheme.colors.outlineVariant2,
+                    borderWidth = ComboBoxDefaults.BorderWidth,
+                    shadowElevation = ComboBoxDefaults.ShadowElevation
                 )
                 .indication(interactionSource, ripple())
                 .defaultMinSize(minHeight = ComboBoxDefaults.MinHeight)
@@ -79,7 +88,7 @@ fun <T> ComboBox(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                entries[value] ?: "",
+                data.text ?: "",
                 style = typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = ComboBoxDefaults.foregroundColor
@@ -99,20 +108,17 @@ fun <T> ComboBox(
                 onDismissRequest = { expanded = false },
                 shape = shapes.small,
                 border = BorderStroke(
-                    width = ThemeDefaults.BorderStrokeWidth,
+                    width = ComboBoxDefaults.DropdownBorderWidth,
                     color = colorScheme.background,
                 ),
             ) {
-                entries.forEach { entry ->
-                    val isSelected = entry.key == value
+                data.entries.forEach { entry ->
+                    val isSelected = entry.key == data.value
 
                     DropdownMenuItem(
                         modifier = Modifier
                             .height(ComboBoxDefaults.MinHeight)
-                            .padding(
-                                horizontal = ComboBoxDefaults.MenuItem.HorizontalPadding,
-                                vertical = ComboBoxDefaults.MenuItem.VerticalPadding,
-                            )
+                            .padding(ComboBoxDefaults.MenuItem.Padding)
                             .clip(shapes.extraSmall)
                             .background(
                                 if (isSelected) {
@@ -121,7 +127,7 @@ fun <T> ComboBox(
                                     Color.Unspecified
                                 }
                             ),
-                        contentPadding = PaddingValues(end = 16.dp),
+                        contentPadding = ComboBoxDefaults.MenuItem.ContentPadding,
                         text = {
                             Box(contentAlignment = Alignment.CenterStart) {
                                 if (isSelected) {
@@ -140,9 +146,7 @@ fun <T> ComboBox(
                                 Text(
                                     entry.value,
                                     modifier = Modifier
-                                        .padding(
-                                            ComboBoxDefaults.MenuItem.ContentPadding,
-                                        ),
+                                        .padding(ComboBoxDefaults.MenuItem.TextPadding),
                                     style = typography.bodyMedium,
                                 )
                             }
@@ -158,19 +162,24 @@ fun <T> ComboBox(
     }
 }
 
-object ComboBoxDefaults {
-    val MinHeight = ButtonDefaults.MinHeight
+private object ComboBoxDefaults {
+    val MinHeight = 32.dp
     val HorizontalPadding = 12.dp
+
     val IconSize = 16.dp
-    val OutlineWidth = 0.5.dp
+
+    val BorderWidth = 1.dp
+    val ShadowElevation = 1.dp
+
+    val DropdownBorderWidth = 1.dp
 
     val foregroundColor: Color
         @Composable @ReadOnlyComposable get() = colorScheme.onSurface
 
     object MenuItem {
-        val HorizontalPadding = 6.dp
-        val VerticalPadding = 2.dp
-        val ContentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+        val Padding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+        val ContentPadding = PaddingValues(end = 24.dp)
+        val TextPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
         val IndicatorWidth = 3.dp
         val IndicatorHeight = 16.dp
 
