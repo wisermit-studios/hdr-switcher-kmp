@@ -2,8 +2,6 @@ package com.wisermit.hdrswitcher.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -25,14 +23,7 @@ import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.rememberDialogState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import com.wisermit.hdrswitcher.designsystem.components.PopupMenuItem
-import com.wisermit.hdrswitcher.resources.Res
-import com.wisermit.hdrswitcher.resources.app_icon
-import com.wisermit.hdrswitcher.resources.app_name
-import com.wisermit.hdrswitcher.resources.exit
 import com.wisermit.hdrswitcher.system.Platform
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import java.awt.GraphicsEnvironment
 import java.awt.MouseInfo
 import java.awt.SystemTray
@@ -40,25 +31,27 @@ import java.awt.TrayIcon
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 
-private val POPUP_SIZE = DpSize(width = 108.dp, height = 44.dp)
-private val POPUP_PADDING = 4.dp
+private val PopupSize = DpSize(width = 108.dp, height = 44.dp)
+private val PopupPadding = 4.dp
 
 @Suppress("UnusedReceiverParameter")
 @Composable
 fun ApplicationScope.FluentTray(
-    onAction: () -> Unit,
-    onExit: () -> Unit,
+    icon: Painter,
+    tooltip: String,
+    onAction: () -> Unit = {},
+    menu: @Composable () -> Unit = {},
 ) {
     var isOpen by remember { mutableStateOf(false) }
-    val popupState = rememberDialogState(size = POPUP_SIZE)
+    val popupState = rememberDialogState(size = PopupSize)
 
     FluentTrayIcon(
-        icon = painterResource(Res.drawable.app_icon),
-        tooltip = stringResource(Res.string.app_name),
+        icon = icon,
+        tooltip = tooltip,
         onAction = onAction,
         onPopupMenuRequest = { position ->
             isOpen = true
-            popupState.position = safeWindowPosition(position, POPUP_SIZE)
+            popupState.position = safeWindowPosition(position, popupState.size)
         },
     )
 
@@ -72,12 +65,8 @@ fun ApplicationScope.FluentTray(
             isOpen = false
         }
 
-        Column(Modifier.padding(POPUP_PADDING)) {
-            PopupMenuItem(
-                icon = Icons.Default.Close,
-                title = stringResource(Res.string.exit),
-                onClick = onExit,
-            )
+        Column(Modifier.padding(PopupPadding)) {
+            menu()
         }
     }
 }

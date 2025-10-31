@@ -1,5 +1,7 @@
 package com.wisermit.hdrswitcher
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,12 +14,14 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.wisermit.hdrswitcher.designsystem.components.PopupMenuItem
 import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
 import com.wisermit.hdrswitcher.di.AppModule
 import com.wisermit.hdrswitcher.domain.storage.InitializeStoragesUseCase
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
+import com.wisermit.hdrswitcher.resources.exit
 import com.wisermit.hdrswitcher.service.ApplicationsWatcherService
 import com.wisermit.hdrswitcher.ui.ErrorDialogWindow
 import com.wisermit.hdrswitcher.ui.FluentTray
@@ -79,6 +83,8 @@ fun main() = application {
             )
 
             FluentTray(
+                icon = painterResource(Res.drawable.app_icon),
+                tooltip = stringResource(Res.string.app_name),
                 onAction = {
                     if (isVisible) {
                         requestWindowFocus.trySend(Unit)
@@ -86,8 +92,13 @@ fun main() = application {
                         isVisible = true
                     }
                 },
-                onExit = ::exitApplication,
-            )
+            ) {
+                PopupMenuItem(
+                    icon = Icons.Default.Close,
+                    title = stringResource(Res.string.exit),
+                    onClick = ::exitApplication,
+                )
+            }
 
             initializationFailure?.let {
                 ErrorDialogWindow(

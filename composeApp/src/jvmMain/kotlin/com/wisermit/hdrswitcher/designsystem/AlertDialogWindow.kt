@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.ui
+package com.wisermit.hdrswitcher.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +20,7 @@ import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.cancel
 import com.wisermit.hdrswitcher.resources.ok
+import com.wisermit.hdrswitcher.ui.FluentDialogWindow
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -80,18 +81,6 @@ fun AlertDialogWindow(
 
 // Workaround to fix line breaks with IntrinsicSize.
 private fun String.normalizeLineBreaks() = replace("\n", " \n").plus(" ")
-
-@Composable
-fun ErrorDialogWindow(
-    data: UiErrorData,
-    onCloseRequest: () -> Unit,
-) {
-    AlertDialogWindow(
-        text = data.text,
-        title = data.title,
-        onCloseRequest = onCloseRequest,
-    )
-}
 
 private object AlertDialogDefaults {
     val MinWidth = 280.dp
