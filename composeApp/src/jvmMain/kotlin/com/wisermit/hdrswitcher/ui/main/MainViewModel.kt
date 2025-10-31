@@ -14,10 +14,9 @@ import com.wisermit.hdrswitcher.domain.system.RefreshHdrStatusUseCase
 import com.wisermit.hdrswitcher.domain.system.SetHdrEnabledUseCase
 import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.model.HdrMode
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
@@ -33,8 +32,8 @@ class MainViewModel(
     private val deleteApplicationUseCase: DeleteApplicationUseCase,
 ) : ViewModel() {
 
-    private val _showErrorDialog = Channel<Throwable>(Channel.CONFLATED)
-    val showErrorDialog = _showErrorDialog.receiveAsFlow()
+    private val _error = MutableStateFlow<Throwable?>(null)
+    val error: StateFlow<Throwable?> = _error
 
     val hdrStatus: StateFlow<Boolean?> = getHdrStatus(Unit)
         .stateIn(viewModelScope, Lazily, null)
@@ -60,7 +59,7 @@ class MainViewModel(
     fun addApplication(file: File) {
         viewModelScope.launch {
             addApplicationUseCase(file)
-                .onFailure(_showErrorDialog::trySend)
+                .onFailure(_error::tryEmit)
         }
     }
 
@@ -77,14 +76,18 @@ class MainViewModel(
     fun save(app: Application) {
         viewModelScope.launch {
             saveApplicationUseCase(app)
-                .onFailure(_showErrorDialog::trySend)
+                .onFailure(_error::tryEmit)
         }
     }
 
     fun delete(app: Application) {
         viewModelScope.launch {
             deleteApplicationUseCase(app)
-                .onFailure(_showErrorDialog::trySend)
+                .onFailure(_error::tryEmit)
         }
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 }

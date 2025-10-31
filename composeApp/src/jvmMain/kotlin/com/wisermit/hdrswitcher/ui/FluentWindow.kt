@@ -4,14 +4,18 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.icons.Icons
@@ -19,20 +23,25 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.FilterNone
 import androidx.compose.material.icons.filled.HorizontalRule
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -49,30 +58,18 @@ import androidx.compose.ui.window.WindowScope
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
+import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.close
 import com.wisermit.hdrswitcher.resources.maximize
 import com.wisermit.hdrswitcher.resources.minimize
 import com.wisermit.hdrswitcher.resources.restore_down
-import com.wisermit.hdrswitcher.ui.theme.ThemeDefaults
 import com.wisermit.hdrswitcher.util.surface
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
-
-object FluentWindowDefaults {
-    val margin = 4.dp
-    val cornerRadius = 8.dp
-    val TitleBarHeight = 44.dp
-    val TitleBarFontSize = 14.sp
-    val TitleBarIconSize = 28.dp
-    val ControlButtonIconSize = 20.dp
-    val ControlButtonWidth = 47.dp
-    val TooltipShadowElevation = 8.dp
-    val TooltipPadding = 8.dp
-}
 
 @Composable
 fun FluentWindow(
@@ -102,10 +99,11 @@ fun FluentWindow(
         }
 
         WindowSurface {
-            Column {
+            Column(Modifier.fillMaxSize()) {
                 TitleBar(
-                    state = state,
+                    windowState = state,
                     title = title,
+                    icon = painterResource(Res.drawable.app_icon),
                     onCloseRequest = onCloseRequest,
                 )
                 content()
@@ -116,10 +114,15 @@ fun FluentWindow(
 
 @Composable
 fun FluentDialogWindow(
-    state: DialogState = rememberDialogState(),
+    onCloseRequest: () -> Unit,
+    state: DialogState = rememberDialogState(size = DpSize.Unspecified),
     visible: Boolean = true,
-    content: @Composable WindowScope.() -> Unit,
+    title: String = "",
+    titleBarEnabled: Boolean = true,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
+    val currentOnCloseRequest by rememberUpdatedState(onCloseRequest)
+
     DialogWindow(
         visible = visible,
         state = state,
@@ -127,49 +130,71 @@ fun FluentDialogWindow(
         undecorated = true,
         transparent = true,
         resizable = false,
-        onCloseRequest = { },
+        onKeyEvent = { event ->
+            val isDismissRequest = event.run { type == KeyEventType.KeyDown && key == Key.Escape }
+
+            if (isDismissRequest) {
+                currentOnCloseRequest()
+                true
+            } else {
+                false
+            }
+        },
+        onCloseRequest = onCloseRequest,
     ) {
         WindowSurface {
-            content()
+            Column(Modifier.width(IntrinsicSize.Max)) {
+                if (titleBarEnabled) {
+                    TitleBar(
+                        title = title,
+                        titleBarHeight = FluentWindowDefaults.DialogTitleBarHeight,
+                        onCloseRequest = onCloseRequest,
+                    )
+                }
+                content()
+            }
         }
     }
 }
 
 @Composable
-private fun WindowSurface(
-    content: @Composable () -> Unit,
-) {
+private fun WindowSurface(content: @Composable () -> Unit) {
     Surface(
-        modifier = Modifier.fillMaxSize(),
         color = colorScheme.background,
-        border = BorderStroke(ThemeDefaults.BorderStrokeWidth, colorScheme.outlineVariant),
-        shape = RoundedCornerShape(FluentWindowDefaults.cornerRadius),
+        border = BorderStroke(
+            width = FluentWindowDefaults.BorderStrokeWidth,
+            color = FluentTheme.colors.outlineLow
+        ),
+        shape = RoundedCornerShape(FluentWindowDefaults.CornerRadius),
         content = content,
     )
 }
 
 @Composable
-private fun FrameWindowScope.TitleBar(
-    state: WindowState,
-    title: String,
+private fun WindowScope.TitleBar(
+    windowState: WindowState? = null,
+    title: String = "",
+    titleBarHeight: Dp = FluentWindowDefaults.TitleBarHeight,
+    icon: Painter? = null,
     onCloseRequest: () -> Unit,
 ) {
     WindowDraggableArea {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(FluentWindowDefaults.TitleBarHeight)
+                .height(titleBarHeight)
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                modifier = Modifier
-                    .size(FluentWindowDefaults.TitleBarIconSize)
-                    .padding(end = 8.dp),
-                painter = painterResource(Res.drawable.app_icon),
-                tint = Color.Unspecified,
-                contentDescription = null,
-            )
+            if (icon != null) {
+                Icon(
+                    modifier = Modifier
+                        .size(FluentWindowDefaults.TitleBarIconSize)
+                        .padding(end = 8.dp),
+                    painter = icon,
+                    tint = Color.Unspecified,
+                    contentDescription = null,
+                )
+            }
 
             Text(
                 modifier = Modifier.weight(1f),
@@ -178,25 +203,28 @@ private fun FrameWindowScope.TitleBar(
                 color = colorScheme.onSurfaceVariant
             )
 
-            ControlButton(
-                Icons.Default.HorizontalRule,
-                contentDescription = stringResource(Res.string.minimize),
-                onClick = { state.isMinimized = true },
-            )
+            windowState?.let {
+                ControlButton(
+                    Icons.Default.HorizontalRule,
+                    contentDescription = stringResource(Res.string.minimize),
+                    onClick = { windowState.isMinimized = true },
+                )
 
-            if (window.isResizable) {
-                if (state.placement == WindowPlacement.Maximized) {
-                    ControlButton(
-                        Icons.Default.FilterNone,
-                        contentDescription = stringResource(Res.string.restore_down),
-                        onClick = { state.placement = WindowPlacement.Floating },
-                    )
-                } else {
-                    ControlButton(
-                        Icons.Default.CropSquare,
-                        contentDescription = stringResource(Res.string.maximize),
-                        onClick = { state.placement = WindowPlacement.Maximized },
-                    )
+
+                if ((this as? FrameWindowScope)?.window?.isResizable == true) {
+                    if (windowState.placement == WindowPlacement.Maximized) {
+                        ControlButton(
+                            Icons.Default.FilterNone,
+                            contentDescription = stringResource(Res.string.restore_down),
+                            onClick = { windowState.placement = WindowPlacement.Floating },
+                        )
+                    } else {
+                        ControlButton(
+                            Icons.Default.CropSquare,
+                            contentDescription = stringResource(Res.string.maximize),
+                            onClick = { windowState.placement = WindowPlacement.Maximized },
+                        )
+                    }
                 }
             }
 
@@ -223,36 +251,31 @@ private fun ControlButton(
             Text(
                 text = contentDescription,
                 modifier = Modifier
-                    .surface(
-                        shadowElevation = FluentWindowDefaults.TooltipShadowElevation,
-                    )
-                    .padding(FluentWindowDefaults.TooltipPadding),
+                    .surface(shadowElevation = 8.dp)
+                    .padding(8.dp),
                 style = typography.bodySmall
             )
         },
     ) {
-        TextButton(
+        Icon(
+            imageVector,
             modifier = Modifier
-                .width(width = FluentWindowDefaults.ControlButtonWidth),
-            shape = RoundedCornerShape(0.dp),
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = colorScheme.onSurface,
-            ),
-            onClick = onClick,
-        ) {
-            Icon(
-                imageVector,
-                modifier = Modifier.size(FluentWindowDefaults.ControlButtonIconSize),
-                contentDescription = contentDescription,
-            )
-        }
+                .aspectRatio(1f)
+                .clickable(
+                    role = Role.Button,
+                    onClick = onClick
+                )
+                .wrapContentSize()
+                .size(FluentWindowDefaults.ControlButtonIconSize),
+            contentDescription = contentDescription,
+        )
     }
 }
 
 fun safeWindowPosition(
     position: DpOffset,
     windowSize: DpSize,
-    screenMargin: Dp = FluentWindowDefaults.margin,
+    screenMargin: Dp = FluentWindowDefaults.Margin,
 ): WindowPosition {
     val safeScreenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
     val safePositionArea = with(safeScreenBounds) {
@@ -267,4 +290,17 @@ fun safeWindowPosition(
         x = position.x.coerceIn(safePositionArea.left, safePositionArea.right),
         y = position.y.coerceIn(safePositionArea.top, safePositionArea.bottom),
     )
+}
+
+private object FluentWindowDefaults {
+    val Margin = 6.dp
+    val CornerRadius = 8.dp
+    val BorderStrokeWidth = 1.dp
+
+    val DialogTitleBarHeight = 28.dp
+
+    val TitleBarHeight = 44.dp
+    val TitleBarFontSize = 14.sp
+    val TitleBarIconSize = 28.dp
+    val ControlButtonIconSize = 20.dp
 }

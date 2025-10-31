@@ -12,19 +12,20 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
 import com.wisermit.hdrswitcher.di.AppModule
 import com.wisermit.hdrswitcher.domain.storage.InitializeStoragesUseCase
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.service.ApplicationsWatcherService
+import com.wisermit.hdrswitcher.ui.ErrorDialogWindow
 import com.wisermit.hdrswitcher.ui.FluentTray
 import com.wisermit.hdrswitcher.ui.FluentWindow
+import com.wisermit.hdrswitcher.ui.UiErrorData
 import com.wisermit.hdrswitcher.ui.main.MainScreen
 import com.wisermit.hdrswitcher.ui.safeWindowPosition
-import com.wisermit.hdrswitcher.ui.theme.FluentTheme
 import com.wisermit.hdrswitcher.util.Log
-import com.wisermit.hdrswitcher.widget.DialogUtils
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -36,7 +37,7 @@ import org.koin.compose.koinInject
 import java.awt.GraphicsEnvironment
 
 private val WINDOW_SIZE = DpSize(
-    width = 440.dp,
+    width = 436.dp,
     height = 600.dp,
 )
 
@@ -49,14 +50,15 @@ fun main() = application {
             modules(AppModule.modules)
         },
     ) {
-        val initializeStorages = koinInject<InitializeStoragesUseCase>()
+        val initializeStoragesUseCase = koinInject<InitializeStoragesUseCase>()
         val applicationsWatcherService = koinInject<ApplicationsWatcherService>()
 
+        var initializationFailure by remember { mutableStateOf<Throwable?>(null) }
+
         LaunchedEffect(Unit) {
-            initializeStorages(Unit)
+            initializeStoragesUseCase(Unit)
                 .onFailure {
-                    DialogUtils.showErrorDialogFor(it)
-                    exitApplication()
+                    initializationFailure = it
                 }
         }
 
@@ -87,28 +89,35 @@ fun main() = application {
                 onExit = ::exitApplication,
             )
 
-            FluentWindow(
-                state = state,
-                visible = isVisible,
-                title = stringResource(Res.string.app_name),
-                icon = painterResource(Res.drawable.app_icon),
-                minimumSize = WINDOW_SIZE,
-                resizable = false,
-                onCloseRequest = {
-                    // TODO: Create config to hide instead of closing.
+            initializationFailure?.let {
+                ErrorDialogWindow(
+                    data = UiErrorData.from(it),
+                    onCloseRequest = ::exitApplication
+                )
+            } ?: run {
+                FluentWindow(
+                    state = state,
+                    visible = isVisible,
+                    title = stringResource(Res.string.app_name),
+                    icon = painterResource(Res.drawable.app_icon),
+                    minimumSize = WINDOW_SIZE,
+                    resizable = false,
+                    onCloseRequest = {
+                        // TODO: Create config to close or minimize to systray.
 //                    isVisible = false
-                    exitApplication()
-                },
-            ) {
-                val coroutineScope = rememberCoroutineScope()
+                        exitApplication()
+                    },
+                ) {
+                    val coroutineScope = rememberCoroutineScope()
 
-                LaunchedEffect(Unit) {
-                    requestWindowFocus.receiveAsFlow()
-                        .onEach { window.requestFocus() }
-                        .launchIn(coroutineScope)
+                    LaunchedEffect(Unit) {
+                        requestWindowFocus.receiveAsFlow()
+                            .onEach { window.requestFocus() }
+                            .launchIn(coroutineScope)
+                    }
+
+                    MainScreen()
                 }
-
-                MainScreen()
             }
         }
     }

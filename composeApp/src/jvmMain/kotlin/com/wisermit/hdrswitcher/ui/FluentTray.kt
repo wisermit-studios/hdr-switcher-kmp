@@ -25,12 +25,12 @@ import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.rememberDialogState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.wisermit.hdrswitcher.designsystem.components.PopupMenuItem
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.resources.exit
 import com.wisermit.hdrswitcher.system.Platform
-import com.wisermit.hdrswitcher.widget.PopupMenuItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.GraphicsEnvironment
@@ -65,6 +65,8 @@ fun ApplicationScope.FluentTray(
     FluentDialogWindow(
         state = popupState,
         visible = isOpen,
+        titleBarEnabled = false,
+        onCloseRequest = {}
     ) {
         LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
             isOpen = false
