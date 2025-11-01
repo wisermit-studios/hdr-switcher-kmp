@@ -1,7 +1,8 @@
-package com.wisermit.hdrswitcher.ui
+package com.wisermit.hdrswitcher.designsystem.window
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -28,8 +29,8 @@ import java.awt.GraphicsEnvironment
 import java.awt.MouseInfo
 import java.awt.SystemTray
 import java.awt.TrayIcon
+import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 
 private val PopupSize = DpSize(width = 108.dp, height = 44.dp)
 private val PopupPadding = 4.dp
@@ -65,7 +66,11 @@ fun ApplicationScope.FluentTray(
             isOpen = false
         }
 
-        Column(Modifier.padding(PopupPadding)) {
+        Column(
+            Modifier
+                .width(PopupSize.width)
+                .padding(PopupPadding)
+        ) {
             menu()
         }
     }
@@ -79,6 +84,7 @@ private fun FluentTrayIcon(
     onPopupMenuRequest: (position: DpOffset) -> Unit,
 ) {
     val currentOnAction by rememberUpdatedState(onAction)
+    val currentOnPopupMenuRequest by rememberUpdatedState(onPopupMenuRequest)
 
     val awtIcon = remember(icon) {
         icon.toAwtImage(GlobalDensity, LayoutDirection.Rtl, iconSize)
@@ -92,22 +98,16 @@ private fun FluentTrayIcon(
                 currentOnAction()
             }
 
-            addMouseListener(object : MouseListener {
-                override fun mouseClicked(p0: MouseEvent) = Unit
-                override fun mousePressed(p0: MouseEvent) = Unit
-                override fun mouseEntered(p0: MouseEvent) = Unit
-                override fun mouseExited(p0: MouseEvent) = Unit
-                override fun mouseReleased(event: MouseEvent) {
-                    if (event.isPopupTrigger) {
-                        // Get Point from MouseInfo, since MouseEvent is inconsistent
-                        // across Windows and macOS.
-                        val position = MouseInfo.getPointerInfo().location
-                            .run { DpOffset(x = x.dp, y = y.dp) }
+            addMouseListener { event ->
+                if (event.isPopupTrigger) {
+                    // Get Point from MouseInfo, since MouseEvent is inconsistent
+                    // across Windows and macOS.
+                    val position = MouseInfo.getPointerInfo().location
+                        .run { DpOffset(x = x.dp, y = y.dp) }
 
-                        onPopupMenuRequest(position)
-                    }
+                    currentOnPopupMenuRequest(position)
                 }
-            })
+            }
         }
     }
 
@@ -123,6 +123,13 @@ private fun FluentTrayIcon(
             SystemTray.getSystemTray().remove(tray)
         }
     }
+}
+
+private fun TrayIcon.addMouseListener(block: (MouseEvent) -> Unit) {
+    addMouseListener(object : MouseAdapter() {
+        override fun mousePressed(e: MouseEvent) = block(e)
+        override fun mouseReleased(e: MouseEvent) = block(e)
+    })
 }
 
 private val GlobalDensity: Density

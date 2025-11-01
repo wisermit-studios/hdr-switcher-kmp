@@ -49,8 +49,8 @@ import com.wisermit.hdrswitcher.resources.off
 import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
-import com.wisermit.hdrswitcher.ui.ErrorDialogWindow
-import com.wisermit.hdrswitcher.ui.UiErrorData
+import com.wisermit.hdrswitcher.ui.ErrorDialog
+import com.wisermit.hdrswitcher.ui.ErrorDialogData
 import com.wisermit.hdrswitcher.util.FilePicker
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -69,8 +69,8 @@ fun MainScreen(
     }
 
     error?.let {
-        ErrorDialogWindow(
-            data = UiErrorData.from(it),
+        ErrorDialog(
+            data = ErrorDialogData.from(it),
             onCloseRequest = viewModel::clearError
         )
     }

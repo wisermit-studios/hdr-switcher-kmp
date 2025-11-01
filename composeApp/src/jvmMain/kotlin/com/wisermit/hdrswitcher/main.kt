@@ -16,6 +16,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.wisermit.hdrswitcher.designsystem.components.PopupMenuItem
 import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
+import com.wisermit.hdrswitcher.designsystem.window.FluentTray
+import com.wisermit.hdrswitcher.designsystem.window.FluentWindow
+import com.wisermit.hdrswitcher.designsystem.window.safeWindowPosition
 import com.wisermit.hdrswitcher.di.AppModule
 import com.wisermit.hdrswitcher.domain.storage.InitializeStoragesUseCase
 import com.wisermit.hdrswitcher.resources.Res
@@ -23,12 +26,9 @@ import com.wisermit.hdrswitcher.resources.app_icon
 import com.wisermit.hdrswitcher.resources.app_name
 import com.wisermit.hdrswitcher.resources.exit
 import com.wisermit.hdrswitcher.service.ApplicationsWatcherService
-import com.wisermit.hdrswitcher.ui.ErrorDialogWindow
-import com.wisermit.hdrswitcher.ui.FluentTray
-import com.wisermit.hdrswitcher.ui.FluentWindow
-import com.wisermit.hdrswitcher.ui.UiErrorData
+import com.wisermit.hdrswitcher.ui.ErrorDialog
+import com.wisermit.hdrswitcher.ui.ErrorDialogData
 import com.wisermit.hdrswitcher.ui.main.MainScreen
-import com.wisermit.hdrswitcher.ui.safeWindowPosition
 import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -101,8 +101,8 @@ fun main() = application {
             }
 
             initializationFailure?.let {
-                ErrorDialogWindow(
-                    data = UiErrorData.from(it),
+                ErrorDialog(
+                    data = ErrorDialogData.from(it),
                     onCloseRequest = ::exitApplication
                 )
             } ?: run {

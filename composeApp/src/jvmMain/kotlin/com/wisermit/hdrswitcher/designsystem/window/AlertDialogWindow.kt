@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher.designsystem
+package com.wisermit.hdrswitcher.designsystem.window
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +20,6 @@ import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
 import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.cancel
 import com.wisermit.hdrswitcher.resources.ok
-import com.wisermit.hdrswitcher.ui.FluentDialogWindow
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
