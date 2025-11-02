@@ -30,7 +30,7 @@ fun PopupMenuItem(
             .defaultMinSize(minHeight = MenuItemDefaults.MinHeight)
             .fillMaxWidth()
             .padding(MenuItemDefaults.Padding)
-            .clip(shape = shapes.extraSmall)
+            .clip(shape = shapes.small)
             .clickable(onClick = onClick)
             .padding(MenuItemDefaults.ContentPadding),
         verticalAlignment = Alignment.CenterVertically

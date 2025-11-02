@@ -15,12 +15,12 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ErrorDialog(
     data: ErrorDialogData,
-    onCloseRequest: () -> Unit,
+    onClose: () -> Unit,
 ) {
     AlertDialogWindow(
         text = data.text,
         title = data.title,
-        onCloseRequest = onCloseRequest,
+        onCloseRequest = onClose,
     )
 }
 
@@ -30,7 +30,6 @@ data class ErrorDialogData(
     val title: String? = null,
 ) {
     companion object Companion {
-
         @Composable
         fun from(error: Throwable): ErrorDialogData {
             return if (error is WiseError) {

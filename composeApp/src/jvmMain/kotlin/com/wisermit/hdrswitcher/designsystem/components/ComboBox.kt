@@ -106,7 +106,7 @@ fun <T> ComboBox(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                shape = shapes.small,
+                shape = shapes.medium,
                 border = BorderStroke(
                     width = ComboBoxDefaults.DropdownBorderWidth,
                     color = colorScheme.background,
@@ -119,7 +119,7 @@ fun <T> ComboBox(
                         modifier = Modifier
                             .height(ComboBoxDefaults.MinHeight)
                             .padding(ComboBoxDefaults.MenuItem.Padding)
-                            .clip(shapes.extraSmall)
+                            .clip(shapes.small)
                             .background(
                                 if (isSelected) {
                                     ComboBoxDefaults.MenuItem.selectedBackgroundColor

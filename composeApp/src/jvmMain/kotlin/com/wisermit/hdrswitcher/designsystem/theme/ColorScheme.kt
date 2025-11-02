@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-internal fun colorScheme(darkTheme: Boolean) = when {
+internal fun fluentColorScheme(darkTheme: Boolean) = when {
     darkTheme -> with(ColorDarkTokens) {
         darkColorScheme(
             primary = brand,
@@ -27,6 +27,7 @@ internal fun colorScheme(darkTheme: Boolean) = when {
             outlineVariant = outline3,
         )
     }
+
     else -> with(ColorTokens) {
         lightColorScheme(
             primary = brand,
@@ -52,14 +53,15 @@ internal fun colorScheme(darkTheme: Boolean) = when {
 internal fun fluentColors(darkTheme: Boolean): FluentColors = when {
     darkTheme -> with(ColorDarkTokens) {
         FluentColors(
-            dialogSurface = dialogLayer,
+            surfaceVariant = dialogLayer,
             outlineLow = outline2,
             outlineVariant2 = outlineComboBox,
         )
     }
+
     else -> with(ColorTokens) {
         FluentColors(
-            dialogSurface = dialogLayer,
+            surfaceVariant = dialogLayer,
             outlineLow = outline2,
             outlineVariant2 = outlineComboBox,
         )
@@ -68,7 +70,7 @@ internal fun fluentColors(darkTheme: Boolean): FluentColors = when {
 
 @Immutable
 data class FluentColors(
-    val dialogSurface: Color,
+    val surfaceVariant: Color,
     val outlineLow: Color,
     val outlineVariant2: Color,
 )

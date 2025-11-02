@@ -24,7 +24,7 @@ fun Modifier.surface(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     borderWidth: Dp = 1.dp,
     borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
-    shape: Shape = MaterialTheme.shapes.extraSmall,
+    shape: Shape = MaterialTheme.shapes.small,
     shadowElevation: Dp = 0.dp,
 ) = this
     .then(

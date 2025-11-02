@@ -17,6 +17,6 @@ class ProcessException(
     causeMessage: String,
 ) : Exception(
     message +
-            "\nCommand:\n    ${commands.joinToString("\n    ", "+ ")}" +
+            "\nCommand:\n    ${commands.joinToString("\n\t", prefix = "+ ")}" +
             "\nError: $causeMessage",
 )

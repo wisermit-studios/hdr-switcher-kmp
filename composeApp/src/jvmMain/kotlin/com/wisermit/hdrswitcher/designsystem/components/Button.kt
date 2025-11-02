@@ -76,7 +76,7 @@ private fun ButtonInternal(
             focusedElevation = ButtonDefaults.Elevation,
             pressedElevation = ButtonDefaults.PressedElevation,
         ),
-        shape = shapes.extraSmall,
+        shape = shapes.small,
         onClick = onClick,
     ) {
         CompositionLocalProvider(

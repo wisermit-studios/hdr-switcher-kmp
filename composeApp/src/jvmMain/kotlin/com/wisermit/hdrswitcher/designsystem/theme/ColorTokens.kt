@@ -43,11 +43,3 @@ internal object ColorDarkTokens {
     val outline3 = Color(0xFF1D1D1D)
     val outlineComboBox = Color(0xFF414141)
 }
-
-internal object StateTokens {
-    const val DRAGGED_STATE_LAYER_OPACITY = 0.16f
-    const val FOCUS_STATE_LAYER_OPACITY = 0.1f
-    const val HOVER_STATE_LAYER_OPACITY = 0.02f
-    const val PRESSED_STATE_LAYER_OPACITY = 0.08f
-    const val DISABLED_STATE_LAYER_OPACITY = 0.38f
-}

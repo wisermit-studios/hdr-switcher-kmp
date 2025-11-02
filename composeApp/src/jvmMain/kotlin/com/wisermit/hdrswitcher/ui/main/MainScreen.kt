@@ -71,7 +71,7 @@ fun MainScreen(
     error?.let {
         ErrorDialog(
             data = ErrorDialogData.from(it),
-            onCloseRequest = viewModel::clearError
+            onClose = viewModel::clearError
         )
     }
 
@@ -173,7 +173,7 @@ fun HdrConfigItem(
                         if (hdrStatus == true) Res.string.on else Res.string.off
                     ),
                     modifier = Modifier.alpha(
-                        if (hdrStatus == null) ThemeDefaults.DISABLED_STATE_LAYER_OPACITY else 1f,
+                        if (hdrStatus == null) ThemeDefaults.DisabledStateLayerOpacity else 1f,
                     ),
                 )
                 Spacer(Modifier.width(16.dp))

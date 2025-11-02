@@ -42,7 +42,7 @@ fun AlertDialogWindow(
         ) {
             Column(
                 Modifier
-                    .background(FluentTheme.colors.dialogSurface)
+                    .background(FluentTheme.colors.surfaceVariant)
                     .fillMaxWidth()
                     .padding(AlertDialogDefaults.ContentPadding)
             ) {
