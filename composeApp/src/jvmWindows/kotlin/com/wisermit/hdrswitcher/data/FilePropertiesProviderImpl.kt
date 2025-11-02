@@ -1,9 +1,9 @@
-package com.wisermit.hdrswitcher.system
+package com.wisermit.hdrswitcher.data
 
-import com.wisermit.hdrswitcher.system.process.PowerShell
+import com.wisermit.hdrswitcher.process.PowerShell
 import java.io.File
 
-class SystemToolsImpl : SystemTools {
+class FilePropertiesProviderImpl : FilePropertiesProvider {
 
     // FIXME: Wrong charset (™).
     override suspend fun getFileDescription(file: File) =

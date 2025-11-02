@@ -1,10 +1,10 @@
-package com.wisermit.hdrswitcher.system
+package com.wisermit.hdrswitcher
 
 import java.io.File
 
-class SystemInfoImpl : SystemInfo() {
-    override val platform: Platform = Platform.MacOS
+internal val platform = Platform.MacOS
 
+internal class SystemInfoImpl : SystemInfo() {
     override val systemDrive: File = File("/")
 
     override val appSettingsDir: File

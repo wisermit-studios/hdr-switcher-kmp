@@ -1,13 +1,13 @@
-package com.wisermit.hdrswitcher.domain.system
+package com.wisermit.hdrswitcher.domain.hdr
 
+import com.wisermit.hdrswitcher.data.hdr.HdrManager
 import com.wisermit.hdrswitcher.domain.FlowUseCase
-import com.wisermit.hdrswitcher.system.SystemManager
 import kotlinx.coroutines.flow.Flow
 
 class GetHdrStatusUseCase(
-    private val systemManagerService: SystemManager,
+    private val hdrManager: HdrManager,
 ) : FlowUseCase<Unit, Boolean?>() {
 
     override fun execute(parameters: Unit): Flow<Boolean?> =
-        systemManagerService.getHdrStatus()
+        hdrManager.getHdrStatus()
 }

@@ -1,4 +1,4 @@
-package com.wisermit.hdrswitcher
+package com.wisermit.hdrswitcher.util
 
 import java.io.File
 

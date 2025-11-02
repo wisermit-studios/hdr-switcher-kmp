@@ -1,11 +1,10 @@
 package com.wisermit.hdrswitcher.data.applications
 
-import com.wisermit.hdrswitcher.data.CachedDataStore
+import androidx.datastore.core.DataStore
 import com.wisermit.hdrswitcher.model.Application
 import kotlinx.coroutines.flow.Flow
 
 interface ApplicationsStorage {
-    suspend fun initialize()
     fun getApplications(): Flow<List<Application>>
     suspend fun add(app: Application)
     suspend fun save(app: Application)
@@ -13,10 +12,8 @@ interface ApplicationsStorage {
 }
 
 class ApplicationsStorageImpl(
-    private val dataStore: CachedDataStore<List<Application>>,
+    private val dataStore: DataStore<List<Application>>,
 ) : ApplicationsStorage {
-
-    override suspend fun initialize() = dataStore.initialize()
 
     override fun getApplications() = dataStore.data
 

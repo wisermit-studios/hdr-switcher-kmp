@@ -1,6 +1,5 @@
 package com.wisermit.hdrswitcher
 
-import com.wisermit.hdrswitcher.system.SystemInfo
 import java.io.File
 
 private const val APP_SETTINGS_FOLDER_NAME = "HDR Switcher"

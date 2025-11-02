@@ -24,7 +24,7 @@ import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.rememberDialogState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import com.wisermit.hdrswitcher.system.Platform
+import com.wisermit.hdrswitcher.Platform
 import java.awt.GraphicsEnvironment
 import java.awt.MouseInfo
 import java.awt.SystemTray
@@ -141,7 +141,7 @@ private val GlobalDensity: Density
 
 private val iconSize: Size
     get() {
-        return when (Platform.Current) {
+        return when (Platform.current) {
             Platform.Windows -> Size(16f, 16f)
             Platform.MacOS -> Size(22f, 22f)
         }

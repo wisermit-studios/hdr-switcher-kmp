@@ -1,6 +1,6 @@
-package com.wisermit.hdrswitcher.system.process
+package com.wisermit.hdrswitcher.process
 
-import com.wisermit.hdrswitcher.AppResources
+import com.wisermit.hdrswitcher.util.AppResources
 import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HdrOn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -60,23 +62,30 @@ import java.io.File
 @Composable
 @Preview
 fun MainScreen(
+    onClose: () -> Unit,
     viewModel: MainViewModel = koinInject(),
 ) {
     val error by viewModel.error.collectAsState()
+    val listState = rememberLazyListState()
+    val scrollAdapter = rememberScrollbarAdapter(listState)
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshData()
     }
 
-    error?.let {
-        ErrorDialog(
-            data = ErrorDialogData.from(it),
+    when (val error = error) {
+        is MainError.Error -> ErrorDialog(
+            data = ErrorDialogData.from(error.cause),
             onClose = viewModel::clearError
         )
-    }
 
-    val listState = rememberLazyListState()
-    val scrollAdapter = rememberScrollbarAdapter(listState)
+        is MainError.FatalError -> ErrorDialog(
+            data = ErrorDialogData.from(error.cause),
+            onClose = onClose
+        )
+
+        else -> Unit
+    }
 
     ScrollViewer(
         modifier = Modifier
@@ -115,31 +124,47 @@ fun MainScreen(
                 )
             }
 
-            if (applications.isEmpty()) {
-                item {
-                    EmptyView(onApplicationAdded = viewModel::addApplication)
+            val applications = applications
+            when {
+                applications == null -> {
+                    item {
+                        CircularProgressIndicator(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp)
+                                .wrapContentSize(),
+                        )
+                    }
                 }
-            } else {
-                item {
-                    Text(
-                        stringResource(Res.string.main_applications_label),
-                        modifier = Modifier.padding(top = 12.dp, bottom = 0.dp),
-                        style = typography.labelLarge,
-                    )
+
+                applications.isEmpty() -> {
+                    item {
+                        EmptyView(onApplicationAdded = viewModel::addApplication)
+                    }
                 }
-                items(
-                    applications,
-                    key = { it.id },
-                ) { app ->
-                    ApplicationItem(
-                        item = app,
-                        onHdrChange = { hdrMode ->
-                            viewModel.setApplicationHdr(app, hdrMode)
-                        },
-                        onDelete = {
-                            viewModel.delete(app)
-                        }
-                    )
+
+                else -> {
+                    item {
+                        Text(
+                            stringResource(Res.string.main_applications_label),
+                            modifier = Modifier.padding(top = 12.dp, bottom = 0.dp),
+                            style = typography.labelLarge,
+                        )
+                    }
+                    items(
+                        applications,
+                        key = { it.id },
+                    ) { item ->
+                        ApplicationItem(
+                            item = item,
+                            onHdrChange = { hdrMode ->
+                                viewModel.setApplicationHdr(item, hdrMode)
+                            },
+                            onDelete = {
+                                viewModel.delete(item)
+                            }
+                        )
+                    }
                 }
             }
         }

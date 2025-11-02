@@ -1,7 +1,7 @@
-package com.wisermit.hdrswitcher.system
+package com.wisermit.hdrswitcher.data
 
 import java.io.File
 
-interface SystemTools {
+interface FilePropertiesProvider {
     suspend fun getFileDescription(file: File): String?
 }

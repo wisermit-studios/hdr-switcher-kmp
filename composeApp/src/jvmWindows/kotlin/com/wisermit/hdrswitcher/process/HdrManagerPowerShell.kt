@@ -1,17 +1,17 @@
-package com.wisermit.hdrswitcher.system.process
+package com.wisermit.hdrswitcher.process
 
 import com.wisermit.hdrswitcher.util.Log
 import java.awt.Robot
 import java.awt.event.KeyEvent
 
-private val TAG = SystemManagerPowerShell::class.java.simpleName
+private val TAG = HdrManagerPowerShell::class.java.simpleName
 
 private const val MONITOR_DATA_STORE_REG_PATH =
     """HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\MonitorDataStore"""
 private const val HDR_ENABLED_REG_KEY = "HDREnabled"
 private const val DATA_SEPARATOR = ","
 
-object SystemManagerPowerShell {
+object HdrManagerPowerShell {
 
     fun getHdrStatus(): Boolean? = getHdrMonitors()
         .takeIf { it.isNotEmpty() }

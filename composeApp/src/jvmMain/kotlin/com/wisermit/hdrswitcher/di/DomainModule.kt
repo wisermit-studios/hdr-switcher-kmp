@@ -4,15 +4,12 @@ import com.wisermit.hdrswitcher.domain.applications.AddApplicationUseCase
 import com.wisermit.hdrswitcher.domain.applications.DeleteApplicationUseCase
 import com.wisermit.hdrswitcher.domain.applications.GetApplicationsUseCase
 import com.wisermit.hdrswitcher.domain.applications.SaveApplicationUseCase
-import com.wisermit.hdrswitcher.domain.storage.InitializeStoragesUseCase
-import com.wisermit.hdrswitcher.domain.system.GetHdrStatusUseCase
-import com.wisermit.hdrswitcher.domain.system.RefreshHdrStatusUseCase
-import com.wisermit.hdrswitcher.domain.system.SetHdrEnabledUseCase
+import com.wisermit.hdrswitcher.domain.hdr.GetHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.hdr.RefreshHdrStatusUseCase
+import com.wisermit.hdrswitcher.domain.hdr.SetHdrEnabledUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
-    factory { InitializeStoragesUseCase(get()) }
-
     factory { RefreshHdrStatusUseCase(get()) }
     factory { GetHdrStatusUseCase(get()) }
     factory { SetHdrEnabledUseCase(get()) }

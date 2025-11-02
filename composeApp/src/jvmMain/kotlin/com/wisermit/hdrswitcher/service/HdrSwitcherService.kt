@@ -1,6 +1,6 @@
 package com.wisermit.hdrswitcher.service
 
-interface ApplicationsWatcherService {
+interface HdrSwitcherService {
     fun start()
-    fun destroy()
+    fun stop()
 }

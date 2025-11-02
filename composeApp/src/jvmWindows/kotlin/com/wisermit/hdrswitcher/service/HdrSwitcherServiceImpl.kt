@@ -2,7 +2,7 @@ package com.wisermit.hdrswitcher.service
 
 import com.wisermit.hdrswitcher.domain.applications.GetApplicationsUseCase
 import com.wisermit.hdrswitcher.model.Application
-import com.wisermit.hdrswitcher.system.process.SystemManagerProcess
+import com.wisermit.hdrswitcher.process.SystemManagerProcess
 import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,29 +10,36 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-private val TAG = ApplicationsWatcherService::class.java.simpleName
+private val TAG = HdrSwitcherService::class.java.simpleName
 
-class ApplicationsWatcherServiceImpl(
+class HdrSwitcherServiceImpl(
     getApplicationsUseCase: GetApplicationsUseCase,
     private val scope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Default)
-) : ApplicationsWatcherService {
+) : HdrSwitcherService {
+
+    private var job: Job? = null
 
     private val applications = getApplicationsUseCase(Unit)
 
-    private var systemManagerExe: SystemManagerProcess? = null
+    private var systemManager: SystemManagerProcess? = null
 
     override fun start() {
-        scope.launch {
-            applications.collect {
-                systemManagerExe?.destroy()
-                if (it.isNotEmpty()) startProcess(it)
+        if (job?.isActive == true) return
+
+        job = scope.launch {
+            applications.collect { result ->
+                systemManager?.destroy()
+
+                result.getOrNull()
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { startProcess(it) }
             }
         }
     }
 
     private suspend fun startProcess(list: List<Application>) {
         try {
-            systemManagerExe = SystemManagerProcess.start {
+            systemManager = SystemManagerProcess.start {
                 val args = list.map { "${it.file.name}|${it.file.path}" }
                 setArgs(*args.toTypedArray())
             }
@@ -41,8 +48,8 @@ class ApplicationsWatcherServiceImpl(
         }
     }
 
-    override fun destroy() {
+    override fun stop() {
         scope.cancel()
-        systemManagerExe?.destroy()
+        systemManager?.destroy()
     }
 }

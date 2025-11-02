@@ -1,3 +1,3 @@
-package com.wisermit.hdrswitcher
+package com.wisermit.hdrswitcher.util
 
 abstract class PlatformAppResources : CommonAppResources()

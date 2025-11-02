@@ -1,8 +1,8 @@
-package com.wisermit.hdrswitcher.system
+package com.wisermit.hdrswitcher.data.hdr
 
 import kotlinx.coroutines.flow.emptyFlow
 
-class SystemManagerImpl : SystemManager {
+class HdrManagerImpl : HdrManager {
 
     override fun getHdrStatus() = emptyFlow<Boolean?>()
 
