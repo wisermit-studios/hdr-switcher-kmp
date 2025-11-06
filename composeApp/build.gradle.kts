@@ -22,28 +22,36 @@ kotlin {
             }
         }
 
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.androidx.datastore)
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            implementation(libs.kotlinx.serialization.json)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                implementation(libs.androidx.datastore)
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+                implementation(libs.kotlinx.serialization.json)
+            }
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
 
+        val jvmCommon by creating {
+            dependsOn(commonMain)
+        }
+
         jvmMain {
+            dependsOn(jvmCommon)
+
             val jvmPlatformTarget = "jvm${buildPlatform.name}"
             val jvmTargetDir = layout.projectDirectory.dir("src/$jvmPlatformTarget")
 
