@@ -2,8 +2,9 @@ namespace SystemManager.Model
 {
     public enum CommandAction
     {
-        Hdr = 1,
-        LaunchExe = 2,
-        WatchExeList = 3,
+        GetHdrStatus = 1,
+        ToggleHdr = 2,
+        LaunchExecutable = 3,
+        StartService = 4,
     }
 }
