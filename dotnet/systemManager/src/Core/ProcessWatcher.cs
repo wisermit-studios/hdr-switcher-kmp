@@ -5,29 +5,29 @@ namespace SystemManager.Core
 {
     public class ProcessWatcher
     {
-        private ManagementEventWatcher? startWatcher;
-        private ManagementEventWatcher? stopWatcher;
+        private ManagementEventWatcher? _startWatcher;
+        private ManagementEventWatcher? _stopWatcher;
 
         public void Watch(
-            List<Exe> exeList,
+            List<Exe> executables,
             Action onStart,
             Action onFinish)
         {
-            startWatcher = CreateEventWatcher("Win32_ProcessStartTrace", exeList);
-            startWatcher.EventArrived += (s, e) => onStart();
-            startWatcher.Start();
+            _startWatcher = CreateEventWatcher("Win32_ProcessStartTrace", executables);
+            _startWatcher.EventArrived += (s, e) => onStart();
+            _startWatcher.Start();
 
-            stopWatcher = CreateEventWatcher("Win32_ProcessStopTrace", exeList);
-            stopWatcher.EventArrived += (s, e) => onFinish();
-            stopWatcher.Start();
+            _stopWatcher = CreateEventWatcher("Win32_ProcessStopTrace", executables);
+            _stopWatcher.EventArrived += (s, e) => onFinish();
+            _stopWatcher.Start();
         }
 
         private static ManagementEventWatcher CreateEventWatcher(
-            string eventClass, List<Exe> exeList)
+            string eventClass, List<Exe> executables)
         {
             var whereClause = string.Join(
                 " OR ",
-                exeList.Select(exe => $"ProcessName = '{exe.Name}'")
+                executables.Select(exe => $"ProcessName = '{exe.Name}'")
             );
 
             return new ManagementEventWatcher(
@@ -37,13 +37,13 @@ namespace SystemManager.Core
 
         public void Dispose()
         {
-            startWatcher?.Stop();
-            startWatcher?.Dispose();
-            startWatcher = null;
+            _startWatcher?.Stop();
+            _startWatcher?.Dispose();
+            _startWatcher = null;
 
-            stopWatcher?.Stop();
-            stopWatcher?.Dispose();
-            stopWatcher = null;
+            _stopWatcher?.Stop();
+            _stopWatcher?.Dispose();
+            _stopWatcher = null;
         }
     }
 }

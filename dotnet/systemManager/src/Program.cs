@@ -1,8 +1,8 @@
-// TODO: Review names and logs.
-using System.Threading.Tasks;
 using SystemManager.Core;
 using SystemManager.Model;
 using SystemManager.Util;
+
+// TODO: Review names and logs.
 
 namespace SystemManager
 {
@@ -19,7 +19,7 @@ namespace SystemManager
             if (args.Length == 1)
             {
                 Log.D("Launching process.");
-                LaunchExe(args[0]);
+                LaunchExecutable(args[0]);
             }
             else
             {
@@ -28,13 +28,13 @@ namespace SystemManager
             }
         }
 
-        private static void LaunchExe(string exePath)
+        private static void LaunchExecutable(string executablePath)
         {
-            if (File.Exists(exePath))
+            if (File.Exists(executablePath))
             {
                 Task.Run(() =>
                     {
-                        Launcher.Launch(exePath);
+                        Launcher.Launch(executablePath);
                     }
                 );
                 Environment.Exit(0);
@@ -47,9 +47,9 @@ namespace SystemManager
 
         private static async Task StartService(string[] args)
         {
-            var exeList = Exe.ListFromArgs(args);
-            var manager = new Service();
-            manager.Watch(exeList);
+            var executables = Exe.ListFromArgs(args);
+            var service = new Service();
+            service.SetExecutables(executables);
 
             await ConsoleManager.ListenInput();
         }

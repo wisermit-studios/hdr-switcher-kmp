@@ -5,7 +5,7 @@ namespace SystemManager.Core
 {
     public class Service
     {
-        private bool initialHdrStatus = false;
+        private bool _initialHdrStatus = false;
 
         private readonly ProcessWatcher _processWatcher;
 
@@ -14,19 +14,19 @@ namespace SystemManager.Core
             _processWatcher = new ProcessWatcher();
         }
 
-        public void Watch(List<Exe> exeList)
+        public void SetExecutables(List<Exe> executables)
         {
             _processWatcher.Watch(
-                exeList,
+                executables,
                 onStart: () =>
                 {
                     Log.I($"Process started.");
-                    EnsureHdr();
+                    EnsureHdrStatus();
                 },
                 onFinish: () =>
                 {
                     Log.I($"Process ended.");
-                    AttemptRevertHdr();
+                    RestoreHdrStatus();
                 }
             );
         }
@@ -36,19 +36,19 @@ namespace SystemManager.Core
             _processWatcher.Dispose();
         }
 
-        private void EnsureHdr()
+        private void EnsureHdrStatus()
         {
-            initialHdrStatus = HdrManager.IsEnabled();
+            _initialHdrStatus = HdrManager.IsEnabled();
 
-            if (!initialHdrStatus)
+            if (!_initialHdrStatus)
             {
                 HdrManager.Toggle();
             }
         }
 
-        private void AttemptRevertHdr()
+        private void RestoreHdrStatus()
         {
-            if (HdrManager.IsEnabled() != initialHdrStatus)
+            if (_initialHdrStatus != HdrManager.IsEnabled())
             {
                 HdrManager.Toggle();
             }

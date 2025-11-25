@@ -1,0 +1,126 @@
+package com.wisermit.hdrswitcher
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.ApplicationScope
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
+import com.wisermit.hdrswitcher.designsystem.components.PopupMenuItem
+import com.wisermit.hdrswitcher.designsystem.theme.FluentTheme
+import com.wisermit.hdrswitcher.designsystem.window.FluentTray
+import com.wisermit.hdrswitcher.designsystem.window.FluentWindow
+import com.wisermit.hdrswitcher.designsystem.window.safeWindowPosition
+import com.wisermit.hdrswitcher.di.AppModule
+import com.wisermit.hdrswitcher.resources.Res
+import com.wisermit.hdrswitcher.resources.app_icon
+import com.wisermit.hdrswitcher.resources.app_name
+import com.wisermit.hdrswitcher.resources.exit
+import com.wisermit.hdrswitcher.service.HdrSwitcherService
+import com.wisermit.hdrswitcher.ui.main.MainScreen
+import com.wisermit.hdrswitcher.util.Log
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.KoinApplication
+import org.koin.compose.koinInject
+import java.awt.GraphicsEnvironment
+
+private val WindowSize = DpSize(
+    width = 436.dp,
+    height = 600.dp,
+)
+
+fun main() = application {
+    Log.level = Log.Level.Test
+
+    KoinApplication(
+        application = {
+            modules(AppModule.modules)
+        },
+    ) {
+        val hdrSwitcherService: HdrSwitcherService = koinInject()
+
+        DisposableEffect(Unit) {
+            hdrSwitcherService.start()
+            onDispose {
+                hdrSwitcherService.stop()
+            }
+        }
+
+        FluentTheme {
+            App()
+        }
+    }
+}
+
+@Composable
+fun ApplicationScope.App() {
+    val requestWindowFocus = remember { Channel<Unit>() }
+    var isWindowVisible by remember { mutableStateOf(true) }
+    val windowState = rememberWindowState(
+        size = WindowSize,
+        position = safeWindowPosition(screenBottomRight, WindowSize)
+    )
+
+    FluentTray(
+        icon = painterResource(Res.drawable.app_icon),
+        tooltip = stringResource(Res.string.app_name),
+        onAction = {
+            if (isWindowVisible) {
+                requestWindowFocus.trySend(Unit)
+            } else {
+                isWindowVisible = true
+            }
+        },
+    ) {
+        PopupMenuItem(
+            icon = Icons.Default.Close,
+            title = stringResource(Res.string.exit),
+            onClick = ::exitApplication,
+        )
+    }
+
+    FluentWindow(
+        state = windowState,
+        visible = isWindowVisible,
+        title = stringResource(Res.string.app_name),
+        icon = painterResource(Res.drawable.app_icon),
+        minimumSize = WindowSize,
+        resizable = false,
+        onCloseRequest = {
+            // TODO: Create config to close or minimize to systray.
+//            isVisible = false
+            exitApplication()
+        },
+    ) {
+        val coroutineScope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) {
+            requestWindowFocus.receiveAsFlow()
+                .onEach { window.requestFocus() }
+                .launchIn(coroutineScope)
+        }
+
+        MainScreen(
+            onClose = ::exitApplication
+        )
+    }
+}
+
+private val screenBottomRight: DpOffset
+    get() = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
+        .run { DpOffset(width.dp, height.dp) }
