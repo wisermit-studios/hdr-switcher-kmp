@@ -12,6 +12,13 @@ namespace SystemManager.Util
     {
         public static LogLevel Level { get; set; } = LogLevel.Error;
 
+        private static readonly string END_MESSAGE_DELIMITER = "\u00A0";
+
+        static Log()
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+        }
+
         public static void E(string message)
         {
             WriteLine(LogLevel.Error, message);
@@ -38,7 +45,7 @@ namespace SystemManager.Util
             {
                 char logPrefix = level.ToString()[0];
 
-                Console.WriteLine($"{logPrefix}/{message}");
+                Console.WriteLine($"{logPrefix}/{message}{END_MESSAGE_DELIMITER}");
             }
         }
     }

@@ -17,6 +17,7 @@ typealias OnExitListener = (SystemManagerProcess.Result) -> Unit
 
 private val TAG = SystemManagerProcess::class.java.simpleName
 private val TAG_EXE = "${TAG}_Exe"
+private const val END_LOG_MESSAGE_DELIMITER = '\u00A0'
 
 class SystemManagerProcess private constructor(
     coroutineContext: CoroutineContext,
@@ -39,13 +40,17 @@ class SystemManagerProcess private constructor(
 
             readersJob = processScope.launch(Dispatchers.IO) {
                 launch {
-                    inputReader()?.forEachLine {
-                        handleInputLine(it)
+                    inputReader(Charsets.UTF_8)?.useLines { lines ->
+                        val inputText = lines.joinToString("\n")
+                        val messages = inputText.split(END_LOG_MESSAGE_DELIMITER)
+                        messages.forEach {
+                            readOutputLine(it.removePrefix("\n"))
+                        }
                     }
                 }
                 launch {
                     errorReader().useLines {
-                        Log.e(TAG_EXE, it.joinToString("\n"))
+                        readOutputLine(it.joinToString("\n"))
                     }
                 }
             }
@@ -79,7 +84,9 @@ class SystemManagerProcess private constructor(
         }
     }
 
-    private fun handleInputLine(line: String) {
+    private fun readOutputLine(line: String) {
+        if (line.isEmpty()) return
+
         val linePrefix = line.take(LINE_PREFIX_LENGTH)
         val lineContent = line.drop(LINE_PREFIX_LENGTH)
 
@@ -89,7 +96,7 @@ class SystemManagerProcess private constructor(
             "I/" -> Log.i(TAG_EXE, lineContent)
             "W/" -> Log.w(TAG_EXE, lineContent)
             "E/" -> Log.e(TAG_EXE, lineContent)
-            else -> Log.e(TAG_EXE, "Unknown input line: \"$line\"")
+            else -> Log.e(TAG_EXE, line)
         }
     }
 
