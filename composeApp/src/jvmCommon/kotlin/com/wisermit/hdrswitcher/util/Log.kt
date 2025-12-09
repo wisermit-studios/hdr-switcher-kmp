@@ -12,27 +12,27 @@ object Log {
     var level = Level.None
 
     fun d(tag: String, msg: String) {
-        log(Level.Debug, tag, msg)
+        printLn(Level.Debug, tag, msg)
     }
 
     fun i(tag: String, msg: String) {
-        log(Level.Info, tag, msg)
+        printLn(Level.Info, tag, msg)
     }
 
     fun w(tag: String, msg: String) {
-        log(Level.Warning, tag, msg)
+        printLn(Level.Warning, tag, msg)
     }
 
     fun e(tag: String, msg: String, throwable: Throwable? = null) {
-        log(Level.Error, tag, msg, throwable)
+        printLn(Level.Error, tag, msg, throwable)
     }
 
     @Deprecated("Remove before commit.")
     fun test(msg: String) {
-        log(Level.Test, "", "... $msg")
+        printLn(Level.Test, "", "... $msg")
     }
 
-    private fun log(level: Level, tag: String, msg: String, tr: Throwable? = null) {
+    private fun printLn(level: Level, tag: String, msg: String, tr: Throwable? = null) {
         if (level <= Log.level) {
             val timestamp = DATE_FORMAT.format(System.currentTimeMillis())
             val tag = tag.padEnd(TAG_LENGTH, ' ')

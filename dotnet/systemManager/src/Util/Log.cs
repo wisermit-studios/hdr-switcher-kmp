@@ -2,7 +2,6 @@ namespace SystemManager.Util
 {
     public enum LogLevel
     {
-        None = -1,
         Error = 3,
         Warning = 4,
         Info = 6,
@@ -11,29 +10,29 @@ namespace SystemManager.Util
 
     public static class Log
     {
-        public static LogLevel Level { get; set; } = LogLevel.None;
+        public static LogLevel Level { get; set; } = LogLevel.Error;
 
         public static void E(string message)
         {
-            WriteLog(LogLevel.Error, message);
+            WriteLine(LogLevel.Error, message);
         }
 
         public static void W(string message)
         {
-            WriteLog(LogLevel.Warning, message);
+            WriteLine(LogLevel.Warning, message);
         }
 
         public static void I(string message)
         {
-            WriteLog(LogLevel.Info, message);
+            WriteLine(LogLevel.Info, message);
         }
 
         public static void D(string message)
         {
-            WriteLog(LogLevel.Debug, message);
+            WriteLine(LogLevel.Debug, message);
         }
 
-        private static void WriteLog(LogLevel level, string message)
+        private static void WriteLine(LogLevel level, string message)
         {
             if (level <= Level)
             {
