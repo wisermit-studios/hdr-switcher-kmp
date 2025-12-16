@@ -38,8 +38,14 @@ namespace SystemManager.Core
             return false;
         }
 
+        public static void SetHdrEnabled(bool enabled)
+        {
+            Log.D($"Setting HDR status to {enabled}.");
 
-        public static void Toggle()
+            if (enabled != IsEnabled()) Toggle();
+        }
+
+        private static void Toggle()
         {
             Log.D("Toggling HDR.");
 

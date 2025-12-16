@@ -42,8 +42,6 @@ class LaunchCommand : Command
 
     public LaunchCommand() : base("launch", "Launch an application with custom settings.")
     {
-        PathArgument.AcceptLegalFileNamesOnly();
-
         Add(PathArgument);
     }
 }

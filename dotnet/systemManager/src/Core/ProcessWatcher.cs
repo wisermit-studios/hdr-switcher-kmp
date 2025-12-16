@@ -9,7 +9,7 @@ namespace SystemManager.Core
         private ManagementEventWatcher? _stopWatcher;
 
         public void Watch(
-            List<Exe> executables,
+            List<Application> executables,
             Action onStart,
             Action onFinish)
         {
@@ -23,7 +23,7 @@ namespace SystemManager.Core
         }
 
         private static ManagementEventWatcher CreateEventWatcher(
-            string eventClass, List<Exe> executables)
+            string eventClass, List<Application> executables)
         {
             var whereClause = string.Join(
                 " OR ",

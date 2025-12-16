@@ -6,11 +6,19 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "Build SystemManager",
-      "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0-windows/system_manager.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}/dotnet/systemManager/src",
+      "stopAtEntry": false,
       "console": "internalConsole",
-      "stopAtEntry": false
+      "cwd": "${workspaceFolder}/dotnet/systemManager/src",
+      "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0-windows/system_manager.dll",
+      "args": [
+        "launch",
+        "%windir%/System32/notepad.exe",
+        "-v=diag",
+        ""
+      ],
+      "logging": {
+        "moduleLoad": false
+      }
     }
   ]
 }

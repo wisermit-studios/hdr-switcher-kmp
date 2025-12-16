@@ -1,30 +1,35 @@
 ﻿using System.Diagnostics;
+using SystemManager.Model;
+using SystemManager.Util;
 
 namespace SystemManager.Core
 {
     public static class Launcher
     {
-        private const int START_DELAY = 300;
-
-        public static void Launch(string exePath)
+        public static void Launch(Application app)
         {
             using var process = new Process();
-            process.StartInfo.FileName = exePath;
+            process.StartInfo.FileName = app.Name;
+
+            // TODO: HDR from app config.
 
             if (HdrManager.IsEnabled())
             {
+                Log.D("HDR already enabled.");
+
                 process.Start();
-                return;
             }
             else
             {
-                HdrManager.Toggle();
-                Thread.Sleep(START_DELAY);
+                HdrManager.SetHdrEnabled(true);
 
                 process.Start();
+
+                Log.D($"Waiting for {app.Name}...");
+
                 process.WaitForExit();
 
-                HdrManager.Toggle();
+                HdrManager.SetHdrEnabled(false);
             }
         }
     }
