@@ -44,7 +44,7 @@ class SystemManagerProcess private constructor(
                         val inputText = lines.joinToString("\n")
                         val messages = inputText.split(END_LOG_MESSAGE_DELIMITER)
                         messages.forEach {
-                            readOutputLine(it.removePrefix("\n"))
+                            readOutputLine(it.trim('\n'))
                         }
                     }
                 }

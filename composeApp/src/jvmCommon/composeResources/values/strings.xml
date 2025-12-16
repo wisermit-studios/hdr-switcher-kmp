@@ -17,6 +17,8 @@
     <string name="off">Off</string>
     <string name="default">System default</string>
 
+    <string name="hdr_switcher_service_error">Service was not running due to an error (see log).</string>
+
     <string name="drag_and_drop_application">Drag and drop application</string>
     <string name="add_application">Add application</string>
     <string name="remove_from_list">Remove from list</string>
