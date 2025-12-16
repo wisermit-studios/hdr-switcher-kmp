@@ -1,10 +1,9 @@
-namespace SystemManager.Model
+namespace SystemManager.Model;
+
+public enum CommandAction
 {
-    public enum CommandAction
-    {
-        GetHdrStatus = 1,
-        ToggleHdr = 2,
-        LaunchExecutable = 3,
-        StartService = 4,
-    }
+    GetHdrStatus = 1,
+    ToggleHdr = 2,
+    LaunchExecutable = 3,
+    StartService = 4,
 }

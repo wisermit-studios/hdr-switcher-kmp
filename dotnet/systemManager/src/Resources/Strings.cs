@@ -1,8 +1,7 @@
-namespace SystemManager.Resources
+namespace SystemManager.Resources;
+
+public interface IStrings
 {
-    public interface IStrings
-    {
-        string DialogErrorText { get; }
-        string DialogErrorCaption { get; }
-    }
+    string DialogErrorText { get; }
+    string DialogErrorCaption { get; }
 }

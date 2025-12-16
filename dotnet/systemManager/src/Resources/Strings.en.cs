@@ -1,8 +1,7 @@
-namespace SystemManager.Resources
+namespace SystemManager.Resources;
+
+public class StringsEn : IStrings
 {
-    public class StringsEn : IStrings
-    {
-        public string DialogErrorText => "Invalid application path: ";
-        public string DialogErrorCaption => "Error";
-    }
+    public string DialogErrorText => "Invalid application path: ";
+    public string DialogErrorCaption => "Error";
 }
