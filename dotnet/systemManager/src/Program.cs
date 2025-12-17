@@ -67,7 +67,12 @@ public static class Program
             Service service = new(resolvedDataPath);
             cancellationToken.Register(service.Stop);
 
-            await InputReader.ListenInput();
+            await InputReader.Listen(command =>
+            {
+                // FIXME: Remove test.
+                Log.D($"command: {command}");
+            });
+            Environment.Exit(ErrorCode.ERROR_BROKEN_PIPE);
         });
     }
 }

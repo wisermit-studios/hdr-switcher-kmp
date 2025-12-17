@@ -4,27 +4,21 @@ namespace SystemManager.Console;
 
 public static class InputReader
 {
-    public static async Task ListenInput()
+    public static async Task Listen(Action<string> action)
     {
-        await ReadInput().ContinueWith(task =>
+        try
         {
-            if (task.IsFaulted)
-            {
-                Log.E($"Error {task.Exception}");
-            }
-            Environment.Exit(ErrorCode.ERROR_BROKEN_PIPE);
-        });
-    }
+            using Stream stream = System.Console.OpenStandardInput();
+            using StreamReader reader = new(stream);
 
-    private static async Task ReadInput()
-    {
-        using var reader = new StreamReader(System.Console.OpenStandardInput());
-        string? line;
-        while ((line = await reader.ReadLineAsync()) != null)
-        {
-            // FIXME: Remove test.
-            Log.D($"command: {line}");
+            while (await reader.ReadLineAsync() is { } line)
+            {
+                action(line);
+            }
         }
-        reader.Close();
+        catch (Exception e)
+        {
+            Log.E($"Error {e}");
+        }
     }
 }
