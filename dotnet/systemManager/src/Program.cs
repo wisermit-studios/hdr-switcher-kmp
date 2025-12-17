@@ -1,4 +1,5 @@
 using System.CommandLine;
+using SystemManager.Console;
 using SystemManager.Core;
 using SystemManager.Model;
 using SystemManager.Util;
@@ -31,7 +32,7 @@ public static class Program
 
     private static void SetupHdrActions(HdrCommand command)
     {
-        command.StatusCommand.SetAction(_ => Console.WriteLine($"{HdrManager.IsEnabled()}"));
+        command.StatusCommand.SetAction(_ => System.Console.WriteLine($"{HdrManager.IsEnabled()}"));
         command.EnableCommand.SetAction(_ => HdrManager.SetHdrEnabled(true));
         command.DisableCommand.SetAction(_ => HdrManager.SetHdrEnabled(false));
     }
@@ -41,12 +42,11 @@ public static class Program
         command.SetAction(parseResult =>
         {
             string path = parseResult.GetRequiredValue(command.PathArgument);
-            var resolvedPath = Environment.ExpandEnvironmentVariables(path);
-            Uri uri = new(resolvedPath);
+            FileInfo applicationFile = new(path.ResolvedPath());
+            Application app = new(applicationFile);
 
-            if (File.Exists(uri.LocalPath))
+            if (app.File.Exists)
             {
-                Application app = new(new(uri.LocalPath));
                 Launcher.Launch(app);
                 return 0;
             }
@@ -59,12 +59,15 @@ public static class Program
 
     private static void SetupServiceAction(ServiceCommand command)
     {
-        command.StartCommand.SetAction(parseResult =>
+        command.StartCommand.SetAction(async (parseResult, cancellationToken) =>
         {
             string dataPath = parseResult.GetRequiredValue(command.StartCommand.DataOption);
-            var resolvedDataPath = Environment.ExpandEnvironmentVariables(dataPath);
-            Uri dataUri = new(resolvedDataPath);
-            Log.D($"Start service. Data={dataUri.LocalPath}");
+            string resolvedDataPath = dataPath.ResolvedPath();
+
+            Service service = new(resolvedDataPath);
+            cancellationToken.Register(service.Stop);
+
+            await InputReader.ListenInput();
         });
     }
 }

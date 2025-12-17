@@ -9,15 +9,15 @@ public class ProcessWatcher
     private ManagementEventWatcher? _stopWatcher;
 
     public void Watch(
-        List<Application> executables,
+        List<Application> applications,
         Action onStart,
         Action onFinish)
     {
-        _startWatcher = CreateEventWatcher("Win32_ProcessStartTrace", executables);
+        _startWatcher = CreateEventWatcher("Win32_ProcessStartTrace", applications);
         _startWatcher.EventArrived += (s, e) => onStart();
         _startWatcher.Start();
 
-        _stopWatcher = CreateEventWatcher("Win32_ProcessStopTrace", executables);
+        _stopWatcher = CreateEventWatcher("Win32_ProcessStopTrace", applications);
         _stopWatcher.EventArrived += (s, e) => onFinish();
         _stopWatcher.Start();
     }
@@ -27,7 +27,7 @@ public class ProcessWatcher
     {
         var whereClause = string.Join(
             " OR ",
-            executables.Select(exe => $"ProcessName = '{exe.File.Name}'")
+            executables.Select(app => $"ProcessName = '{app.File.Name}'")
         );
 
         return new ManagementEventWatcher(
@@ -35,14 +35,12 @@ public class ProcessWatcher
         );
     }
 
-    public void Dispose()
+    public void Stop()
     {
         _startWatcher?.Stop();
         _startWatcher?.Dispose();
-        _startWatcher = null;
 
         _stopWatcher?.Stop();
         _stopWatcher?.Dispose();
-        _stopWatcher = null;
     }
 }

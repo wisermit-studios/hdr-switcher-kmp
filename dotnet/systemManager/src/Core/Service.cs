@@ -5,17 +5,28 @@ namespace SystemManager.Core;
 
 public class Service
 {
-    private readonly ProcessWatcher _processWatcher;
+    private readonly ProcessWatcher _processWatcher = new();
 
-    public Service()
+    public Service(string dataPath)
     {
-        _processWatcher = new ProcessWatcher();
+        Log.I($"Starting service. Data={dataPath}.");
+        // TODO: Load json.
+        List<Application> applications = [];
+        if (applications.Count == 0)
+        {
+            Log.I($"No applications to watch.");
+        }
+        else
+        {
+            Log.I($"Watching ({applications.Count}) applications.");
+            WatchApplications(applications);
+        }
     }
 
-    public void SetExecutables(List<Application> executables)
+    public void WatchApplications(List<Application> applications)
     {
-        _processWatcher.Watch(
-            executables,
+        _processWatcher?.Watch(
+            applications,
             onStart: () =>
             {
                 Log.I($"Process started.");
@@ -23,7 +34,7 @@ public class Service
             },
             onFinish: () =>
             {
-                Log.I($"Process ended.");
+                Log.I($"Process finished.");
                 HdrManager.SetHdrEnabled(false);
             }
         );
@@ -31,11 +42,7 @@ public class Service
 
     public void Stop()
     {
-        Log.I($"Stopping service...");
-
-        HdrManager.SetHdrEnabled(false);
-        _processWatcher.Dispose();
-
         Log.I($"Service stopped.");
+        _processWatcher.Stop();
     }
 }

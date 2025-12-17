@@ -16,7 +16,7 @@ public static class Log
 
     static Log()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        System.Console.OutputEncoding = System.Text.Encoding.UTF8;
     }
 
     public static void E(string message)
@@ -45,7 +45,7 @@ public static class Log
         {
             char logPrefix = level.ToString()[0];
 
-            Console.WriteLine($"{logPrefix}/{message}{END_MESSAGE_DELIMITER}");
+            System.Console.WriteLine($"{logPrefix}/{message}{END_MESSAGE_DELIMITER}");
         }
     }
 }

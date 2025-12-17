@@ -1,7 +1,7 @@
 using System.CommandLine;
 using SystemManager.Util;
 
-namespace SystemManager;
+namespace SystemManager.Console;
 
 class CommandLine : RootCommand
 {
@@ -38,7 +38,7 @@ class HdrCommand : Command
 
 class LaunchCommand : Command
 {
-    public readonly Argument<string> PathArgument = new("path");
+    public readonly Argument<string> PathArgument = new("application path");
 
     public LaunchCommand() : base("launch", "Launch an application with custom settings.")
     {
