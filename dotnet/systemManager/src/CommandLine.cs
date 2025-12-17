@@ -48,13 +48,27 @@ class LaunchCommand : Command
 
 class ServiceCommand : Command
 {
-    public readonly Command StartCommand = new("start", "Start the service.");
+    public readonly ServiceStartCommand StartCommand = [];
     public readonly Command StopCommand = new("stop", "Stop the service.");
 
     public ServiceCommand() : base("service", "Manage the custom applications settings service.")
     {
         Add(StartCommand);
         Add(StopCommand);
+    }
+}
+
+public class ServiceStartCommand : Command
+{
+    public readonly Option<string> DataOption = new("--data", "-d")
+    {
+        HelpName = "JSON PATH",
+        Required = true
+    };
+
+    public ServiceStartCommand() : base("start", "Start the service.")
+    {
+        Add(DataOption);
     }
 }
 
@@ -79,7 +93,7 @@ class VerbosityOption : Option<VerbosityOption.Level>
 
     public static Level Default = Level.Normal;
 
-    public VerbosityOption() : base("verbosity", "-v")
+    public VerbosityOption() : base("--verbosity", "-v")
     {
         Description = $"Verbosity level. Allowed values: " +
             $"{string.Join(", ", Level.Entries.Select(x => $"{x.Alias}({x.Name})"))}.";

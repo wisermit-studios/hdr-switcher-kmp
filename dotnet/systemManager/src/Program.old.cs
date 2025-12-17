@@ -30,7 +30,6 @@ namespace SystemManager
         {
             if (File.Exists(executablePath))
             {
-
                 Launcher.Launch(new(new(executablePath)));
                 Environment.Exit(0);
             }

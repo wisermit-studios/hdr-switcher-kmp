@@ -19,6 +19,11 @@ private val TAG = SystemManagerProcess::class.java.simpleName
 private val TAG_EXE = "${TAG}_Exe"
 private const val END_LOG_MESSAGE_DELIMITER = '\u00A0'
 
+private val RESULT_HEX_FORMAT = HexFormat {
+    upperCase = true
+    number.prefix = "0x"
+}
+
 class SystemManagerProcess private constructor(
     coroutineContext: CoroutineContext,
     private val process: Process,
@@ -72,7 +77,6 @@ class SystemManagerProcess private constructor(
             readersJob.join()
 
             val exitCode = process.exitValue()
-            Log.d(TAG, "Process exited: ${exitCode.toHexString(HEX_FORMAT)}")
 
             process.runCatching {
                 inputStream.close()
@@ -103,33 +107,28 @@ class SystemManagerProcess private constructor(
     companion object {
         private const val LINE_PREFIX_LENGTH = 2
 
-        private val HEX_FORMAT = HexFormat {
-            upperCase = true
-            number.prefix = "0x"
-        }
-
         suspend fun start(init: Builder.() -> Unit) = Builder().also(init).start()
     }
 
     data class Result(
         val code: Int,
         val values: List<String>,
-    )
+    ) {
+        val hexCode: String = code.toHexString(RESULT_HEX_FORMAT)
+    }
 
     class Builder {
-
-        var args: Array<out String> = emptyArray()
-            private set
-
+        var data: String = ""
         var onExit: OnExitListener? = null
 
-        fun setArgs(vararg args: String) {
-            this.args = args
-        }
-
         suspend fun start(): SystemManagerProcess {
-            val exeFile = AppResources.systemManagerExe
-            val process = ProcessBuilder(exeFile.path, *args).start()
+            val command = arrayOf(
+                AppResources.systemManagerExe.path,
+                "service", "start",
+                "--data", data,
+            )
+
+            val process = ProcessBuilder(*command).start()
             return SystemManagerProcess(coroutineContext, process, onExit)
         }
     }

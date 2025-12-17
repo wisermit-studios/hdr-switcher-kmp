@@ -12,6 +12,6 @@ interface HdrSwitcherService {
     fun stop()
 
     enum class Status {
-        Active, Stopped, Error
+        Active, Suspended, Stopped, Error
     }
 }

@@ -9,7 +9,7 @@ public static class Launcher
     public static void Launch(Application app)
     {
         using var process = new Process();
-        process.StartInfo.FileName = app.Name;
+        process.StartInfo.FileName = app.File.Name;
 
         // TODO: HDR from app config.
 
@@ -25,7 +25,7 @@ public static class Launcher
 
             process.Start();
 
-            Log.D($"Waiting for {app.Name}...");
+            Log.D($"Waiting for {app.File.Name}...");
 
             process.WaitForExit();
 

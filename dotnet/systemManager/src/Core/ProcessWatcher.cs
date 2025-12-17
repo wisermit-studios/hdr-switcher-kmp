@@ -27,7 +27,7 @@ public class ProcessWatcher
     {
         var whereClause = string.Join(
             " OR ",
-            executables.Select(exe => $"ProcessName = '{exe.Name}'")
+            executables.Select(exe => $"ProcessName = '{exe.File.Name}'")
         );
 
         return new ManagementEventWatcher(

@@ -1,8 +1,15 @@
+using System.Text.Json.Serialization;
+
 namespace SystemManager.Model;
 
-public class Application(Uri uri, bool? hdrStatus = null)
+public enum HdrMode
 {
-    public Uri Uri { get; } = uri;
-    public string Name { get; } = Path.GetFileName(uri.LocalPath);
-    public bool? HdrStatus { get; } = hdrStatus;
+    Default,
+    On,
+    Off
 }
+
+public record Application(
+    [property: JsonPropertyName("path")] FileInfo File,
+    [property: JsonPropertyName("hdr")] HdrMode Hdr = HdrMode.Default
+);

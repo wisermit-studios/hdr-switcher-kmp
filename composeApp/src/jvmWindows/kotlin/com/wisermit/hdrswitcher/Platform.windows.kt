@@ -11,7 +11,7 @@ internal actual fun systemInfo(): SystemInfo = WindowsSystemInfo()
 private class WindowsSystemInfo : SystemInfo {
     override val systemDrive: File = File(System.getenv("SystemDrive"))
 
-    override val appSettingsDir: File
+    override val applicationDataDir: File
         get() = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Documents)
             ?.let(::File)
             ?: File(userHomeDir, "Documents")

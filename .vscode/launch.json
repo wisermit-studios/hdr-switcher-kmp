@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run System Manager",
+      "name": "Run System Manager (launch)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "Build SystemManager",
@@ -12,9 +12,28 @@
       "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0-windows/system_manager.dll",
       "args": [
         "launch",
-        "%windir%/System32/notepad.exe",
-        "-v=diag",
-        ""
+        "%WINDIR%/System32/notepad.exe",
+        "-v=diag"
+      ],
+      "logging": {
+        "moduleLoad": false
+      }
+    },
+    {
+      "name": "Run System Manager (service start)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build SystemManager",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "cwd": "${workspaceFolder}/dotnet/systemManager/src",
+      "program": "${workspaceFolder}/dotnet/systemManager/src/bin/Debug/net8.0-windows/system_manager.dll",
+      "args": [
+        "service",
+        "start",
+        "--data",
+        "%USERPROFILE%/Documents/HDR Switcher/applications.json",
+        "-v=diag"
       ],
       "logging": {
         "moduleLoad": false

@@ -46,7 +46,7 @@ public static class Program
 
             if (File.Exists(uri.LocalPath))
             {
-                Application app = new(uri);
+                Application app = new(new(uri.LocalPath));
                 Launcher.Launch(app);
                 return 0;
             }
@@ -61,7 +61,10 @@ public static class Program
     {
         command.StartCommand.SetAction(parseResult =>
         {
-            Log.D($"Start service");
+            string dataPath = parseResult.GetRequiredValue(command.StartCommand.DataOption);
+            var resolvedDataPath = Environment.ExpandEnvironmentVariables(dataPath);
+            Uri dataUri = new(resolvedDataPath);
+            Log.D($"Start service. Data={dataUri.LocalPath}");
         });
     }
 }
