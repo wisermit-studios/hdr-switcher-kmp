@@ -42,8 +42,7 @@ public static class Program
         command.SetAction(parseResult =>
         {
             string path = parseResult.GetRequiredValue(command.PathArgument);
-            FileInfo applicationFile = new(path.ResolvedPath());
-            Application app = new(applicationFile);
+            Application app = new(path.ResolvedPath());
 
             if (app.File.Exists)
             {
@@ -62,9 +61,13 @@ public static class Program
         command.StartCommand.SetAction(async (parseResult, cancellationToken) =>
         {
             string dataPath = parseResult.GetRequiredValue(command.StartCommand.DataOption);
-            string resolvedDataPath = dataPath.ResolvedPath();
-
-            Service service = new(resolvedDataPath);
+            FileInfo dataFile = new(dataPath.ResolvedPath());
+            
+            Service service = new(
+                dataFile,
+                onError: code => Environment.Exit(code)
+            );
+            
             cancellationToken.Register(service.Stop);
 
             await InputReader.Listen(command =>
@@ -72,7 +75,7 @@ public static class Program
                 // FIXME: Remove test.
                 Log.D($"command: {command}");
             });
-            Environment.Exit(ErrorCode.ERROR_BROKEN_PIPE);
+            return ErrorCode.ERROR_BROKEN_PIPE;
         });
     }
 }

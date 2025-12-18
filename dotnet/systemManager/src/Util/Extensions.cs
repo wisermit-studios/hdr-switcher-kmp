@@ -4,7 +4,8 @@ public static class Extensions
 {
     public static string ResolvedPath(this string path)
     {
-        var resolvedPath = Environment.ExpandEnvironmentVariables(path);
+        string resolvedPath = Environment.ExpandEnvironmentVariables(path);
+        // TODO: Resolve redirections.
         return new Uri(resolvedPath).LocalPath;
     }
 }

@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace SystemManager.Model;
 
 public enum HdrMode
@@ -10,6 +8,9 @@ public enum HdrMode
 }
 
 public record Application(
-    [property: JsonPropertyName("path")] FileInfo File,
-    [property: JsonPropertyName("hdr")] HdrMode Hdr = HdrMode.Default
-);
+    string Path,
+    HdrMode Hdr = HdrMode.Default
+)
+{
+    public FileInfo File = new(Path);
+}
