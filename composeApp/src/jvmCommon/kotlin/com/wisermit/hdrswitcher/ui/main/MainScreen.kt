@@ -59,12 +59,13 @@ import com.wisermit.hdrswitcher.ui.ErrorDialogData
 import com.wisermit.hdrswitcher.util.FilePicker
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import java.io.File
 
 @Composable
 fun MainScreen(
     onClose: () -> Unit,
-    viewModel: MainViewModel = koinInject(),
+    viewModel: MainViewModel = koinViewModel(),
     hdrService: HdrSwitcherService = koinInject(),
 ) {
     val error by viewModel.error.collectAsState()
