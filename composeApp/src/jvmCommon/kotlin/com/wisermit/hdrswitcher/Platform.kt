@@ -15,7 +15,7 @@ interface SystemInfo {
 
     val userHomeDir: File get() = File(System.getProperty("user.home"))
 
-    val appSettingsDir: File
+    val applicationDataDir: File
 
     val applicationExtension: String
 }

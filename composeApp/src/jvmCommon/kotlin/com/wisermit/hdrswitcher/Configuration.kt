@@ -2,7 +2,7 @@ package com.wisermit.hdrswitcher
 
 import java.io.File
 
-private const val APP_SETTINGS_FOLDER_NAME = "HDR Switcher"
+private const val APP_DATA_FOLDER_NAME = "HDR Switcher"
 private const val APPLICATIONS_FILE_NAME = "applications.json"
 
 interface Configuration {
@@ -13,7 +13,7 @@ interface Configuration {
 class ConfigurationImpl(val systemInfo: SystemInfo) : Configuration {
 
     override val userDataDir: File
-        get() = File(systemInfo.appSettingsDir, APP_SETTINGS_FOLDER_NAME)
+        get() = File(systemInfo.applicationDataDir, APP_DATA_FOLDER_NAME)
 
     override val applicationsFile: File
         get() = File(userDataDir, APPLICATIONS_FILE_NAME)

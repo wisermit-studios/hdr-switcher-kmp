@@ -1,5 +1,6 @@
 package com.wisermit.hdrswitcher.ui.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,27 +46,31 @@ import com.wisermit.hdrswitcher.resources.Res
 import com.wisermit.hdrswitcher.resources.add_application
 import com.wisermit.hdrswitcher.resources.drag_and_drop_application
 import com.wisermit.hdrswitcher.resources.hdr
+import com.wisermit.hdrswitcher.resources.hdr_switcher_service_error
 import com.wisermit.hdrswitcher.resources.main_applications_label
 import com.wisermit.hdrswitcher.resources.no_hdr_message
 import com.wisermit.hdrswitcher.resources.off
 import com.wisermit.hdrswitcher.resources.on
 import com.wisermit.hdrswitcher.resources.open
 import com.wisermit.hdrswitcher.resources.or
+import com.wisermit.hdrswitcher.service.HdrSwitcherService
 import com.wisermit.hdrswitcher.ui.ErrorDialog
 import com.wisermit.hdrswitcher.ui.ErrorDialogData
 import com.wisermit.hdrswitcher.util.FilePicker
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import java.io.File
 
 @Composable
-@Preview
 fun MainScreen(
     onClose: () -> Unit,
-    viewModel: MainViewModel = koinInject(),
+    viewModel: MainViewModel = koinViewModel(),
+    hdrService: HdrSwitcherService = koinInject(),
 ) {
     val error by viewModel.error.collectAsState()
+    val hdrServiceStatus = hdrService.status.collectAsState()
+
     val listState = rememberLazyListState()
     val scrollAdapter = rememberScrollbarAdapter(listState)
 
@@ -85,6 +90,18 @@ fun MainScreen(
         )
 
         else -> Unit
+    }
+
+    if (hdrServiceStatus.value == HdrSwitcherService.Status.Error) {
+        // TODO: Display retry button.
+        Text(
+            stringResource(Res.string.hdr_switcher_service_error),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorScheme.error)
+                .padding(16.dp),
+            style = typography.bodySmall
+        )
     }
 
     ScrollViewer(

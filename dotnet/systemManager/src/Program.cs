@@ -1,57 +1,83 @@
+using System.CommandLine;
+using SystemManager.Console;
 using SystemManager.Core;
 using SystemManager.Model;
 using SystemManager.Util;
 
-// TODO: Review names and logs.
+namespace SystemManager;
 
-namespace SystemManager
+public static class Program
 {
-    public static class Program
+    static async Task Main(string[] args)
     {
-        [STAThread]
-        static async Task Main(string[] args)
+        CommandLine commandLine = [];
+        SetupHdrActions(commandLine.HdrCommand);
+        SetupLaunchAction(commandLine.LaunchCommand);
+        SetupServiceAction(commandLine.ServiceCommand);
+
+
+        ParseResult result = commandLine.Parse(args);
+
+        try
         {
-            var logLevel = LogLevel.Debug;
-            Log.Level = logLevel;
+            VerbosityOption.Level level = result.GetRequiredValue(commandLine.VerbosityOption);
+            Log.Level = level.Loglevel;
+        }
+        catch
+        {
+            // The error will be handled by result.Invoke().
+        }
 
-            ConsoleManager.ReadArgs(args);
+        int resultCode = result.Invoke();
+        Environment.Exit(resultCode);
+    }
 
-            if (args.Length == 1)
+    private static void SetupHdrActions(HdrCommand command)
+    {
+        command.StatusCommand.SetAction(_ => System.Console.WriteLine($"{HdrManager.IsEnabled()}"));
+        command.EnableCommand.SetAction(_ => HdrManager.SetHdrEnabled(true));
+        command.DisableCommand.SetAction(_ => HdrManager.SetHdrEnabled(false));
+    }
+
+    private static void SetupLaunchAction(LaunchCommand command)
+    {
+        command.SetAction(parseResult =>
+        {
+            string path = parseResult.GetRequiredValue(command.PathArgument);
+            Application app = new(path.ResolvedPath());
+
+            if (app.File.Exists)
             {
-                Log.D("Launching process.");
-                LaunchExecutable(args[0]);
+                Launcher.Launch(app);
+                return 0;
             }
             else
             {
-                Log.D("Starting service.");
-                await StartService(args);
+                return ErrorCode.ERROR_FILE_NOT_FOUND;
             }
-        }
+        });
+    }
 
-        private static void LaunchExecutable(string executablePath)
+    private static void SetupServiceAction(ServiceCommand command)
+    {
+        command.StartCommand.SetAction(async (parseResult, cancellationToken) =>
         {
-            if (File.Exists(executablePath))
-            {
-                Task.Run(() =>
-                    {
-                        Launcher.Launch(executablePath);
-                    }
-                );
-                Environment.Exit(0);
-            }
-            else
-            {
-                Environment.Exit(ErrorCode.ERROR_FILE_NOT_FOUND);
-            }
-        }
+            string dataPath = parseResult.GetRequiredValue(command.StartCommand.DataOption);
+            FileInfo dataFile = new(dataPath.ResolvedPath());
 
-        private static async Task StartService(string[] args)
-        {
-            var executables = Exe.ListFromArgs(args);
-            var service = new Service();
-            service.SetExecutables(executables);
+            Service service = new(
+                dataFile,
+                onError: code => Environment.Exit(code)
+            );
 
-            await ConsoleManager.ListenInput();
-        }
+            cancellationToken.Register(service.Stop);
+
+            await InputReader.Listen(command =>
+            {
+                // FIXME: Remove test.
+                Log.D($"command: {command}");
+            });
+            return ErrorCode.ERROR_BROKEN_PIPE;
+        });
     }
 }

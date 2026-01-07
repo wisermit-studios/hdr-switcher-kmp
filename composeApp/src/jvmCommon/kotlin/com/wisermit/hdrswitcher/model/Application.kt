@@ -8,15 +8,22 @@ import kotlinx.serialization.Transient
 import java.io.File
 
 enum class HdrMode {
-    Default, On, Off;
+    @SerialName("default")
+    Default,
+
+    @SerialName("on")
+    On,
+
+    @SerialName("off")
+    Off;
 }
 
 @Immutable
 @Serializable
 data class Application(
 
-    @SerialName("file")
     @Contextual
+    @SerialName("path")
     val file: File,
 
     @SerialName("description")

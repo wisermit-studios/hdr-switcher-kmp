@@ -17,6 +17,12 @@ typealias OnExitListener = (SystemManagerProcess.Result) -> Unit
 
 private val TAG = SystemManagerProcess::class.java.simpleName
 private val TAG_EXE = "${TAG}_Exe"
+private const val END_LOG_MESSAGE_DELIMITER = '\u00A0'
+
+private val RESULT_HEX_FORMAT = HexFormat {
+    upperCase = true
+    number.prefix = "0x"
+}
 
 class SystemManagerProcess private constructor(
     coroutineContext: CoroutineContext,
@@ -26,7 +32,8 @@ class SystemManagerProcess private constructor(
     val coroutineHandler = CoroutineExceptionHandler { _, e ->
         Log.e(TAG, "Job failure.", e)
     }
-    private val processScope = CoroutineScope(coroutineContext + coroutineHandler + SupervisorJob())
+    private val processJob = SupervisorJob()
+    private val processScope = CoroutineScope(coroutineContext + coroutineHandler + processJob)
     private val readersJob: Job
 
     private var outputWriter: BufferedWriter
@@ -39,20 +46,24 @@ class SystemManagerProcess private constructor(
 
             readersJob = processScope.launch(Dispatchers.IO) {
                 launch {
-                    inputReader()?.forEachLine {
-                        handleInputLine(it)
+                    // TODO: Read blocks.
+                    inputReader(Charsets.UTF_8)?.forEachLine { line ->
+                        val messages = line.split(END_LOG_MESSAGE_DELIMITER)
+                        messages.forEach {
+                            readOutputLine(it.trim('\n'))
+                        }
                     }
                 }
                 launch {
                     errorReader().useLines {
-                        Log.e(TAG_EXE, it.joinToString("\n"))
+                        readOutputLine(it.joinToString("\n"))
                     }
                 }
             }
         }
     }
 
-    fun command(vararg commands: String) {
+    fun sendCommand(vararg commands: String) {
         outputWriter.run {
             commands.forEach { write(it) }
             write(System.lineSeparator())
@@ -60,14 +71,18 @@ class SystemManagerProcess private constructor(
         }
     }
 
-    fun destroy() = process.destroy()
+    fun destroy(): Job {
+        process.destroy()
+        return processJob
+    }
+
+    suspend fun await() = processJob.join()
 
     private fun exit() {
         processScope.launch {
             readersJob.join()
 
             val exitCode = process.exitValue()
-            Log.d(TAG, "Process exited: ${exitCode.toHexString(HEX_FORMAT)}")
 
             process.runCatching {
                 inputStream.close()
@@ -76,10 +91,13 @@ class SystemManagerProcess private constructor(
             }
 
             onExit?.invoke(Result(exitCode, resultList))
+            processJob.cancel()
         }
     }
 
-    private fun handleInputLine(line: String) {
+    private fun readOutputLine(line: String) {
+        if (line.isEmpty()) return
+
         val linePrefix = line.take(LINE_PREFIX_LENGTH)
         val lineContent = line.drop(LINE_PREFIX_LENGTH)
 
@@ -89,17 +107,12 @@ class SystemManagerProcess private constructor(
             "I/" -> Log.i(TAG_EXE, lineContent)
             "W/" -> Log.w(TAG_EXE, lineContent)
             "E/" -> Log.e(TAG_EXE, lineContent)
-            else -> Log.e(TAG_EXE, "Unknown input line: \"$line\"")
+            else -> Log.e(TAG_EXE, line)
         }
     }
 
     companion object {
         private const val LINE_PREFIX_LENGTH = 2
-
-        private val HEX_FORMAT = HexFormat {
-            upperCase = true
-            number.prefix = "0x"
-        }
 
         suspend fun start(init: Builder.() -> Unit) = Builder().also(init).start()
     }
@@ -107,22 +120,32 @@ class SystemManagerProcess private constructor(
     data class Result(
         val code: Int,
         val values: List<String>,
-    )
+    ) {
+        val hexCode: String = code.toHexString(RESULT_HEX_FORMAT)
+    }
 
     class Builder {
-
-        var args: Array<out String> = emptyArray()
-            private set
-
+        var data: String = ""
         var onExit: OnExitListener? = null
 
-        fun setArgs(vararg args: String) {
-            this.args = args
-        }
-
         suspend fun start(): SystemManagerProcess {
-            val exeFile = AppResources.systemManagerExe
-            val process = ProcessBuilder(exeFile.path, *args).start()
+            val verbosity = when (Log.level) {
+                Log.Level.None -> "quiet"
+                Log.Level.Error -> "minimal"
+                Log.Level.Warning -> "normal"
+                Log.Level.Info -> "detailed"
+                Log.Level.Debug,
+                Log.Level.Test -> "diagnostic"
+            }
+
+            val command = arrayOf(
+                AppResources.systemManagerExe.path,
+                "service", "start",
+                "--verbosity", verbosity,
+                "--data", data,
+            )
+
+            val process = ProcessBuilder(*command).start()
             return SystemManagerProcess(coroutineContext, process, onExit)
         }
     }

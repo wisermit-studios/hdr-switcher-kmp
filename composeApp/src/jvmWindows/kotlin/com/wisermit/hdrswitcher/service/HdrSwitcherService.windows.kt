@@ -1,58 +1,90 @@
 package com.wisermit.hdrswitcher.service
 
+import com.wisermit.hdrswitcher.Configuration
 import com.wisermit.hdrswitcher.domain.applications.GetApplicationsUseCase
-import com.wisermit.hdrswitcher.model.Application
 import com.wisermit.hdrswitcher.process.SystemManagerProcess
+import com.wisermit.hdrswitcher.service.HdrSwitcherService.Status
 import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.koin.core.scope.Scope
 
-private val TAG = HdrSwitcherService::class.java.simpleName
+private val SERVICE_NAME = HdrSwitcherService::class.java.simpleName
+private val TAG = SERVICE_NAME
 
-internal actual fun Scope.hdrSwitcherService(): HdrSwitcherService = WindowsHdrSwitcherService(get())
+internal actual fun Scope.hdrSwitcherService(): HdrSwitcherService =
+    WindowsHdrSwitcherService(get(), get())
 
 private class WindowsHdrSwitcherService(
     getApplicationsUseCase: GetApplicationsUseCase,
-    private val scope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Default)
+    private val configuration: Configuration,
+    private val scope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Default),
 ) : HdrSwitcherService {
 
     private var job: Job? = null
 
-    private val applications = getApplicationsUseCase(Unit)
+    private val applicationsUseCase = getApplicationsUseCase(Unit)
 
     private var systemManager: SystemManagerProcess? = null
 
-    override fun start() {
-        if (job?.isActive == true) return
+    private val _status = MutableStateFlow(Status.Stopped)
+    override val status: StateFlow<Status> = _status
 
-        job = scope.launch {
-            applications.collect { result ->
-                systemManager?.destroy()
-
-                result.getOrNull()
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { startProcess(it) }
+    init {
+        scope.launch {
+            status.drop(1).collect {
+                Log.i(TAG, "$SERVICE_NAME $it")
             }
         }
     }
 
-    private suspend fun startProcess(list: List<Application>) {
+    override fun start() {
+        job = scope.launch {
+            applicationsUseCase.collect { result ->
+                systemManager?.apply {
+                    systemManager = null
+                    destroy()
+                    await()
+                }
+
+                val applications = result.getOrNull()
+
+                if (applications.isNullOrEmpty()) {
+                    _status.emit(Status.Suspended)
+                } else {
+                    startProcess()
+                }
+            }
+        }
+    }
+
+    private suspend fun startProcess() {
         try {
             systemManager = SystemManagerProcess.start {
-                val args = list.map { "${it.file.name}|${it.file.path}" }
-                setArgs(*args.toTypedArray())
+                data = configuration.applicationsFile.path
+
+                onExit = {
+                    Log.i(TAG, "Process exited: ${it.hexCode}.")
+                    val status = if (it.code == 0 || systemManager == null)
+                        Status.Suspended else Status.Error
+                    _status.tryEmit(status)
+                }
             }
+            _status.emit(Status.Active)
         } catch (e: Exception) {
-            Log.e(TAG, "Error while trying to start Application Watcher Service", e)
+            Log.e(TAG, "Error while trying to start $SERVICE_NAME.", e)
+            _status.emit(Status.Error)
         }
     }
 
     override fun stop() {
-        scope.cancel()
+        job?.cancel()
         systemManager?.destroy()
+        _status.tryEmit(Status.Stopped)
     }
 }
