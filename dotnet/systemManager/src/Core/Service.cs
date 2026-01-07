@@ -33,7 +33,7 @@ public class Service
                 }
                 else
                 {
-                    Log.I($"Watching ({applications.Count}) applications.");
+                    Log.I($"Watching {applications.Count} applications.");
                     WatchApplications(applications);
                 }
                 break;

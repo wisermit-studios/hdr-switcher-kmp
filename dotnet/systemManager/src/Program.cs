@@ -6,8 +6,6 @@ using SystemManager.Util;
 
 namespace SystemManager;
 
-// TODO: Review names and logs. Refactor namespaces.
-
 public static class Program
 {
     static async Task Main(string[] args)
@@ -16,6 +14,7 @@ public static class Program
         SetupHdrActions(commandLine.HdrCommand);
         SetupLaunchAction(commandLine.LaunchCommand);
         SetupServiceAction(commandLine.ServiceCommand);
+
 
         ParseResult result = commandLine.Parse(args);
 
@@ -67,7 +66,7 @@ public static class Program
                 dataFile,
                 onError: code => Environment.Exit(code)
             );
-            
+
             cancellationToken.Register(service.Stop);
 
             await InputReader.Listen(command =>

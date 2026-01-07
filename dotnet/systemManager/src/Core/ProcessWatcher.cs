@@ -1,46 +1,42 @@
-using System.Management;
 using SystemManager.Model;
+using Microsoft.Diagnostics.Tracing.Parsers;
+using Microsoft.Diagnostics.Tracing.Session;
+using SystemManager.Util;
 
 namespace SystemManager.Core;
 
 public class ProcessWatcher
 {
-    private ManagementEventWatcher? _startWatcher;
-    private ManagementEventWatcher? _stopWatcher;
+    readonly TraceEventSession _session = new("wisermit.systemmanager:ProcessWatcherSession");
 
     public void Watch(
-        List<Application> applications,
-        Action onStart,
-        Action onFinish)
+            List<Application> applications,
+            Action onStart,
+            Action onFinish)
     {
-        _startWatcher = CreateEventWatcher("Win32_ProcessStartTrace", applications);
-        _startWatcher.EventArrived += (s, e) => onStart();
-        _startWatcher.Start();
+        HashSet<string> processes = [.. applications.Select(e => e.File.Name.ToLowerInvariant())];
 
-        _stopWatcher = CreateEventWatcher("Win32_ProcessStopTrace", applications);
-        _stopWatcher.EventArrived += (s, e) => onFinish();
-        _stopWatcher.Start();
-    }
+        _session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
 
-    private static ManagementEventWatcher CreateEventWatcher(
-        string eventClass, List<Application> executables)
-    {
-        var whereClause = string.Join(
-            " OR ",
-            executables.Select(app => $"ProcessName = '{app.File.Name}'")
-        );
+        _session.Source.Kernel.ProcessStart += e =>
+        {
+            if (processes.Contains(e.ImageFileName.ToLowerInvariant())) onStart();
+        };
 
-        return new ManagementEventWatcher(
-            new WqlEventQuery($"SELECT * FROM {eventClass} WHERE {whereClause}")
-        );
+        _session.Source.Kernel.ProcessStop += e =>
+        {
+            if (processes.Contains(e.ImageFileName.ToLowerInvariant())) onFinish();
+        };
+
+
+        Task.Run(() => _session.Source.Process());
+        Log.I($"ProcessWatcher started.");
     }
 
     public void Stop()
     {
-        _startWatcher?.Stop();
-        _startWatcher?.Dispose();
-
-        _stopWatcher?.Stop();
-        _stopWatcher?.Dispose();
+        _session.Source.StopProcessing();
+        _session.Dispose();
+        Log.I($"ProcessWatcher stopped.");
     }
 }
