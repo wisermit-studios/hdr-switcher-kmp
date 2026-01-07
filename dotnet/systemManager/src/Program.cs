@@ -23,7 +23,10 @@ public static class Program
             VerbosityOption.Level level = result.GetRequiredValue(commandLine.VerbosityOption);
             Log.Level = level.Loglevel;
         }
-        catch { }
+        catch
+        {
+            // The error will be handled by result.Invoke().
+        }
 
         int resultCode = result.Invoke();
         Environment.Exit(resultCode);
@@ -61,7 +64,7 @@ public static class Program
         {
             string dataPath = parseResult.GetRequiredValue(command.StartCommand.DataOption);
             FileInfo dataFile = new(dataPath.ResolvedPath());
-            
+
             Service service = new(
                 dataFile,
                 onError: code => Environment.Exit(code)
