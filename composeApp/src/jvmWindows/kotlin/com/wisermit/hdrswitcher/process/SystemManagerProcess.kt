@@ -32,7 +32,8 @@ class SystemManagerProcess private constructor(
     val coroutineHandler = CoroutineExceptionHandler { _, e ->
         Log.e(TAG, "Job failure.", e)
     }
-    private val processScope = CoroutineScope(coroutineContext + coroutineHandler + SupervisorJob())
+    private val processJob = SupervisorJob()
+    private val processScope = CoroutineScope(coroutineContext + coroutineHandler + processJob)
     private val readersJob: Job
 
     private var outputWriter: BufferedWriter
@@ -45,9 +46,9 @@ class SystemManagerProcess private constructor(
 
             readersJob = processScope.launch(Dispatchers.IO) {
                 launch {
-                    inputReader(Charsets.UTF_8)?.useLines { lines ->
-                        val inputText = lines.joinToString("\n")
-                        val messages = inputText.split(END_LOG_MESSAGE_DELIMITER)
+                    // TODO: Read blocks.
+                    inputReader(Charsets.UTF_8)?.forEachLine { line ->
+                        val messages = line.split(END_LOG_MESSAGE_DELIMITER)
                         messages.forEach {
                             readOutputLine(it.trim('\n'))
                         }
@@ -62,7 +63,7 @@ class SystemManagerProcess private constructor(
         }
     }
 
-    fun command(vararg commands: String) {
+    fun sendCommand(vararg commands: String) {
         outputWriter.run {
             commands.forEach { write(it) }
             write(System.lineSeparator())
@@ -70,7 +71,12 @@ class SystemManagerProcess private constructor(
         }
     }
 
-    fun destroy() = process.destroy()
+    fun destroy(): Job {
+        process.destroy()
+        return processJob
+    }
+
+    suspend fun await() = processJob.join()
 
     private fun exit() {
         processScope.launch {
@@ -85,6 +91,7 @@ class SystemManagerProcess private constructor(
             }
 
             onExit?.invoke(Result(exitCode, resultList))
+            processJob.cancel()
         }
     }
 
@@ -122,9 +129,19 @@ class SystemManagerProcess private constructor(
         var onExit: OnExitListener? = null
 
         suspend fun start(): SystemManagerProcess {
+            val verbosity = when (Log.level) {
+                Log.Level.None -> "quiet"
+                Log.Level.Error -> "minimal"
+                Log.Level.Warning -> "normal"
+                Log.Level.Info -> "detailed"
+                Log.Level.Debug,
+                Log.Level.Test -> "diagnostic"
+            }
+
             val command = arrayOf(
                 AppResources.systemManagerExe.path,
                 "service", "start",
+                "--verbosity", verbosity,
                 "--data", data,
             )
 

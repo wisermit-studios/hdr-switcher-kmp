@@ -69,9 +69,10 @@ fun MainScreen(
     hdrService: HdrSwitcherService = koinInject(),
 ) {
     val error by viewModel.error.collectAsState()
+    val hdrServiceStatus = hdrService.status.collectAsState()
+
     val listState = rememberLazyListState()
     val scrollAdapter = rememberScrollbarAdapter(listState)
-    val hdrServiceStatus = hdrService.status.collectAsState()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshData()
@@ -92,6 +93,7 @@ fun MainScreen(
     }
 
     if (hdrServiceStatus.value == HdrSwitcherService.Status.Error) {
+        // TODO: Display retry button.
         Text(
             stringResource(Res.string.hdr_switcher_service_error),
             modifier = Modifier

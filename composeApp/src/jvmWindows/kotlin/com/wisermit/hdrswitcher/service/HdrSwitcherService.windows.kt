@@ -8,7 +8,6 @@ import com.wisermit.hdrswitcher.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
@@ -45,13 +44,13 @@ private class WindowsHdrSwitcherService(
     }
 
     override fun start() {
-        if (job?.isActive == true) return
-
-        Log.i(TAG, "Starting $SERVICE_NAME...")
-
         job = scope.launch {
             applicationsUseCase.collect { result ->
-                systemManager?.destroy()
+                systemManager?.apply {
+                    systemManager = null
+                    destroy()
+                    await()
+                }
 
                 val applications = result.getOrNull()
 
@@ -71,7 +70,8 @@ private class WindowsHdrSwitcherService(
 
                 onExit = {
                     Log.i(TAG, "Process exited: ${it.hexCode}.")
-                    val status = if (it.code == 0) Status.Suspended else Status.Error
+                    val status = if (it.code == 0 || systemManager == null)
+                        Status.Suspended else Status.Error
                     _status.tryEmit(status)
                 }
             }
@@ -83,7 +83,7 @@ private class WindowsHdrSwitcherService(
     }
 
     override fun stop() {
-        scope.cancel()
+        job?.cancel()
         systemManager?.destroy()
         _status.tryEmit(Status.Stopped)
     }
