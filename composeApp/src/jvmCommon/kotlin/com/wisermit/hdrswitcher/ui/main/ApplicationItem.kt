@@ -7,15 +7,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.wisermit.hdrswitcher.designsystem.components.Button
 import com.wisermit.hdrswitcher.designsystem.components.ComboBox
-import com.wisermit.hdrswitcher.designsystem.components.ComboBoxData
+import com.wisermit.hdrswitcher.designsystem.components.ComboBoxItem
 import com.wisermit.hdrswitcher.designsystem.components.ConfigurationItem
 import com.wisermit.hdrswitcher.designsystem.components.SubItem
 import com.wisermit.hdrswitcher.model.Application
@@ -74,16 +76,30 @@ fun ApplicationItem(
                 Text(stringResource(Res.string.hdr))
             },
             trailingContent = {
-                val entries = remember { HdrEntries }
-                    .mapValues { (_, res) -> stringResource(res) }
+                var expanded by remember { mutableStateOf(false) }
 
                 ComboBox(
-                    data = ComboBoxData(
-                        item.hdr,
-                        entries,
-                    ),
-                    onSelected = onHdrChange,
-                )
+                    expanded = expanded,
+                    onClick = { expanded = !expanded },
+                    onDismissRequest = { expanded = false },
+                    content = {
+                        HdrEntries[item.hdr]?.let {
+                            Text(stringResource(it))
+                        }
+                    }
+                ) {
+                    HdrEntries.forEach { entry ->
+                        ComboBoxItem(
+                            selected = entry.key == item.hdr,
+                            onClick = {
+                                expanded = false
+                                onHdrChange(entry.key)
+                            }
+                        ) {
+                            Text(stringResource(entry.value))
+                        }
+                    }
+                }
             }
         )
 
